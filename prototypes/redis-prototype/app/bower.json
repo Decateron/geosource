@@ -1,0 +1,19 @@
+{
+  "name": "api-prototype",
+  "version": "0.0.0",
+  "authors": [
+    "Josh Heinrichs <joshiheinrichs@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "iron-ajax": "PolymerElements/iron-ajax#~1.0.2",
+    "iron-autogrow-textarea": "PolymerElements/iron-autogrow-textarea#~1.0.3"
+  }
+}

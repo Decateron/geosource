@@ -1,0 +1,91 @@
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-autogrow-textarea/iron-autogrow-textarea.html">
+
+<dom-module id="api-prototype">
+	<style>
+		:host {
+			display: block;
+		}
+		div {
+			margin: 10px;
+		}
+	</style>
+	<template>
+		<iron-ajax id="ajax"
+			method="POST"
+			body="[[body]]"
+			handle-as="json"
+			on-response="handleResponse"
+			></iron-ajax>
+		<div>
+			<button on-tap="addPost">Add Post</button>
+			<button on-tap="getPost">Get Post</button>
+			<input id="postId">
+			<button on-tap="addUser">Add User</button>
+			<button on-tap="getUser">Get User</button>
+			<input id="userId">
+			<button on-tap="addChannel">Add Channel</button>
+			<button on-tap="getChannel">Get Channel</button>
+			<input id="channelId">
+		</div>
+		<div>
+			<span>
+				<iron-autogrow-textarea bind-value="{{body}}">
+					<textarea placeholder="body"></textarea>
+				</iron-autogrow-textarea>
+			</span>
+			<span>
+				<iron-autogrow-textarea bind-value="[[response]]">
+					<textarea placeholder="response"></textarea>
+				</iron-autogrow-textarea>
+			</span>
+		</div>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "api-prototype",
+
+		properties: {
+			body: String,
+			response: String
+		},
+
+		addPost: function() {
+			console.log(this.body);
+			this.$.ajax.url = "api/add/post";
+			this.$.ajax.generateRequest();
+		},
+
+		getPost: function() {
+			this.$.ajax.url = "api/get/post/" + this.$.postId.value;
+			this.$.ajax.generateRequest();
+		},
+
+		addUser: function() {
+			this.$.ajax.url = "api/add/user";
+			this.$.ajax.generateRequest();
+		},
+
+		getUser: function() {
+			this.$.ajax.url = "api/get/user/" + this.$.userId.value;
+			this.$.ajax.generateRequest();
+		},
+
+		addChannel: function() {
+			this.$.ajax.url = "api/add/channel";
+			this.$.ajax.generateRequest();
+		},
+
+		getChannel: function() {
+			this.$.ajax.url = "api/get/channel/" + this.$.channelId.value;
+			this.$.ajax.generateRequest();
+		},
+
+		handleResponse: function(event, detail, sender) {
+			this.response = JSON.stringify(detail.response);
+		}
+
+	});
+</script>
