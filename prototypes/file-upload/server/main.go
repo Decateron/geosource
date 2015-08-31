@@ -53,16 +53,6 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		    return
 		}
 
-        // // f, err := os.OpenFile("./test/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-        // f, err := os.Create("./test/" + u4.String() + filepath.Ext(handler.Filename))
-        // if err != nil {
-        //     fmt.Println(err)
-        //     return
-        // }
-        // defer f.Close()
-
-        // io.Copy(f, file)
-
         blob, err := ioutil.ReadAll(file)
         if err != nil {
         	fmt.Println("error:", err)
@@ -71,12 +61,6 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
         mw := imagick.NewMagickWand()
 		defer mw.Destroy()
-
-		// err = mw.ReadImage("./test/" + u4.String() + filepath.Ext(handler.Filename))
-		// if err != nil {
-		// 	fmt.Println(err)
-		// 	return
-		// }
 
 		err = mw.ReadImageBlob(blob)
 		if err != nil {
