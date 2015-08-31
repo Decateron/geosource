@@ -1,0 +1,159 @@
+<link rel="import" href="../google-signin-offline/google-signin-offline.html">
+<link rel="import" href="../../bower_components/google-signin/google-signin.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<dom-module id="login-prototype">
+	<style>
+		:host {
+			display: block;
+		}
+		div {
+			margin: 20px;
+		}
+		google-signin {
+			margin: 20px;
+			margin-bottom: 0;
+		}
+		paper-input {
+			display: inline-block;
+			font-size: 14px;
+		}
+		paper-button {
+			text-transform: none;
+			background-color: #3f51b5;
+			color: #fff;
+			font-size: 14px;
+		}
+	</style>
+	<template>
+		<div>
+			<google-signin-offline id="signinButton"
+				client-id="[[clientId]]"
+				on-signin="signin"
+				on-signout="signout">
+			</google-signin-offline>
+		</div>
+<!-- 		<div>
+			<google-signin></google-signin>
+		</div> -->
+		<div>
+			<span><b>ClientID: </b></span>
+			<span>[[clientId]]</span>
+		</div>
+		<div>
+			<span><b>State: </b></span>
+			<span>[[state]]</span>
+		</div>
+		<div>
+			<span><b>Code: </b></span>
+			<span>[[code]]</span>
+		</div>
+		<div>
+			<span><b>Username: </b></span>
+			<span>[[username]]</span>
+		</div>
+		<div>
+			<span><paper-input id="input" required label="Enter a username"></paper-input></span>
+			<span><paper-button on-tap="postUser">Submit</paper-button></span>
+		</div>
+
+		<iron-ajax id="login"
+			method="POST"
+			content-type="application/json"
+			handle-as="json"
+			on-response="loginResponse">
+		</iron-ajax>
+
+		<iron-ajax id="logout"
+			method="POST"
+			handle-as="json"
+			on-response="logoutResponse">
+		</iron-ajax>
+
+		<iron-ajax id="postUser"
+			method="POST"
+			content-type="application/json"
+			handle-as="json"
+			on-response="postUserResponse">
+		</iron-ajax>
+
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "login-prototype",
+
+		properties: {
+			clientId: String,
+			state: String,
+			code: String,
+			username: String,
+		},
+
+		test: function() {
+			console.log("test");
+		},
+
+		signin: function(event, detail, sender) {
+			console.log("signed in");
+			this.$.login.params = {
+				state: this.state
+			};
+			if (detail.code) {
+				this.code = detail.code;
+				this.$.login.body = {
+					code: this.code
+				};
+			}
+			this.$.login.url = location.origin + "/api/login";
+			this.$.login.generateRequest();
+		},
+
+		signout: function(event, detail, sender) {
+			 console.log("signed out");
+			 this.$.logout.url = location.origin + "/api/logout";
+			 this.$.logout.generateRequest();
+		},
+
+		loginResponse: function(event, detail, sender) {
+			console.log(detail.response);
+			if (detail.response.error) {
+				console.log(detail.response.error);
+				this.$.signinButton.signedIn = true;
+			} else if (!detail.response.username) {
+				// this.createUser();
+			} else {
+				this.username = detail.response.username;
+			}
+		},
+
+		logoutResponse: function(event, detail, sender) {
+			if (detail.response.error) {
+				console.log(detail.response.error);
+			} else {
+				this.code = null;
+				this.username = null;
+			}
+		},
+
+		postUser: function() {
+			this.$.postUser.body = {
+				username: this.$.input.value
+			};
+			this.$.postUser.url = location.origin + "/api/users";
+			this.$.postUser.generateRequest();
+		},
+
+		postUserResponse: function(event, detail, sender) {
+			if (detail.response.error) {
+				this.$.input.errorMessage = detail.response.error;
+				this.$.input.invalid = true;
+			} else {
+				this.$.input.invalid = false;
+				this.username = detail.response.username;
+			}
+		}
+	});
+</script>

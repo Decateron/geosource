@@ -1,0 +1,9 @@
+[google]
+clientId = foo
+clientSecret = bar
+[postgresql]
+# psql -h host -d database -U user
+host = example.com
+database = geosource
+user = geosource
+password = password
