@@ -20,11 +20,6 @@ const (
 	MAX_HEIGHT = 200
 )
 
-//scales 
-func scale(width, height uint) newWidth, newHeight uint {
-
-}
-
 // upload logic
 func upload(w http.ResponseWriter, r *http.Request) {
     fmt.Println("method:", r.Method)
