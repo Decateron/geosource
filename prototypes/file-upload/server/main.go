@@ -91,8 +91,13 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
         t, _ := template.ParseFiles("uploadHandler.gtpl")
         t.Execute(w, token)
     } else {
-        r.ParseMultipartForm(32 << 20)
-        file, handler, err := r.FormFile("uploadfile")
+        err := r.ParseMultipartForm(32 << 20)
+        if err != nil {
+        	fmt.Println("error:", err)
+        	return
+        }
+
+        file, _, err := r.FormFile("field-1")
         if err != nil {
             fmt.Println(err)
             return
@@ -104,7 +109,49 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
         	return
         }
 
-        fmt.Fprintf(w, "%v", handler.Header)
+		formdata := r.MultipartForm  // ok, no problem so far, read the Form data
+
+		//get the *fileheaders
+		files := formdata.File["field-2"]  // grab the filenames
+		for i, _ := range files {  // loop through the files one by one
+			file, err := files[i].Open()
+			defer file.Close()
+			if err != nil {
+				fmt.Println("error:", err)
+				return
+			}
+
+			err = saveImage(file)
+			if err != nil {
+				fmt.Println("error:", err)
+				return
+			}
+		}
+
+		fmt.Println(r.FormValue("field-3"))
+
+		checkboxes := formdata.Value["field-4"]
+		for i, _ := range checkboxes {
+			checkbox := checkboxes[i]
+			fmt.Println(checkbox)
+		}
+
+
+		fmt.Println(r.FormValue("field-5"))
+
+        // file2, handler, err := r.FormFile("uploadfile3")
+        // if err != nil {
+        //     fmt.Println(err)
+        //     return
+        // }
+        // defer file.Close()
+        // err = saveImage(file2)
+        // if err != nil {
+        // 	fmt.Println(err)
+        // 	return
+        // }
+
+        // fmt.Fprintf(w, "%v", handler.Header)
     }
 }
 
