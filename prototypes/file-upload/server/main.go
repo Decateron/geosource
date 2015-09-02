@@ -24,17 +24,17 @@ const (
 func saveImage(file multipart.File) error {
 	u4, err := uuid.NewV4()
 	if err != nil {
-	    fmt.Println("error:", err)
-	    return err
+		fmt.Println("error:", err)
+		return err
 	}
 
-    blob, err := ioutil.ReadAll(file)
-    if err != nil {
-    	fmt.Println("error:", err)
-    	return err
-    }
+	blob, err := ioutil.ReadAll(file)
+	if err != nil {
+		fmt.Println("error:", err)
+		return err
+	}
 
-    mw := imagick.NewMagickWand()
+	mw := imagick.NewMagickWand()
 	defer mw.Destroy()
 
 	err = mw.ReadImageBlob(blob)
@@ -81,33 +81,33 @@ func saveImage(file multipart.File) error {
 
 // upload logic
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Println("method:", r.Method)
-    if r.Method == "GET" {
-        crutime := time.Now().Unix()
-        h := md5.New()
-        io.WriteString(h, strconv.FormatInt(crutime, 10))
-        token := fmt.Sprintf("%x", h.Sum(nil))
+	fmt.Println("method:", r.Method)
+	if r.Method == "GET" {
+		crutime := time.Now().Unix()
+		h := md5.New()
+		io.WriteString(h, strconv.FormatInt(crutime, 10))
+		token := fmt.Sprintf("%x", h.Sum(nil))
 
-        t, _ := template.ParseFiles("uploadHandler.gtpl")
-        t.Execute(w, token)
-    } else {
-        err := r.ParseMultipartForm(32 << 20)
-        if err != nil {
-        	fmt.Println("error:", err)
-        	return
-        }
+		t, _ := template.ParseFiles("uploadHandler.gtpl")
+		t.Execute(w, token)
+	} else {
+		err := r.ParseMultipartForm(32 << 20)
+		if err != nil {
+			fmt.Println("error:", err)
+			return
+		}
 
-        file, _, err := r.FormFile("field-1")
-        if err != nil {
-            fmt.Println(err)
-            return
-        }
-        defer file.Close()
-        err = saveImage(file)
-        if err != nil {
-        	fmt.Println(err)
-        	return
-        }
+		file, _, err := r.FormFile("field-1")
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		defer file.Close()
+		err = saveImage(file)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 
 		formdata := r.MultipartForm  // ok, no problem so far, read the Form data
 
@@ -139,34 +139,34 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println(r.FormValue("field-5"))
 
-        // file2, handler, err := r.FormFile("uploadfile3")
-        // if err != nil {
-        //     fmt.Println(err)
-        //     return
-        // }
-        // defer file.Close()
-        // err = saveImage(file2)
-        // if err != nil {
-        // 	fmt.Println(err)
-        // 	return
-        // }
+		// file2, handler, err := r.FormFile("uploadfile3")
+		// if err != nil {
+		//     fmt.Println(err)
+		//     return
+		// }
+		// defer file.Close()
+		// err = saveImage(file2)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	return
+		// }
 
-        // fmt.Fprintf(w, "%v", handler.Header)
-    }
+		// fmt.Fprintf(w, "%v", handler.Header)
+	}
 }
 
 func main() {
 
 	imagick.Initialize()
-    defer imagick.Terminate()
+	defer imagick.Terminate()
 
-    r := mux.NewRouter()
-    r.HandleFunc("/upload", uploadHandler)
-    r.PathPrefix("/").Handler(http.FileServer(http.Dir("app/")))
+	r := mux.NewRouter()
+	r.HandleFunc("/upload", uploadHandler)
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("app/")))
 
-    http.Handle("/", r)
-    err := http.ListenAndServe(":9090", nil)
-    if err != nil {
+	http.Handle("/", r)
+	err := http.ListenAndServe(":9090", nil)
+	if err != nil {
 		log.Fatal(err)
 	}
 }
