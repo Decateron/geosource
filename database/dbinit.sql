@@ -3,6 +3,7 @@ CREATE DOMAIN email AS VARCHAR(254);
 CREATE DOMAIN channelname AS VARCHAR(20);
 CREATE TYPE visibility AS ENUM ('public', 'private');
 CREATE DOMAIN title AS VARCHAR(140);
+CREATE DOMAIN comment AS VARCHAR(500);
 
 CREATE TABLE users (
 	u_username username PRIMARY KEY,
@@ -35,6 +36,15 @@ CREATE TABLE posts (
 	FOREIGN KEY (p_channelname) REFERENCES channels (ch_channelname)
 );
 CREATE INDEX post_gix ON posts USING GIST (p_location); 
+
+CREATE TABLE comments (
+	cmt_cid SERIAL PRIMARY KEY,
+	cmt_pid INTEGER NOT NULL,
+	cmt_cid_parent INTEGER,
+	cmt_comment comment NOT NULL,
+	FOREIGN KEY (cmt_pid) REFERENCES posts (p_pid),
+	FOREIGN KEY (cmt_cid_parent) REFERENCES comments (cmt_cid)
+);
 
 CREATE TABLE user_favorites (
 	uf_username username NOT NULL,
