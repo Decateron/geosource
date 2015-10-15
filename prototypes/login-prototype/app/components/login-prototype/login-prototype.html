@@ -1,7 +1,7 @@
-<link rel="import" href="../google-signin-offline/google-signin-offline.html">
 <link rel="import" href="../../bower_components/google-signin/google-signin.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <dom-module id="login-prototype">
 	<style>
@@ -12,8 +12,7 @@
 			margin: 20px;
 		}
 		google-signin {
-			margin: 20px;
-			margin-bottom: 0;
+			margin: 0;
 		}
 		paper-input {
 			display: inline-block;
@@ -28,15 +27,13 @@
 	</style>
 	<template>
 		<div>
-			<google-signin-offline id="signinButton"
+			<google-signin
+				offline
 				client-id="[[clientId]]"
-				on-signin="signin"
-				on-signout="signout">
-			</google-signin-offline>
+				on-google-signin-offline-success="signin"
+				on-google-signed-out="signout">
+			</google-signin>
 		</div>
-<!-- 		<div>
-			<google-signin></google-signin>
-		</div> -->
 		<div>
 			<span><b>ClientID: </b></span>
 			<span>[[clientId]]</span>
@@ -58,20 +55,24 @@
 			<span><paper-button on-tap="postUser">Submit</paper-button></span>
 		</div>
 
-		<iron-ajax id="login"
+		<iron-ajax id="postSignin"
+			url="/api/login"
 			method="POST"
 			content-type="application/json"
 			handle-as="json"
 			on-response="loginResponse">
 		</iron-ajax>
 
-		<iron-ajax id="logout"
+		<iron-ajax id="postSignout"
+			url="/api/logout"
 			method="POST"
+			content-type="application/json"
 			handle-as="json"
 			on-response="logoutResponse">
 		</iron-ajax>
 
 		<iron-ajax id="postUser"
+			url="/api/users"
 			method="POST"
 			content-type="application/json"
 			handle-as="json"
@@ -98,30 +99,28 @@
 
 		signin: function(event, detail, sender) {
 			console.log("signed in");
-			this.$.login.params = {
+			console.log(detail);
+			this.$.postSignin.params = {
 				state: this.state
 			};
 			if (detail.code) {
 				this.code = detail.code;
-				this.$.login.body = {
+				this.$.postSignin.body = {
 					code: this.code
 				};
 			}
-			this.$.login.url = location.origin + "/api/login";
-			this.$.login.generateRequest();
+			this.$.postSignin.generateRequest();
 		},
 
 		signout: function(event, detail, sender) {
 			 console.log("signed out");
-			 this.$.logout.url = location.origin + "/api/logout";
-			 this.$.logout.generateRequest();
+			 this.$.postSignout.generateRequest();
 		},
 
 		loginResponse: function(event, detail, sender) {
 			console.log(detail.response);
 			if (detail.response.error) {
 				console.log(detail.response.error);
-				this.$.signinButton.signedIn = true;
 			} else if (!detail.response.username) {
 				// this.createUser();
 			} else {
@@ -142,7 +141,6 @@
 			this.$.postUser.body = {
 				username: this.$.input.value
 			};
-			this.$.postUser.url = location.origin + "/api/users";
 			this.$.postUser.generateRequest();
 		},
 

@@ -4,8 +4,6 @@ Demoing Google+ login. Implementation is based off of the [gplus-quickstart-go](
 
 This prototype also supports username creation, and stores the data into a simple Postgresql database which records a user's email and username.
 
-A simple, custom signin button was created since the `google-signin` web component does not allow for offline access (since it isn't capable of providing a code). It's a bit buggy at the moment, so hopefully the official `google-signin` component will have that feature included in the future.
-
 ### Setup
 
 Follow Step 1 of the [gplus-quickstart-go tutorial](https://developers.google.com/+/web/samples/go) to set up the Google+ API.
