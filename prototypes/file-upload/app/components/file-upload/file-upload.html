@@ -1,0 +1,156 @@
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/image-icons.html">
+
+<dom-module id="file-upload">
+	<style>
+		paper-textarea {
+			width: 200px;
+		}
+		.hidden {
+			display: block;
+			visibility: hidden;
+			width: 0;
+			height: 0;
+			padding: 0;
+			margin: 0;
+		}
+		img {
+			height: 75px;
+			margin: 15px;
+			margin-left: 0;
+			margin-bottom: 0;
+		}
+		paper-button {
+			color: #000;
+			background-color: #ddd;
+			text-transform: none;
+			margin: 0;
+			display: block;
+			width: 200px;
+		}
+		.title {
+			font-size: 18px;
+			font-weight: bold;
+		}
+		.contents {
+			background-color: #eee;
+			padding: 15px;
+			margin-bottom: 15px;
+		}
+		paper-textarea {
+			font-size: 14px;
+			width: 100%;
+		}
+		paper-textarea::shadow paper-input-container {
+			padding: 0;
+		}
+		paper-checkbox {
+			padding: 0;
+			margin-top: 10px;
+		}
+		paper-checkbox:first-child {
+			margin-top: 0;
+		}
+		paper-radio-button {
+			padding: 0;
+			margin-top: 10px;
+		}
+		paper-radio-button:first-child {
+			margin-top: 0;
+		}
+	</style>
+	<template>
+		<form id="form" enctype="multipart/form-data" action="/upload" method="post">
+			
+			<div class="title"><b>Title</b></div>
+			<div class="contents">
+				<paper-textarea value="{{field-1}}" label="Input a title..." no-label-float></paper-textarea>
+				<input class="hidden" type="text" name="field-1" value="{{field-1}}">
+			</div>
+
+			<div class="title"><b>Images</b></div>
+			<div class="contents">
+				<input class="hidden" id="file" name="field-2" type="file" capture="camera" accept="image/*" multiple on-change="test">
+				<paper-button id="select" on-tap="openFile">
+					<iron-icon icon="image:camera-alt"></iron-icon>
+					<span>Add Pictures</span>
+				</paper-button>
+				<output id="list"></output>
+			</div>
+
+			<div class="title"><b>Check Boxes</b></div>
+			<div class="contents">
+				<paper-radio-group>
+					<paper-checkbox name="option-1" checked="{{field-3-option-1}}">Option 1</paper-checkbox>
+					<input class="hidden" type="checkbox" name="field-3" value="Option 1" checked="{{field-3-option-1}}">
+					<paper-checkbox name="option-2" checked="{{field-3-option-2}}">Option 2</paper-checkbox>
+					<input class="hidden" type="checkbox" name="field-3" value="Option 2" checked="{{field-3-option-2}}">
+					<paper-checkbox name="option-3" checked="{{field-3-option-3}}">Option 3</paper-checkbox>
+					<input class="hidden" type="checkbox" name="field-3" value="Option 3" checked="{{field-3-option-3}}">
+				</paper-radio-group>
+			</div>
+
+			<div class="title"><b>Radio Buttons</b></div>
+			<div class="contents">
+				<paper-radio-group>
+					<paper-radio-button name="option-1" checked="{{field-4-option-1}}">Option 1</paper-radio-button>
+					<input class="hidden" type="radio" name="field-4" value="Option 1" checked="{{field-4-option-1}}">
+					<paper-radio-button name="option-2" checked="{{field-4-option-2}}">Option 2</paper-radio-button>
+					<input class="hidden" type="radio" name="field-4" value="Option 2" checked="{{field-4-option-2}}">
+					<paper-radio-button name="option-3" checked="{{field-4-option-3}}">Option 3</paper-radio-button>
+					<input class="hidden" type="radio" name="field-4" value="Option 3" checked="{{field-4-option-3}}">
+				</paper-radio-group>
+			</div>
+
+			<input type="hidden" name="token" value="{{.}}">
+
+			<paper-button on-tap="submit">Submit</paper-button>
+
+			
+		</form>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "file-upload",
+
+		openFile: function() {
+			this.$.file.click();
+		},
+
+		test: function() {
+			console.log(this.$.file.files);
+
+			Polymer.dom(this.$.list).innerHTML = "";
+
+			var files = this.$.file.files;
+
+			for (var i=0; i< files.length; i++) {
+				var file = files[i];
+				var reader = new FileReader();
+
+				reader.onload = function(e) {
+					var img = new Image();
+					img.src = e.target.result;
+					Polymer.dom(this.$.list).appendChild(img);
+				}.bind(this)
+
+				reader.readAsDataURL(file);	
+			}
+		},
+
+		submit: function() {
+			var form = this.$.form;
+			var formData = new FormData(form);
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', '/upload', true);
+			xhr.send(formData);
+		}
+	});
+</script>

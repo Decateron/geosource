@@ -24,13 +24,13 @@ const (
 func saveImage(file multipart.File) error {
 	u4, err := uuid.NewV4()
 	if err != nil {
-		fmt.Println("error:", err)
+		log.Print(log.Llongfile, err)
 		return err
 	}
 
 	blob, err := ioutil.ReadAll(file)
 	if err != nil {
-		fmt.Println("error:", err)
+		log.Print(log.Llongfile, err)
 		return err
 	}
 
@@ -39,7 +39,7 @@ func saveImage(file multipart.File) error {
 
 	err = mw.ReadImageBlob(blob)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(log.Llongfile, err)
 		return err
 	}
 
@@ -60,19 +60,19 @@ func saveImage(file multipart.File) error {
 	// The blur factor is a float, where > 1 is blurry, < 1 is sharp
 	err = mw.ResizeImage(newWidth, newHeight, imagick.FILTER_LANCZOS, 1)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(log.Llongfile, err)
 		return err
 	}
 
 	err = mw.SetImageCompressionQuality(70)
 	if err != nil {
-		fmt.Println(err)
+		log.Print(log.Llongfile, err)
 		return err
 	}
 
 	err = mw.WriteImage("app/images/" + u4.String() + ".jpg")
 	if err != nil {
-		fmt.Println(err)
+		log.Print(log.Llongfile, err)
 		return err
 	}
 
@@ -93,21 +93,11 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		err := r.ParseMultipartForm(32 << 20)
 		if err != nil {
-			fmt.Println("error:", err)
+			log.Print(log.Llongfile, err)
 			return
 		}
 
-		file, _, err := r.FormFile("field-1")
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		defer file.Close()
-		err = saveImage(file)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+		fmt.Println(r.FormValue("field-1"))
 
 		formdata := r.MultipartForm  // ok, no problem so far, read the Form data
 
@@ -117,45 +107,29 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			file, err := files[i].Open()
 			defer file.Close()
 			if err != nil {
-				fmt.Println("error:", err)
+				log.Print(log.Llongfile, err)
 				return
 			}
 
 			err = saveImage(file)
 			if err != nil {
-				fmt.Println("error:", err)
+				log.Print(log.Llongfile, err)
 				return
 			}
 		}
 
-		fmt.Println(r.FormValue("field-3"))
-
-		checkboxes := formdata.Value["field-4"]
+		checkboxes := formdata.Value["field-3"]
 		for i, _ := range checkboxes {
 			checkbox := checkboxes[i]
 			fmt.Println(checkbox)
 		}
 
-
-		fmt.Println(r.FormValue("field-5"))
-
-		// file2, handler, err := r.FormFile("uploadfile3")
-		// if err != nil {
-		//     fmt.Println(err)
-		//     return
-		// }
-		// defer file.Close()
-		// err = saveImage(file2)
-		// if err != nil {
-		// 	fmt.Println(err)
-		// 	return
-		// }
-
-		// fmt.Fprintf(w, "%v", handler.Header)
+		fmt.Println(r.FormValue("field-4"))
 	}
 }
 
 func main() {
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	imagick.Initialize()
 	defer imagick.Terminate()

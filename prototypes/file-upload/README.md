@@ -1,6 +1,6 @@
 # file-upload
 
-Prototyping image uploading in golang.
+Prototyping image uploading in golang. I plan on expanding this into testing channel creation and submission
 
 ### Setup
 
