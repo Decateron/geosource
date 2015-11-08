@@ -1,23 +1,23 @@
 package main
 
 import (
-	"net/http"
-	"strconv"
-	"html/template"
-	"fmt"
-	"time"
-	"log"
 	"crypto/md5"
-	"io"
-	"io/ioutil"
-	"mime/multipart"
+	"fmt"
+	"github.com/gographics/imagick/imagick"
 	"github.com/gorilla/mux"
 	"github.com/nu7hatch/gouuid"
-	"github.com/gographics/imagick/imagick"
+	"html/template"
+	"io"
+	"io/ioutil"
+	"log"
+	"mime/multipart"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 const (
-	MAX_WIDTH = 400
+	MAX_WIDTH  = 400
 	MAX_HEIGHT = 200
 )
 
@@ -49,11 +49,11 @@ func saveImage(file multipart.File) error {
 	var newWidth, newHeight uint
 	if width > MAX_WIDTH {
 		newWidth = MAX_WIDTH
-		newHeight = uint(float32(height) / float32(width / MAX_WIDTH))
+		newHeight = uint(float32(height) / float32(width/MAX_WIDTH))
 	}
 	if newHeight > MAX_HEIGHT {
 		newHeight = MAX_HEIGHT
-		newWidth = uint(float32(width) / float32(height / MAX_HEIGHT))
+		newWidth = uint(float32(width) / float32(height/MAX_HEIGHT))
 	}
 
 	// Resize the image using the Lanczos filter
@@ -99,11 +99,11 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println(r.FormValue("field-1"))
 
-		formdata := r.MultipartForm  // ok, no problem so far, read the Form data
+		formdata := r.MultipartForm // ok, no problem so far, read the Form data
 
 		//get the *fileheaders
-		files := formdata.File["field-2"]  // grab the filenames
-		for i, _ := range files {  // loop through the files one by one
+		files := formdata.File["field-2"] // grab the filenames
+		for i, _ := range files {         // loop through the files one by one
 			file, err := files[i].Open()
 			defer file.Close()
 			if err != nil {
@@ -139,6 +139,7 @@ func main() {
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("app/")))
 
 	http.Handle("/", r)
+	log.Printf("serving http on :9090")
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
 		log.Fatal(err)
