@@ -1,0 +1,248 @@
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../bower_components/iron-icons/editor-icons.html">
+
+<dom-module id="channel-creator">
+	<style>
+		h2 {
+			margin-bottom: 0;
+		}
+		paper-button {
+			color: #000;
+			text-transform: none;
+			margin: 0;
+			display: block;
+			width: 200px;
+		}
+		paper-menu-button {
+			padding-left: 0;
+		}
+		paper-radio-button:first-child {
+			padding-left: 8px;
+		}
+		table {
+			width: 100%;
+			border-spacing: 0;
+			background-color: #eee;
+			padding: 10px;
+			margin-top: 10px;
+		}
+		th.table_header {
+			font-weight: bold;
+		}
+		th.field-type {
+			width: 150px;
+		}
+		th.field-label {
+		}
+		th.field-required {
+			width: 80px;
+			margin:auto;
+		}
+		th.field-remove {
+			width: 42px;
+			margin:auto;
+			text-align: center;
+		}
+		th {
+			text-align: left;
+		}
+		iron-icon {
+			margin-right: 10px;
+		}
+		tr.field {
+			background-color: #eee;
+		}
+		tr.subfield {
+			background-color: #ddd;
+		}
+		td.subfield {
+			padding-left: 8px;
+		}
+	</style>
+	<template>
+		<h2>Name</h2>
+		<paper-input label="Enter a channel name..." value="{{name}}" no-label-float></paper-input>
+		<h2>Visibility</h2>
+		<paper-radio-group selected="{{visibility}}">
+			<paper-radio-button name="Public">Public</paper-radio-button>
+			<paper-radio-button name="Private">Private</paper-radio-button>
+		</paper-radio-group>
+		<h2>Fields</h2>
+		<table>
+			<tr class="table_header field">
+				<th class="field-type">Type</th>
+				<th class="field-label">Label</th>
+				<th class="field-required">Required</th>
+				<th class="field-remove"></th>
+			</tr>
+			<tr class="field">
+				<td><iron-icon icon="{{getIcon('Text')}}"></iron-icon><span>Text</span></td>
+				<td><paper-input value="Title" disabled no-label-float></paper-input></td>
+				<td><paper-checkbox checked disabled></paper-checkbox></td>
+				<td></td>
+			</tr>
+			<template is="dom-repeat" items="{{fields}}" as="field" id="fields" index-as="fieldIndex">
+				<tr class="field">
+					<td><iron-icon icon="{{getIcon(field.type)}}"></iron-icon><span>{{field.type}}</span></td>
+					<td><paper-input class="flex" value="{{field.label}}" label="Enter a label..." no-label-float></paper-input></td>
+					<td><paper-checkbox checked="{{field.required}}"></paper-checkbox></td>
+					<td><paper-icon-button icon="close" on-tap="removeField"></paper-icon-button></td>
+				</tr>
+				<template is="dom-if" if="{{field.subfields}}">
+					<template is="dom-repeat" items="{{field.subfields}}" as="subfield" index-as="subfieldIndex">
+						<tr class="subfield">
+							<!-- hack to make indexes referenceable in javascript -->
+							<div style="display:none;"><span>{{fieldIndex}}</span><span>{{subfieldIndex}}"></span></div>
+							<td class="subfield"><iron-icon icon="{{getIcon(subfield.type)}}"></iron-icon><span>{{subfield.type}}</span></td>
+							<td><paper-input class="flex" value="{{subfield.label}}" label="Enter a label..." no-label-float></td>
+							<td><paper-checkbox checked="{{field.required}}" disabled></paper-checkbox></td>
+							<td><paper-icon-button icon="close" on-tap="removeSubfield"></paper-icon-button></td>
+						</tr>
+					</template>
+					<tr class="subfield">
+						<td><paper-icon-button icon="add" on-tap="onAddSubfieldTap"></paper-icon-button></td>
+						<td></td><td></td><td></td>
+					</tr>
+				</template>
+			</template>
+		</table>
+		<paper-menu-button vertical-align="bottom">
+			<paper-icon-button icon="add" class="dropdown-trigger"></paper-icon-button><br>
+			<paper-menu class="dropdown-content">
+				</iron-icon><paper-item on-tap="addText" type="Text"><iron-icon icon="{{getIcon('Text')}}"></iron-icon>Text</paper-item>
+				</iron-icon><paper-item on-tap="addImages" type="Images"><iron-icon icon="{{getIcon('Images')}}"></iron-icon>Images</paper-item>
+				</iron-icon><paper-item on-tap="addCheckBoxes" type="CheckBoxes"><iron-icon icon="{{getIcon('CheckBoxes')}}"></iron-icon>Check Boxes</paper-item>
+				</iron-icon><paper-item on-tap="addRadioButtons" type="RadioButtons"><iron-icon icon="{{getIcon('RadioButtons')}}"></iron-icon>Radio Buttons</paper-item>
+			</paper-menu>
+		</paper-menu-button>
+		<div class="horizontal layout flex">
+			<paper-button class="flex" on-tap="cancel">Cancel</paper-button>
+			<paper-button class="flex" on-tap="submit">Submit</paper-button>
+		</div>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "channel-creator",
+
+		properties: {
+			name: {
+				type: String,
+				value: ""
+			},
+			visibility: {
+				type: String,
+				value: "Public"
+			},
+			fields: {
+				type: Array,
+				value: []
+			},
+		},
+
+		getIcon: function(type) {
+			switch(type) {
+				case "Text":
+					return "editor:format-color-text";
+				case "Images":
+					return "image:camera-alt";
+				case "CheckBoxes":
+					return "icons:check-box";
+				case "CheckBox":
+					return "icons:check-box";
+				case "RadioButtons":
+					return "icons:radio-button-checked";
+				case "RadioButton":
+					return "icons:radio-button-checked";
+			}
+		},
+
+		addText: function() {
+			this.addField("Text", "", false);
+		},
+
+		addImages: function() {
+			this.addField("Images", "", false);
+		},
+
+		addCheckBoxes: function() {
+			this.addField("CheckBoxes", "", false, []);
+			this.addCheckBox(this.fields.length - 1);
+		},
+
+		addCheckBox: function(index) {
+			this.addSubfield(index, "CheckBox", "");
+		},
+
+		addRadioButtons: function() {
+			this.addField("RadioButtons", "", false, []);
+			this.addRadioButton(this.fields.length - 1);
+		},
+
+		addRadioButton: function(index) {
+			this.addSubfield(index, "RadioButton", "");
+		},
+
+		onAddSubfieldTap: function(event) {
+			var index = this.$.fields.indexForElement(event.target);
+			var field = event.model.field;
+			switch(field.type) {
+				case "CheckBoxes":
+					this.addCheckBox(index);
+					break;
+				case "RadioButtons":
+					this.addRadioButton(index);
+					break;
+			}
+		},
+
+		addField: function(type, label, required, subfields) {
+			this.push('fields', {type: type, label: label, required: required, subfields: subfields});
+			console.log(this.fields);
+		},
+
+		removeField: function(event) {
+			var fieldIndex = event.model.fieldIndex;
+			this.splice('fields', fieldIndex, 1);
+		},
+
+		addSubfield: function(index, type, label) {
+			this.push('fields.'+index+'.subfields', {type: type, label: label});
+			console.log(this.fields);
+		},
+
+		removeSubfield: function(event) {
+			var fieldIndex = event.model.fieldIndex;
+			var subfieldIndex = event.model.subfieldIndex;
+			this.splice('fields.'+fieldIndex+'.subfields', subfieldIndex, 1);
+		},
+
+		cancel: function() {
+			this.name = "";
+			this.visibility = "Public";
+			this.fields = [];
+		},
+
+		submit: function() {
+			var fields = [{type: "Text", label: "Title", required: true}]
+			for (var i=0; i<this.fields.length; i++) {
+				fields.push(this.fields[i]);
+			}
+			console.log({name: this.name, visibility: this.visibility, fields: fields});
+			//add channel to info and database
+		},
+	});
+</script>

@@ -10,12 +10,13 @@
 
 	<script src="bower_components/webcomponentsjs/webcomponents.js"></script>
 	<link rel="import" href="bower_components/polymer/polymer.html">
-	<link rel="import" href="components/file-upload/file-upload.html">
+	<link rel="import" href="elements/file-upload.html">
 
 	<style>
 		html,body {
 			height: 100%;
-			margin: 10px;
+			margin: 0;
+			padding: 0;
 			background-color: #fff;
 			font-family: 'RobotoDraft', sans-serif;
 		}
@@ -23,31 +24,6 @@
 
 </head>
 <body>
-<!-- 	<form id="form2" enctype="multipart/form-data" action="http://127.0.0.1:9090/upload" method="post">
-		<b>Image</b><br>
-		<input name="field-1" type="file" accept="image/*" required><br>
-		
-		<br><b>Images</b><br>
-		<input name="field-2" type="file" capture="camera" accept="image/*" id="album" multiple required><br>
-
-		<br><b>Text</b><br>
-		<textarea name="field-3" form="form" placeholder="Enter text here..." required></textarea><br>
-
-		<br><b>Check Boxes</b><br>
-		<input name="field-4" type="checkbox" value="Option 1">Option 1<br>
-		<input name="field-4" type="checkbox" value="Option 2">Option 2<br>
-		<input name="field-4" type="checkbox" value="Option 3">Option 3<br>
-
-		<br><b>Radio Buttons</b><br>
-		<input name="field-5" type="radio" value="Option 1">Option 1<br>
-		<input name="field-5" type="radio" value="Option 2">Option 2<br>
-		<input name="field-5" type="radio" value="Option 3">Option 3<br>
-		
-		<input type="hidden" name="token" value="{{.}}"><br>
-
-		<input type="submit" value="Submit">
-	</form> -->
-
 	<file-upload></file-upload>
 </body>
 </html>

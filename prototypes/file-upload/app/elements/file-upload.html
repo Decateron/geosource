@@ -1,0 +1,48 @@
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="channel-creator.html">
+<link rel="import" href="post-creator.html">
+
+<dom-module id="file-upload">
+	<style>
+		paper-tabs {
+			height: 100%;
+			width: 100%;
+		}
+		iron-pages {
+			margin: 20px;
+		}
+	</style>
+	<template>
+		<paper-header-panel class="flex">
+			<paper-toolbar>
+				<paper-tabs selected="{{selected}}">
+					<paper-tab>Create Post</paper-tab>
+      				<paper-tab>Create Channel</paper-tab>
+				</paper-tabs>
+			</paper-toolbar>
+			<iron-pages selected="{{selected}}">
+				<post-creator></post-creator>
+				<channel-creator></channel-creator>
+			</iron-pages>
+		</paper-header-panel>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "file-upload",
+		properties: {
+			selected: {
+				type: Number,
+				value: 0,
+			}
+		}
+	});
+</script>
