@@ -96,7 +96,7 @@
 					<paper-input label="Enter text..." no-label-float value="{{field.value}}"></paper-input>
 				</template>
 				<template is="dom-if" if="{{isImages(field)}}">
-					<input class="hidden" id="file" name="field-2" type="file" capture="camera" accept="image/*" multiple on-change="getPosts">
+					<input class="hidden" id="file" name="field-2" type="file" capture="camera" accept="image/*" multiple on-change="displayFiles">
 					<paper-button class="field" on-tap="openFiles">
 						<iron-icon icon="image:camera-alt"></iron-icon>
 						<span>Add Pictures</span>
@@ -176,7 +176,7 @@
 			// this.$.file.click();
 		},
 
-		getPosts: function(event) {
+		displayFiles: function(event) {
 			console.log(event);
 			var list = event.model._nodes[2];
 			Polymer.dom(list).innerHTML = "";
