@@ -89,6 +89,12 @@
 			</paper-dropdown-menu>
 		</div>
 
+		<template is="dom-if" if="{{channel}}">
+			<h2>Title</h2>
+			<div class="contents">
+				<paper-input label="Enter a title..." no-label-float value="{{title}}"></paper-input>
+			</div>
+		</template>
 		<template is="dom-repeat" items="{{channel.fields}}" as="field">
 			<h2>{{field.label}}</h2>
 			<div class="contents">

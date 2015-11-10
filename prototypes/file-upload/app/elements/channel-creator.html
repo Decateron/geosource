@@ -237,11 +237,7 @@
 		},
 
 		submit: function() {
-			var fields = [{type: "Text", label: "Title", required: true}];
-			for (var i=0; i<this.fields.length; i++) {
-				fields.push(this.fields[i]);
-			}
-			var channel = {name: this.name, visibility: this.visibility, fields: fields};
+			var channel = {name: this.name, visibility: this.visibility, fields: this.fields};
 			console.log(channel);
 			this.fire("submit-success", {channel: channel});
 			this.clear();
