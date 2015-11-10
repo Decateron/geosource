@@ -6,8 +6,11 @@
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/platinum-sw/platinum-sw-register.html">
+<link rel="import" href="../bower_components/platinum-sw/platinum-sw-cache.html">
 <link rel="import" href="channel-creator.html">
 <link rel="import" href="post-creator.html">
+<link rel="import" href="object-store.html">
 
 <dom-module id="file-upload">
 	<style>
@@ -20,6 +23,10 @@
 		}
 	</style>
 	<template>
+		<platinum-sw-register auto-register>
+			<platinum-sw-cache></platinum-sw-cache>
+		</platinum-sw-register>
+		<object-store id="store"></object-store>
 		<paper-header-panel class="flex">
 			<paper-toolbar>
 				<paper-tabs selected="{{selected}}">
@@ -28,8 +35,13 @@
 				</paper-tabs>
 			</paper-toolbar>
 			<iron-pages selected="{{selected}}">
-				<post-creator></post-creator>
-				<channel-creator></channel-creator>
+				<post-creator 
+					channels="{{channels}}"
+					on-submit-success="storePost">
+				</post-creator>
+				<channel-creator 
+					on-submit-success="storeChannel">
+				</channel-creator>
 			</iron-pages>
 		</paper-header-panel>
 	</template>
@@ -42,7 +54,20 @@
 			selected: {
 				type: Number,
 				value: 0,
-			}
-		}
+			},
+			channels: {
+				type: Array,
+				value: [],
+			},
+		},
+		storePost: function(event) {
+			console.log(event.detail.post);
+			this.$.store.addPost(event.detail.post);
+		},
+		storeChannel: function(event) {
+			console.log(event.detail.channel);
+			this.$.store.addChannel(event.detail.channel);
+			this.push('channels', event.detail.channel);
+		},
 	});
 </script>

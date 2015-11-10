@@ -128,7 +128,7 @@
 			</paper-menu>
 		</paper-menu-button>
 		<div class="horizontal layout flex">
-			<paper-button class="flex" on-tap="cancel">Cancel</paper-button>
+			<paper-button class="flex" on-tap="clear">Cancel</paper-button>
 			<paper-button class="flex" on-tap="submit">Submit</paper-button>
 		</div>
 	</template>
@@ -230,19 +230,21 @@
 			this.splice('fields.'+fieldIndex+'.subfields', subfieldIndex, 1);
 		},
 
-		cancel: function() {
+		clear: function() {
 			this.name = "";
 			this.visibility = "Public";
 			this.fields = [];
 		},
 
 		submit: function() {
-			var fields = [{type: "Text", label: "Title", required: true}]
+			var fields = [{type: "Text", label: "Title", required: true}];
 			for (var i=0; i<this.fields.length; i++) {
 				fields.push(this.fields[i]);
 			}
-			console.log({name: this.name, visibility: this.visibility, fields: fields});
-			//add channel to info and database
+			var channel = {name: this.name, visibility: this.visibility, fields: fields};
+			console.log(channel);
+			this.fire("submit-success", {channel: channel});
+			this.clear();
 		},
 	});
 </script>

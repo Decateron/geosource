@@ -6,6 +6,9 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
 
 <dom-module id="post-creator">
 	<style>
@@ -28,11 +31,13 @@
 		}
 		paper-button {
 			color: #000;
-			background-color: #ddd;
 			text-transform: none;
 			margin: 0;
 			display: block;
 			width: 200px;
+		}
+		paper-button.field {
+			background-color: #ddd;
 		}
 		.title {
 			font-size: 18px;
@@ -46,9 +51,6 @@
 		paper-textarea {
 			font-size: 14px;
 			width: 100%;
-		}
-		paper-textarea::shadow paper-input-container {
-			padding: 0;
 		}
 		paper-checkbox {
 			padding: 0;
@@ -64,62 +66,65 @@
 		paper-radio-button:first-child {
 			margin-top: 0;
 		}
+		h2 {
+			margin-bottom: 0;
+		}
+		paper-dropdown-menu {
+			--paper-dropdown-menu: {
+				paper-menu-button.paper-dropdown-menu {
+					padding: 0;
+				}
+			};
+		}
 	</style>
 	<template>
-		<form id="form" enctype="multipart/form-data" action="/upload" method="post">
-			
-			<paper-button on-tap="addPost">Add Post</paper-button><br>
-			<paper-button on-tap="removePostFromId">Remove Post</paper-button><paper-input id="idInput"></paper-input><br>
-			<paper-button on-tap="clearPosts">Clear Posts</paper-button><br>
-			<paper-button on-tap="displayPosts">Display Posts</paper-button><br>
-			
+		<h2>Channel</h2>
+		<div class="contents">
+			<paper-dropdown-menu label="Select a channel..." no-label-float>
+				<paper-menu class="dropdown-content" selected="{{channelIndex}}">
+					<template is="dom-repeat" items="{{channels}}">
+						<paper-item>{{item.name}}</paper-item>
+					</template>
+				</paper-menu>
+			</paper-dropdown-menu>
+		</div>
 
-			<div class="title"><b>Title</b></div>
+		<template is="dom-repeat" items="{{channel.fields}}" as="field">
+			<h2>{{field.label}}</h2>
 			<div class="contents">
-				<paper-textarea value="{{field-1}}" label="Input a title..." no-label-float></paper-textarea>
-				<input class="hidden" type="text" name="field-1" value="{{field-1}}">
+				<template is="dom-if" if="{{isText(field)}}">
+					<paper-input label="Enter text..." no-label-float value="{{field.value}}"></paper-input>
+				</template>
+				<template is="dom-if" if="{{isImages(field)}}">
+					<input class="hidden" id="file" name="field-2" type="file" capture="camera" accept="image/*" multiple on-change="getPosts">
+					<paper-button class="field" on-tap="openFiles">
+						<iron-icon icon="image:camera-alt"></iron-icon>
+						<span>Add Pictures</span>
+					</paper-button>
+					<div id="pictures"></div>
+				</template>
+				<template is="dom-if" if="{{isCheckBoxes(field)}}">
+					<paper-radio-group>
+						<template is="dom-repeat" items="{{field.subfields}}" as="subfield">
+							<paper-checkbox checked="{{subfield.value}}">{{subfield.label}}</paper-checkbox><br>
+						</template>
+					</paper-radio-group>
+				</template>
+				<template is="dom-if" if="{{isRadioButtons(field)}}">
+					<paper-radio-group>
+						<template is="dom-repeat" items="{{field.subfields}}" as="subfield">
+							<paper-radio-button checked="{{subfield.value}}">{{subfield.label}}</paper-radio-button><br>
+						</template>
+					</paper-radio-group>
+				</template>
 			</div>
+		</template>
 
-			<div class="title"><b>Images</b></div>
-			<div class="contents">
-				<input class="hidden" id="file" name="field-2" type="file" capture="camera" accept="image/*" multiple on-change="getPosts">
-				<paper-button id="select" on-tap="openFiles">
-					<iron-icon icon="image:camera-alt"></iron-icon>
-					<span>Add Pictures</span>
-				</paper-button>
-				<output id="list"></output>
-			</div>
-
-			<div class="title"><b>Check Boxes</b></div>
-			<div class="contents">
-				<paper-radio-group>
-					<paper-checkbox name="option-1" checked="{{field-3-option-1}}">Option 1</paper-checkbox>
-					<input class="hidden" type="checkbox" name="field-3" value="Option 1" checked="{{field-3-option-1}}">
-					<paper-checkbox name="option-2" checked="{{field-3-option-2}}">Option 2</paper-checkbox>
-					<input class="hidden" type="checkbox" name="field-3" value="Option 2" checked="{{field-3-option-2}}">
-					<paper-checkbox name="option-3" checked="{{field-3-option-3}}">Option 3</paper-checkbox>
-					<input class="hidden" type="checkbox" name="field-3" value="Option 3" checked="{{field-3-option-3}}">
-				</paper-radio-group>
-			</div>
-
-			<div class="title"><b>Radio Buttons</b></div>
-			<div class="contents">
-				<paper-radio-group>
-					<paper-radio-button name="option-1" checked="{{field-4-option-1}}">Option 1</paper-radio-button>
-					<input class="hidden" type="radio" name="field-4" value="Option 1" checked="{{field-4-option-1}}">
-					<paper-radio-button name="option-2" checked="{{field-4-option-2}}">Option 2</paper-radio-button>
-					<input class="hidden" type="radio" name="field-4" value="Option 2" checked="{{field-4-option-2}}">
-					<paper-radio-button name="option-3" checked="{{field-4-option-3}}">Option 3</paper-radio-button>
-					<input class="hidden" type="radio" name="field-4" value="Option 3" checked="{{field-4-option-3}}">
-				</paper-radio-group>
-			</div>
-
-			<input type="hidden" name="token" value="{{.}}">
-
-			<paper-button on-tap="submit">Submit</paper-button>
-
-			
-		</form>
+		<div class="horizontal layout flex">
+			<paper-button class="flex" on-tap="clear">Cancel</paper-button>
+			<paper-button class="flex" on-tap="save">Save Draft</paper-button>
+			<paper-button class="flex" on-tap="submit">Submit</paper-button>
+		</div>
 	</template>
 </dom-module>
 
@@ -128,196 +133,77 @@
 		is: "post-creator",
 
 		properties: {
-			DB_NAME: {
-				type: String,
-				value: "geosource-indexeddb",
+			channels: {
+				type: Array,
+				value: [],
 			},
-			DB_VERSION: {
+			channelIndex: {
 				type: Number,
-				value: 2,
+				value: null,
+				observer: "channelChanged",
 			},
-			DB_STORE_NAME: {
-				type: String,
-				value: "posts",
+			channel: {
+				type: Object,
+				value: null,
 			},
-			db: Object,
+
 		},
 
-		ready: function() {
-			this.openDb();
+		channelChanged: function() {
+			console.log(this.channelIndex);
+			this.channel = this.channels[this.channelIndex];
 		},
 
-		openDb: function() {
-			console.log("openDb ...");
-			var request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
-			request.onsuccess = function(event) {
-				this.db = request.result;
-				console.log("openDb DONE");
-				this.displayPosts();
-			}.bind(this);
-			request.onerror = function(event) {
-				console.error("openDb:", event.target.errorCode);
-			}.bind(this);
-			request.onupgradeneeded = function(event) {
-				console.log("openDb.onupgradeneeded");
-				var store = event.currentTarget.result.createObjectStore(
-					this.DB_STORE_NAME, {keyPath: 'id', autoIncrement: true});
-			}.bind(this);
+		isText: function(field) {
+			return field.type == "Text";
 		},
 
-		getObjectStore: function(storeName, mode) {
-			var transaction = this.db.transaction(storeName, mode);
-			return transaction.objectStore(storeName);
+		isImages: function(field) {
+			return field.type == "Images";
 		},
 
-		clearPosts: function(storeName) {
-			var store = this.getObjectStore(this.DB_STORE_NAME, "readwrite");
-			var request = store.clear();
-			request.onsuccess = function(event) {
-				console.log("store cleared");
-				// this.displayActionSuccess("Store cleared");
-				// this.displayPubList(store);
-			}.bind(this);
-			request.onerror = function(event) {
-				console.error("clearPosts", event.target.errorCode);
-				this.displayActionFailure(request.error);
-			}.bind(this);
+		isCheckBoxes: function(field) {
+			return field.type == "CheckBoxes";
 		},
 
-		addPost: function() {
-			console.log("trying to insert");
-			var store = this.getObjectStore(this.DB_STORE_NAME, "readwrite");
-			var object = {blob: "ayy"};
-			var request;
-			try {
-				request = store.add(object);
-			} catch (e) {
-				throw e;
-			}
-			request.onsuccess = function(event) {
-				console.log("Insertion into DB successful");
-			};
-			request.onerror = function() {
-				console.error("addPublication error", this.error);
-			};
+		isRadioButtons: function(field) {
+			return field.type == "RadioButtons";
 		},
 
-		removePostFromId: function() {
-			var id = parseInt(this.$.idInput.value);
-			console.log("removing post", id);
-			var store = this.getObjectStore(this.DB_STORE_NAME, "readwrite");
-			this.removePost(id, store);
-			// var request = store.index('id');
-			// request.get(id).onsuccess = function(event) {
-			// 	if (typeof event.target.result == "undefined") {
-			// 		// this.displayActionFailture("No matching record found");
-			// 		return;
-			// 	}
-			// 	this.removePost(event.target.result.id, store);
-			// }.bind(this);
-			// request.onerror = function(event) {
-			// 	console.error("remove post", event.target.errorCode);
-			// };
+		openFiles: function(event) {
+			console.log(event.model);
+			event.model._nodes[0].click();
+			// this.$.file.click();
 		},
 
-		removePost: function(key, store) {
-			var request = store.get(key);
-			request.onsuccess = function(event) {
-				var record = event.target.result;
-				console.log("record:", record);
-				if (typeof record == "undefined") {
-					//displayActionFailure("No matching record found");
-					return;
-				}
-				request = store.delete(key);
-				request.onsuccess = function(event) {
-					console.log("delete successful");
-				};
-				request.onerror = function(event) {
-					console.error("deletePublication:", event.target.errorCode);
-				};
-			};
-			request.onerror = function(event) {
-				console.error("deletePublication:", event.target.errorCode);
-			};
-		},
+		getPosts: function(event) {
+			console.log(event);
+			var list = event.model._nodes[2];
+			Polymer.dom(list).innerHTML = "";
 
-		openFiles: function() {
-			this.$.file.click();
-		},
-
-		getPosts: function() {
-			Polymer.dom(this.$.list).innerHTML = "";
-
-			var files = this.$.file.files;
+			var files = event.model._nodes[0].files;
 			for (var i=0; i< files.length; i++) {
 				var file = files[i];
 				var reader = new FileReader();
 				var blob = file.slice(0, file.size);
-				this.storeFile(blob, "file-"+i);
+				// this.storeFile(blob, "file-"+i);
 				reader.onload = function(event) {
 					var result = event.target.result;
 					var img = new Image();
 					img.src = result;
-					Polymer.dom(this.$.list).appendChild(img);
+					Polymer.dom(list).appendChild(img);
 				}.bind(this);
 				reader.readAsDataURL(blob);
 			}
 		},
 
-		storeFile: function(blob, index) {
-			console.log("adding file");
-			var transaction = this.db.transaction(["posts"], "readwrite");
-			transaction.oncomplete = function(event) {
-				alert("all done");
-			};
-			transaction.onerror = function(event) {
-				console.log("error");
-			};
-
-			var objectStore = transaction.objectStore("posts");
-			var request = objectStore.add(blob, index);
-			request.onsuccess = function(event) {
-				console.log("added file");
-			};
-		},
-
-		displayPosts: function() {
-			console.log("displayPubList");
-			var store = this.getObjectStore(this.DB_STORE_NAME, "readonly");
-			var request = store.count();
-			request.onsuccess = function(event) {
-				console.log(event.target.result);
-			}.bind(this);
-			request.onerror = function(event) {
-				console.error("add error", request.error);
-				this.displayActionFailure(request.error);
-			}.bind(this);
-
-			var i = 0;
-			request = store.openCursor();
-			request.onsuccess = function(event) {
-				var cursor = event.target.result;
-				if (cursor) {
-					console.log("displayPubList cursor:", cursor);
-					request = store.get(cursor.key);
-					request.onsuccess = function(event) {
-						console.log(event.target.result);
-					};
-					cursor.continue();
-					i++;
-				} else {
-					console.log("No more entries");
-				}
-			};
-		},
-
 		submit: function() {
-			var form = this.$.form;
-			var formData = new FormData(form);
-			var xhr = new XMLHttpRequest();
-			xhr.open('POST', '/upload', true);
-			xhr.send(formData);
+			// var form = this.$.form;
+			// var formData = new FormData(form);
+			// var xhr = new XMLHttpRequest();
+			// xhr.open('POST', '/upload', true);
+			// xhr.send(formData);
+			console.log(this.channel);
 		}
 	});
 </script>

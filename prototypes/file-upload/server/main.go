@@ -139,8 +139,8 @@ func main() {
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("app/")))
 
 	http.Handle("/", r)
-	log.Printf("serving http on :9090")
-	err := http.ListenAndServe(":9090", nil)
+	log.Printf("serving http on :7183")
+	err := http.ListenAndServe(":7183", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
