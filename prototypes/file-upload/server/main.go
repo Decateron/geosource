@@ -1,19 +1,15 @@
 package main
 
 import (
-	"crypto/md5"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"github.com/gographics/imagick/imagick"
 	"github.com/gorilla/mux"
 	"github.com/nu7hatch/gouuid"
-	"html/template"
-	"io"
-	"io/ioutil"
 	"log"
-	"mime/multipart"
 	"net/http"
-	"strconv"
-	"time"
+	"strings"
 )
 
 const (
@@ -21,16 +17,23 @@ const (
 	MAX_HEIGHT = 200
 )
 
-func saveImage(file multipart.File) error {
+type Post struct {
+	Channelname *string  `json:"channelname"`
+	Title       *string  `json:"title"`
+	Fields      []*Field `json:"fields"`
+}
+
+type Field struct {
+	Label     *string     `json:"label"`
+	Type      *string     `json:"type"`
+	Value     interface{} `json:"value"`
+	Subfields []*Field    `json:"subfields"`
+}
+
+func saveImage(blob []byte) error {
 	u4, err := uuid.NewV4()
 	if err != nil {
-		log.Print(log.Llongfile, err)
-		return err
-	}
-
-	blob, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Print(log.Llongfile, err)
+		log.Print(err)
 		return err
 	}
 
@@ -39,7 +42,7 @@ func saveImage(file multipart.File) error {
 
 	err = mw.ReadImageBlob(blob)
 	if err != nil {
-		log.Print(log.Llongfile, err)
+		log.Print(err)
 		return err
 	}
 
@@ -60,19 +63,19 @@ func saveImage(file multipart.File) error {
 	// The blur factor is a float, where > 1 is blurry, < 1 is sharp
 	err = mw.ResizeImage(newWidth, newHeight, imagick.FILTER_LANCZOS, 1)
 	if err != nil {
-		log.Print(log.Llongfile, err)
+		log.Print(err)
 		return err
 	}
 
 	err = mw.SetImageCompressionQuality(70)
 	if err != nil {
-		log.Print(log.Llongfile, err)
+		log.Print(err)
 		return err
 	}
 
 	err = mw.WriteImage("app/images/" + u4.String() + ".jpg")
 	if err != nil {
-		log.Print(log.Llongfile, err)
+		log.Print(err)
 		return err
 	}
 
@@ -81,51 +84,38 @@ func saveImage(file multipart.File) error {
 
 // upload logic
 func uploadHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("method:", r.Method)
-	if r.Method == "GET" {
-		crutime := time.Now().Unix()
-		h := md5.New()
-		io.WriteString(h, strconv.FormatInt(crutime, 10))
-		token := fmt.Sprintf("%x", h.Sum(nil))
-
-		t, _ := template.ParseFiles("uploadHandler.gtpl")
-		t.Execute(w, token)
-	} else {
-		err := r.ParseMultipartForm(32 << 20)
-		if err != nil {
-			log.Print(log.Llongfile, err)
-			return
-		}
-
-		fmt.Println(r.FormValue("field-1"))
-
-		formdata := r.MultipartForm // ok, no problem so far, read the Form data
-
-		//get the *fileheaders
-		files := formdata.File["field-2"] // grab the filenames
-		for i, _ := range files {         // loop through the files one by one
-			file, err := files[i].Open()
-			defer file.Close()
-			if err != nil {
-				log.Print(log.Llongfile, err)
-				return
-			}
-
-			err = saveImage(file)
-			if err != nil {
-				log.Print(log.Llongfile, err)
-				return
-			}
-		}
-
-		checkboxes := formdata.Value["field-3"]
-		for i, _ := range checkboxes {
-			checkbox := checkboxes[i]
-			fmt.Println(checkbox)
-		}
-
-		fmt.Println(r.FormValue("field-4"))
+	decoder := json.NewDecoder(r.Body)
+	var post Post
+	err := decoder.Decode(&post)
+	if err != nil {
+		log.Print(err)
+		return
 	}
+
+	if post.Fields != nil {
+		for _, field := range post.Fields {
+			fmt.Println(*field.Type)
+			if *field.Type == "Images" {
+				images := field.Value.([]interface{})
+				for _, image := range images {
+					str := image.(string)
+					str = strings.Split(str, ",")[1]
+					blob, err := base64.StdEncoding.DecodeString(str)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					err = saveImage(blob)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+				}
+			}
+		}
+	}
+
+	fmt.Println(post)
 }
 
 func main() {

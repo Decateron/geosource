@@ -5,21 +5,21 @@ import (
 )
 
 const (
-	FIELDTYPE_TEXT         string = "text"
-	FIELDTYPE_CHECKBOXES   string = "checkboxes" 
-	FIELDTYPE_CHECKBOX     string = "checkbox"
-	FIELDTYPE_RADIOBUTTONS string = "radiobuttons"
-	FIELDTYPE_RADIOBUTTON  string = "radiobutton"
-	FIELDTYPE_IMAGE        string = "image"
+	FIELDTYPE_TEXT         string = "Text"
+	FIELDTYPE_CHECKBOXES   string = "CheckBoxes"
+	FIELDTYPE_CHECKBOX     string = "CheckBox"
+	FIELDTYPE_RADIOBUTTONS string = "RadioButtons"
+	FIELDTYPE_RADIOBUTTON  string = "RadioButton"
+	FIELDTYPE_IMAGES       string = "Images"
 )
 
 var ErrInvalidType = errors.New("Invalid field type")
 var ErrInvalidValue = errors.New("Invalid value type")
 
 type Field struct {
-	Label     *string     `json:"label"`
-	Type      *string     `json:"type"`
-	Value     interface{} `json:"value"`
+	Label *string     `json:"label"`
+	Type  *string     `json:"type"`
+	Value interface{} `json:"value"`
 }
 
 func ValidField(field *Field) (bool, error) {
@@ -30,7 +30,7 @@ func ValidField(field *Field) (bool, error) {
 		return ValidRadioButton(field)
 	case FIELDTYPE_TEXT:
 		return ValidText(field)
-	case FIELDTYPE_IMAGE:
+	case FIELDTYPE_IMAGES:
 		return ValidImage(field)
 	default:
 		return false, ErrInvalidType
@@ -40,7 +40,7 @@ func ValidField(field *Field) (bool, error) {
 func ValidText(field *Field) (bool, error) {
 	if *field.Type != FIELDTYPE_TEXT {
 		return false, ErrInvalidType
-	} 
+	}
 	_, ok := field.Value.(*string)
 	if !ok {
 		return false, ErrInvalidValue
@@ -93,7 +93,7 @@ func ValidRadioButton(field *Field) (bool, error) {
 }
 
 func ValidImage(field *Field) (bool, error) {
-	if *field.Type != FIELDTYPE_IMAGE {
+	if *field.Type != FIELDTYPE_IMAGES {
 		return false, ErrInvalidType
 	}
 	_, ok := field.Value.(*string)

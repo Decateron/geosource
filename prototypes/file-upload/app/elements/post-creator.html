@@ -9,6 +9,7 @@
 <link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
 
 <dom-module id="post-creator">
 	<style>
@@ -78,6 +79,15 @@
 		}
 	</style>
 	<template>
+
+		<iron-ajax
+			id="upload"
+			method="POST"
+			content-type="application/json"
+			url="/upload"
+			handle-as="json"
+			on-response="uploadResponse">
+		</iron-ajax>
 
 		<template is="dom-if" if="{{drafts}}">
 			<h2>Drafts</h2>
@@ -268,6 +278,12 @@
 			// xhr.open('POST', '/upload', true);
 			// xhr.send(formData);
 			console.log(this.post);
-		}
+			this.$.upload.body = this.post;
+			this.$.upload.generateRequest();
+		},
+
+		uploadResponse: function() {
+			console.log("upload response");
+		},
 	});
 </script>
