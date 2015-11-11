@@ -1,6 +1,6 @@
 # file-upload
 
-Prototyping image uploading in golang. I plan on expanding this into testing channel creation and submission
+Prototyping image uploading in golang. This was mainly used to prototype image uploading and offline functionality (including storing channels and posts locally while offline).
 
 ### Setup
 
