@@ -11,6 +11,7 @@
 <link rel="import" href="channel-creator.html">
 <link rel="import" href="post-creator.html">
 <link rel="import" href="object-store.html">
+<link rel="import" href="post-menu.html">
 
 <dom-module id="file-upload">
 	<style>
@@ -38,11 +39,12 @@
 				</paper-tabs>
 			</paper-toolbar>
 			<iron-pages selected="{{selected}}">
-				<post-creator 
+				<post-menu 
 					channels="{{channels}}"
 					drafts="{{posts}}"
-					on-submit-success="storePost">
-				</post-creator>
+					on-submit-success="storePost"
+					on-delete-draft="deletePost">
+				</post-menu>
 				<channel-creator 
 					on-submit-success="storeChannel">
 				</channel-creator>
@@ -71,6 +73,9 @@
 		storePost: function(event) {
 			console.log(event.detail.post);
 			this.$.store.addPost(event.detail.post);
+		},
+		deletePost: function(event) {
+			this.$.store.removePost(event.detail.id);
 		},
 		storeChannel: function(event) {
 			console.log(event.detail.channel);

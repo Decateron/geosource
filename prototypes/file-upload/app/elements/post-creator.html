@@ -89,19 +89,6 @@
 			on-response="uploadResponse">
 		</iron-ajax>
 
-		<template is="dom-if" if="{{drafts}}">
-			<h2>Drafts</h2>
-			<div class="contents">
-				<paper-dropdown-menu label="Open a draft..." no-label-float>
-					<paper-menu class="dropdown-content" selected="{{draftIndex}}">
-						<template is="dom-repeat" items="{{drafts}}">
-							<paper-item>{{item.title}}</paper-item>
-						</template>
-					</paper-menu>
-				</paper-dropdown-menu>
-			</div>
-		</template>
-
 		<h2>Channel</h2>
 		<div class="contents">
 			<paper-dropdown-menu label="Select a channel..." no-label-float>
@@ -113,7 +100,7 @@
 			</paper-dropdown-menu>
 		</div>
 
-		<template is="dom-if" if="{{post}}">
+		<template is="dom-if" if="{{post.channelname}}">
 			<h2>Title</h2>
 			<div class="contents">
 				<paper-input label="Enter a title..." no-label-float value="{{post.title}}"></paper-input>
@@ -153,9 +140,9 @@
 				</template>
 			</div>
 		</template>
-		<template is="dom-if" if="{{post}}">
+		<template is="dom-if" if="{{post.channelname}}">
 			<div class="horizontal layout flex">
-				<paper-button class="flex" on-tap="clear">Cancel</paper-button>
+				<paper-button class="flex" on-tap="cancel">Cancel</paper-button>
 				<paper-button class="flex" on-tap="save">Save Draft</paper-button>
 				<paper-button class="flex" on-tap="submit">Submit</paper-button>
 			</div>
@@ -163,6 +150,7 @@
 	</template>
 </dom-module>
 
+<script src="../bower_components/moment/moment.js"></script>
 <script>
 	Polymer({
 		is: "post-creator",
@@ -186,20 +174,20 @@
 				type: Object,
 				value: null,
 			},
-			drafts: {
-				type: Array,
-				value: [],
-			},
-			draftIndex: {
-				type: Number,
-				value: null,
-				observer: "draftIndexChanged",
-			},
 		},
 
-		draftIndexChanged: function() {
-			console.log(this.draftIndex);
-			this.post = this.drafts[this.draftIndex];
+		newPost: function() {
+			this.post = {time: moment().toString()};
+			navigator.geolocation.getCurrentPosition(function(position){
+				this.post.location = {
+					latitude: position.coords.latitude,
+					longitude: position.coords.longitude
+				};
+			}.bind(this));
+		},
+
+		loadPost: function(post) {
+			this.post = post;
 		},
 
 		channelIndexChanged: function() {
@@ -208,11 +196,12 @@
 		},
 
 		channelChanged: function() {
-			this.post = null;
 			if (this.channel) {
 				var channelname = this.channel.name;
 				var fields = JSON.parse(JSON.stringify(this.channel.fields));
-				this.post = {channelname: channelname, title: "", fields: fields};
+				this.set('post.channelname', channelname);
+				this.set('post.title', "");
+				this.set('post.fields', fields);
 			}
 		},
 
@@ -263,8 +252,9 @@
 			}
 		},
 
-		clear: function() {
+		cancel: function() {
 			this.channelIndex = null;
+			this.exit();
 		},
 
 		save: function() {
@@ -272,18 +262,17 @@
 		},
 
 		submit: function() {
-			// var form = this.$.form;
-			// var formData = new FormData(form);
-			// var xhr = new XMLHttpRequest();
-			// xhr.open('POST', '/upload', true);
-			// xhr.send(formData);
-			console.log(this.post);
 			this.$.upload.body = this.post;
 			this.$.upload.generateRequest();
 		},
 
 		uploadResponse: function() {
 			console.log("upload response");
+			this.exit();
+		},
+
+		exit: function() {
+			this.fire('exit');
 		},
 	});
 </script>

@@ -1,0 +1,131 @@
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-radio-group/paper-radio-group.html">
+<link rel="import" href="../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="post-menu">
+	<style>
+		paper-button {
+			color: #000;
+			text-transform: none;
+			margin: 0;
+			display: block;
+			width: 200px;
+		}
+		.title {
+			font-size: 18px;
+			font-weight: bold;
+		}
+		.contents {
+			background-color: #eee;
+			padding: 15px;
+			margin-bottom: 15px;
+		}
+		h2 {
+			margin-bottom: 0;
+		}
+		table {
+			width: 100%;
+			border-spacing: 0;
+		}
+		tr.header {
+			font-weight: bold;
+		}
+		tr.item:hover {
+			background-color: #ddd;
+		}
+		td.delete {
+			width: 42px;
+		}
+	</style>
+	<template>
+		<iron-pages selected="{{selected}}">
+			<div>
+				<h2>Drafts</h2>
+				<div class="contents">
+					<table>
+						<tr class="header">
+							<td>Title</td>
+							<td>Channel</td>
+							<td>Time</td>
+							<td>Location</td>
+							<td class="delete"></td>
+						</tr>
+						<template is="dom-repeat" items="{{drafts}}" as="draft" index="index">
+							<tr class="item">
+								<td on-tap="openDraft">{{draft.title}}</td>
+								<td on-tap="openDraft">{{draft.channelname}}</td>
+								<td on-tap="openDraft">{{draft.time}}</td>
+								<td on-tap="openDraft">{{draft.location}}</td>
+								<td><paper-icon-button icon="close" on-tap="deleteDraft"></paper-icon-button></td>
+							</tr>
+							<!-- Force index into model -->
+							<span style="display:none;">{{index}}</span>
+						</template>
+					</table>
+				</div>
+				<div class="horizontal layout flex">
+					<paper-button class="flex" on-tap="createPost">Create New Post</paper-button>
+				</div>
+			</div>
+			<post-creator 
+				id="postCreator"
+				channels="{{channels}}"
+				on-exit="postCreatorExit">
+			</post-creator>
+		</iron-pages>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "post-menu",
+
+		properties: {
+			channels: {
+				type: Array,
+				value: [],
+			},
+			drafts: {
+				type: Array,
+				value: [],
+			},
+			selected: {
+				type: Number,
+				value: 0,
+			}
+		},
+
+		createPost: function() {
+			console.log("create post");
+			this.$.postCreator.newPost();
+			this.selected = 1;
+		},
+
+		openDraft: function(event) {
+			console.log("open draft");
+			this.$.postCreator.loadPost(event.model.draft);
+			this.selected = 1;
+		},
+
+		deleteDraft: function(event) {
+			console.log("delete draft");
+			var draft = event.model.draft;
+			this.fire('delete-draft', {id: draft.id});
+			this.splice('drafts', event.model.index, 1);
+		},
+
+		postCreatorExit: function() {
+			this.selected = 0;
+		}
+
+	});
+</script>
