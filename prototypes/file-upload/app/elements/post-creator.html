@@ -121,7 +121,11 @@
 						<iron-icon icon="image:camera-alt"></iron-icon>
 						<span>Add Pictures</span>
 					</paper-button>
-					<div id="pictures"></div>
+					<template is="dom-repeat" items="{{field.value}}" as="value">
+						<img src="{{value}}">
+					</template>
+					<!-- hack to force index into model -->
+					<span style="display:none;">{{index}}</span>
 				</template>
 				<template is="dom-if" if="{{isCheckBoxes(field)}}">
 					<paper-radio-group>
@@ -225,22 +229,26 @@
 		},
 
 		displayFiles: function(event) {
-			console.log(event);
-			var list = event.model._nodes[2];
-			Polymer.dom(list).innerHTML = "";
-
+			console.log(event.model);
+			var fieldIndex = event.model.index;
 			var files = event.model._nodes[0].files;
-			for (var i=0; i< files.length; i++) {
+
+			// var value = new Array(files.length);
+			// event.model.field.value = value;
+			this.set('post.fields.'+fieldIndex+'.value', []);
+
+			for (var i=0; i<files.length; i++) {
+				var valueIndex = i;
 				var file = files[i];
 				var reader = new FileReader();
+				reader.onload = (function(valueIndex){
+					return function(event) {
+						console.log(valueIndex);
+						var base64 = event.target.result;
+						this.push('post.fields.'+fieldIndex+'.value', base64);
+					}.bind(this);
+				}.bind(this))(i);
 				var blob = file.slice(0, file.size);
-				// this.storeFile(blob, "file-"+i);
-				reader.onload = function(event) {
-					var result = event.target.result;
-					var img = new Image();
-					img.src = result;
-					Polymer.dom(list).appendChild(img);
-				}.bind(this);
 				reader.readAsDataURL(blob);
 			}
 		},
