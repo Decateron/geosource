@@ -5,6 +5,7 @@
 		is: "object-store",
 
 		properties: {
+			db: Object,
 			DB_NAME: {
 				type: String,
 				value: "geosource-indexeddb",
@@ -21,7 +22,14 @@
 				type: String,
 				value: "channels",
 			},
-			db: Object
+			posts: {
+				type: Array,
+				value: [],
+			},
+			channels: {
+				type: Array,
+				value: [],
+			},
 		},
 
 		ready: function() {
@@ -110,6 +118,9 @@
 
 		displayPosts: function() {
 			console.log("displayPosts");
+
+			this.splice('posts', 0, this.posts.length);
+
 			var store = this.getObjectStore(this.DB_POST_STORE_NAME, "readonly");
 			var request = store.count();
 			request.onsuccess = function(event) {
@@ -129,13 +140,15 @@
 					request = store.get(cursor.key);
 					request.onsuccess = function(event) {
 						console.log(event.target.result);
-					};
+						this.push('posts', event.target.result);
+						console.log(this.posts);
+					}.bind(this);
 					cursor.continue();
 					i++;
 				} else {
 					console.log("No more entries");
 				}
-			};
+			}.bind(this);
 		},
 
 		addChannel: function(channel) {
@@ -149,7 +162,8 @@
 			}
 			request.onsuccess = function(event) {
 				console.log("Successfully added channel");
-			};
+				this.displayChannels();
+			}.bind(this);
 			request.onerror = function() {
 				console.error("Error adding channel", this.error);
 			};
@@ -194,6 +208,9 @@
 
 		displayChannels: function() {
 			console.log("displayChannels");
+
+			this.splice('channels', 0, this.channels.length);
+
 			var store = this.getObjectStore(this.DB_CHANNEL_STORE_NAME, "readonly");
 			var request = store.count();
 			request.onsuccess = function(event) {
@@ -213,13 +230,15 @@
 					request = store.get(cursor.key);
 					request.onsuccess = function(event) {
 						console.log(event.target.result);
-					};
+						this.push('channels', event.target.result);
+						console.log(this.channels);
+					}.bind(this);
 					cursor.continue();
 					i++;
 				} else {
 					console.log("No more entries");
 				}
-			};
+			}.bind(this);
 		},
 
 	});

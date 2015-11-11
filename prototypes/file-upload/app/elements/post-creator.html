@@ -78,6 +78,20 @@
 		}
 	</style>
 	<template>
+
+		<template is="dom-if" if="{{drafts}}">
+			<h2>Drafts</h2>
+			<div class="contents">
+				<paper-dropdown-menu label="Open a draft..." no-label-float>
+					<paper-menu class="dropdown-content" selected="{{draftIndex}}">
+						<template is="dom-repeat" items="{{drafts}}">
+							<paper-item>{{item.title}}</paper-item>
+						</template>
+					</paper-menu>
+				</paper-dropdown-menu>
+			</div>
+		</template>
+
 		<h2>Channel</h2>
 		<div class="contents">
 			<paper-dropdown-menu label="Select a channel..." no-label-float>
@@ -89,13 +103,13 @@
 			</paper-dropdown-menu>
 		</div>
 
-		<template is="dom-if" if="{{channel}}">
+		<template is="dom-if" if="{{post}}">
 			<h2>Title</h2>
 			<div class="contents">
-				<paper-input label="Enter a title..." no-label-float value="{{title}}"></paper-input>
+				<paper-input label="Enter a title..." no-label-float value="{{post.title}}"></paper-input>
 			</div>
 		</template>
-		<template is="dom-repeat" items="{{channel.fields}}" as="field">
+		<template is="dom-repeat" items="{{post.fields}}" as="field">
 			<h2>{{field.label}}</h2>
 			<div class="contents">
 				<template is="dom-if" if="{{isText(field)}}">
@@ -125,12 +139,13 @@
 				</template>
 			</div>
 		</template>
-
-		<div class="horizontal layout flex">
-			<paper-button class="flex" on-tap="clear">Cancel</paper-button>
-			<paper-button class="flex" on-tap="save">Save Draft</paper-button>
-			<paper-button class="flex" on-tap="submit">Submit</paper-button>
-		</div>
+		<template is="dom-if" if="{{post}}">
+			<div class="horizontal layout flex">
+				<paper-button class="flex" on-tap="clear">Cancel</paper-button>
+				<paper-button class="flex" on-tap="save">Save Draft</paper-button>
+				<paper-button class="flex" on-tap="submit">Submit</paper-button>
+			</div>
+		</template>
 	</template>
 </dom-module>
 
@@ -146,18 +161,45 @@
 			channelIndex: {
 				type: Number,
 				value: null,
-				observer: "channelChanged",
+				observer: "channelIndexChanged",
 			},
 			channel: {
 				type: Object,
 				value: null,
+				observer: "channelChanged",
 			},
+			post: {
+				type: Object,
+				value: null,
+			},
+			drafts: {
+				type: Array,
+				value: [],
+			},
+			draftIndex: {
+				type: Number,
+				value: null,
+				observer: "draftIndexChanged",
+			},
+		},
 
+		draftIndexChanged: function() {
+			console.log(this.draftIndex);
+			this.post = this.drafts[this.draftIndex];
+		},
+
+		channelIndexChanged: function() {
+			console.log(this.channelIndex);
+			this.channel = this.channels[this.channelIndex];
 		},
 
 		channelChanged: function() {
-			console.log(this.channelIndex);
-			this.channel = this.channels[this.channelIndex];
+			this.post = null;
+			if (this.channel) {
+				var channelname = this.channel.name;
+				var fields = JSON.parse(JSON.stringify(this.channel.fields));
+				this.post = {channelname: channelname, title: "", fields: fields};
+			}
 		},
 
 		isText: function(field) {
@@ -203,13 +245,21 @@
 			}
 		},
 
+		clear: function() {
+			this.channelIndex = null;
+		},
+
+		save: function() {
+			this.fire('submit-success', {post: this.post});
+		},
+
 		submit: function() {
 			// var form = this.$.form;
 			// var formData = new FormData(form);
 			// var xhr = new XMLHttpRequest();
 			// xhr.open('POST', '/upload', true);
 			// xhr.send(formData);
-			console.log(this.channel);
+			console.log(this.post);
 		}
 	});
 </script>

@@ -26,7 +26,10 @@
 		<platinum-sw-register auto-register>
 			<platinum-sw-cache></platinum-sw-cache>
 		</platinum-sw-register>
-		<object-store id="store"></object-store>
+		<object-store id="store"
+			channels="{{channels}}"
+			posts="{{posts}}">
+		</object-store>
 		<paper-header-panel class="flex">
 			<paper-toolbar>
 				<paper-tabs selected="{{selected}}">
@@ -37,6 +40,7 @@
 			<iron-pages selected="{{selected}}">
 				<post-creator 
 					channels="{{channels}}"
+					drafts="{{posts}}"
 					on-submit-success="storePost">
 				</post-creator>
 				<channel-creator 
@@ -51,13 +55,17 @@
 	Polymer({
 		is: "file-upload",
 		properties: {
-			selected: {
-				type: Number,
-				value: 0,
-			},
 			channels: {
 				type: Array,
 				value: [],
+			},
+			posts: {
+				type: Array,
+				value: [],
+			},
+			selected: {
+				type: Number,
+				value: 0,
 			},
 		},
 		storePost: function(event) {
@@ -67,7 +75,6 @@
 		storeChannel: function(event) {
 			console.log(event.detail.channel);
 			this.$.store.addChannel(event.detail.channel);
-			this.push('channels', event.detail.channel);
 		},
 	});
 </script>
