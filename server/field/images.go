@@ -13,7 +13,7 @@ const (
 	MAX_HEIGHT    = 2000
 	IMAGE_QUALITY = 70
 	IMAGE_TYPE    = ".jpg"
-	IMAGE_PATH    = "../app/images"
+	IMAGE_DIR     = "../app/images/"
 )
 
 type Images []Image
@@ -90,7 +90,7 @@ func (image Image) Save() (string, error) {
 		return "", err
 	}
 
-	err = mw.WriteImage(IMAGE_PATH + u4.String() + IMAGE_TYPE)
+	err = mw.WriteImage(IMAGE_DIR + u4.String() + IMAGE_TYPE)
 	if err != nil {
 		return "", err
 	}

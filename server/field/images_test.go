@@ -27,6 +27,6 @@ func TestImagesValidate(t *testing.T) {
 	err = json.Unmarshal([]byte(encoded), &field)
 	assert.NoError(t, err)
 	assert.NoError(t, field.Validate())
-	err = os.Remove(IMAGE_PATH + string([]Image(*field.Images)[0]) + IMAGE_TYPE)
+	err = os.Remove(IMAGE_DIR + string([]Image(*field.Images)[0]) + IMAGE_TYPE)
 	assert.NoError(t, err)
 }
