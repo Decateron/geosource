@@ -1,7 +1,9 @@
 language: go
 go:
   - tip
+before_install:
+  - "sudo apt-get install libmagickwand-dev"
 install:
-  - "cd server && go get -d -t ./... && sudo apt-get install libmagickwand-dev"
+  - "cd server && go get -d -t ./...""
 script: 
   - "go test ./..."
