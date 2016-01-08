@@ -2,6 +2,6 @@ language: go
 go:
   - tip
 install:
-  - "cd server && go get -d -t ./..."
+  - "cd server && go get -d -t ./... && sudo apt-get install libmagickwand-dev"
 script: 
   - "go test ./..."
