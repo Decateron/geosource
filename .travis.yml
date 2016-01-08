@@ -4,7 +4,7 @@ go:
 before_install:
   - "sudo apt-get install libmagickwand-dev"
 install:
-  - "go get github.com/gographics/imagick"
+  - "go get github.com/gographics/imagick/imagick"
   - "cd server && go get -d -t ./..."
 script: 
   - "go test ./..."
