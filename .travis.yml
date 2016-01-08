@@ -1,4 +1,5 @@
 language: go
 go:
   - tip
-script: cd server && go get -d ./... && go test ./...
+script: 
+  - "cd server && go get -d ./... && go test ./..."
