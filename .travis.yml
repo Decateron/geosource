@@ -3,11 +3,6 @@ dist: trusty
 language: go
 go:
   - tip
-before_install:
-  - sudo add-apt-repository -y ppa:moti-p/cc
-  - sudo apt-get update
-  - sudo apt-get -y --reinstall install imagemagick
-  - printf "\n" | pecl install imagick-beta
 install:
   - "go get github.com/gographics/imagick/imagick"
   - "cd server && go get -d -t ./..."
