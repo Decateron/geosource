@@ -1,0 +1,6 @@
+language: go
+go:
+  - tip
+env:
+  - TEST_DIR=server
+script: cd $TEST_DIR && go get -d ./... && go test ./...
