@@ -2,9 +2,8 @@ sudo: required
 dist: trusty
 language: go
 go:
-  - tip
+  - 1.5
 install:
-  - "go get github.com/gographics/imagick/imagick"
   - "cd server && go get -d -t ./..."
 script: 
   - "go test ./..."
