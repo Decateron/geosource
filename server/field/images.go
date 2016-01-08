@@ -5,6 +5,7 @@ import (
 	"github.com/gographics/imagick/imagick"
 	"github.com/nu7hatch/gouuid"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -90,7 +91,12 @@ func (image Image) Save() (string, error) {
 		return "", err
 	}
 
-	err = mw.WriteImage(IMAGE_DIR + u4.String() + IMAGE_TYPE)
+	file, err := os.Create(IMAGE_DIR + u4.String() + IMAGE_TYPE)
+	if err != nil {
+		return "", err
+	}
+
+	err = mw.WriteImageFile(file)
 	if err != nil {
 		return "", err
 	}
