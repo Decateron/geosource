@@ -73,18 +73,12 @@ func (image Image) Save() (string, error) {
 		newWidth = uint(float64(width) / float64(height/MAX_HEIGHT))
 	}
 
-	log.Println(newWidth)
-	log.Println(newHeight)
-
 	// Resize the image using the Lanczos filter
 	// The blur factor is a float, where > 1 is blurry, < 1 is sharp
 	err = mw.ResizeImage(newWidth, newHeight, imagick.FILTER_LANCZOS, 1)
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
-
-	log.Println("test")
 
 	err = mw.SetImageCompressionQuality(IMAGE_QUALITY)
 	if err != nil {
@@ -100,8 +94,6 @@ func (image Image) Save() (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	log.Println("test")
 
 	return u4.String(), nil
 }

@@ -2,7 +2,6 @@ package field
 
 import (
 	"errors"
-	"log"
 )
 
 const (
@@ -58,7 +57,6 @@ func (field *Field) Validate() error {
 		value = field.Radiobuttons
 	case TYPE_IMAGES:
 		value = field.Images
-		log.Println("Image field")
 	default:
 		return ErrInvalidType
 	}
