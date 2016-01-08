@@ -14,7 +14,7 @@ const (
 	MAX_HEIGHT    = 2000
 	IMAGE_QUALITY = 70
 	IMAGE_TYPE    = ".jpg"
-	IMAGE_DIR     = "../app/images/"
+	IMAGE_DIR     = "./"
 )
 
 type Images []Image
