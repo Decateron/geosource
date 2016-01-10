@@ -18,6 +18,7 @@ var ErrMissingLabel error = errors.New("Missing label.")
 var ErrInvalidLabel error = errors.New("Invalid label.")
 var ErrMissingValue error = errors.New("Missing value.")
 var ErrInvalidValue error = errors.New("Invalid value.")
+var ErrMultipleValues error = errors.New("Multiple values.")
 
 type Field struct {
 	Type         string        `json:"type"`
@@ -36,32 +37,11 @@ type Value interface {
 }
 
 func (field *Field) Validate() error {
-	// ensure that only one field is filled out
-	if field.Type != TYPE_TEXT && field.Text != nil ||
-		field.Type != TYPE_NUMBER && field.Number != nil ||
-		field.Type != TYPE_CHECKBOXES && field.Checkboxes != nil ||
-		field.Type != TYPE_RADIOBUTTONS && field.Radiobuttons != nil ||
-		field.Type != TYPE_IMAGES && field.Images != nil {
-		return ErrInvalidValue
+	value, err := field.GetValue()
+	if err != nil {
+		return err
 	}
-
-	var value Value
-	switch field.Type {
-	case TYPE_TEXT:
-		value = field.Text
-	case TYPE_NUMBER:
-		value = field.Number
-	case TYPE_CHECKBOXES:
-		value = field.Checkboxes
-	case TYPE_RADIOBUTTONS:
-		value = field.Radiobuttons
-	case TYPE_IMAGES:
-		value = field.Images
-	default:
-		return ErrInvalidType
-	}
-
-	err := value.Validate()
+	err = value.Validate()
 	if err != nil {
 		return err
 	}
@@ -69,4 +49,30 @@ func (field *Field) Validate() error {
 		return ErrInvalidValue
 	}
 	return nil
+}
+
+func (field *Field) GetValue() (Value, error) {
+	// Ensure that at most one value exists, and that it matches the type
+	if field.Type != TYPE_TEXT && field.Text != nil ||
+		field.Type != TYPE_NUMBER && field.Number != nil ||
+		field.Type != TYPE_CHECKBOXES && field.Checkboxes != nil ||
+		field.Type != TYPE_RADIOBUTTONS && field.Radiobuttons != nil ||
+		field.Type != TYPE_IMAGES && field.Images != nil {
+		return nil, ErrMultipleValues
+	}
+
+	switch field.Type {
+	case TYPE_TEXT:
+		return field.Text, nil
+	case TYPE_NUMBER:
+		return field.Number, nil
+	case TYPE_CHECKBOXES:
+		return field.Checkboxes, nil
+	case TYPE_RADIOBUTTONS:
+		return field.Radiobuttons, nil
+	case TYPE_IMAGES:
+		return field.Images, nil
+	default:
+		return nil, ErrInvalidType
+	}
 }
