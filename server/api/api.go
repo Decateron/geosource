@@ -1,20 +1,54 @@
 package api
 
 import (
+	"../config"
 	"errors"
+	"fmt"
 	"github.com/ant0ine/go-json-rest/rest"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/providers/gplus"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"html/template"
+	"log"
 	"net/http"
+	"os"
 )
 
+var apiConfig *config.Config
+
 var ErrInsufficientPermission error = errors.New("Insufficient permission.")
+var indexTemplate = template.Must(template.ParseFiles("../app/index.html"))
+
+func Init(config *config.Config) {
+	apiConfig = config
+	oauthConfig = &oauth2.Config{
+		ClientID:     config.Google.ClientId,
+		ClientSecret: config.Google.ClientSecret,
+		// Scope determines which API calls you are authorized to make
+		Scopes:   []string{"https://www.googleapis.com/auth/plus.login", "https://www.googleapis.com/auth/userinfo.email"},
+		Endpoint: google.Endpoint,
+		// Use "postmessage" for the code-flow for server side apps
+		RedirectURL: "postmessage",
+	}
+	goth.UseProviders(
+		gplus.New(config.Google.ClientId, config.Google.ClientSecret, config.Google.CallbackUrl),
+		// facebook.New(config.Facebook.ClientId, config.Facebook.ClientSecret, config.Facebook.Callback),
+		// twitter.New(config.Twitter.ClientId, config.Twitter.ClientSecret, config.Twitter.Callback),
+	)
+}
 
 func MakeHandler() (http.Handler, error) {
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
 	router, err := rest.MakeRouter(
 		// Login
-		// rest.Post("/login", Login),
-		// rest.Get("/logout", Logout),
+		rest.Post("/login", Login),
+		rest.Post("/logout", Logout),
+
+		// Auth
+		rest.Get("/auth/#provider", BeginAuth),
+		rest.Get("/auth/#provider/callback", CallbackAuth),
 
 		// Channels
 		rest.Get("/channels", GetChannels),
@@ -69,4 +103,22 @@ func MakeHandler() (http.Handler, error) {
 	}
 	api.SetApp(router)
 	return api.MakeHandler(), nil
+}
+
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, SESSION_NAME)
+	state := randomString(64)
+	fmt.Println(state)
+	session.Values["state"] = state
+	session.Save(r, w)
+
+	var data = struct {
+		ClientId, State string
+	}{apiConfig.Google.ClientId, state}
+
+	err := indexTemplate.Execute(w, data)
+	if err != nil {
+		log.Println("error rendering template:", err)
+		return
+	}
 }
