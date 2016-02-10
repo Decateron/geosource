@@ -7,30 +7,46 @@ import (
 
 func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	data := `
+
+	channelData := `
 {
-	"type": "checkboxes",
-	"label": "bar",
-	"required": true,
-	"form": [
-		"foo",
-		"bar"
-	],
-	"value": [
-		true,
-		false
+	"name": "test",
+	"fields": [
+		{
+			"type": "checkboxes",
+			"label": "bar",
+			"required": true,
+			"form": [
+				"foo",
+				"bar"
+			]
+		},
+		{
+			"type": "text",
+			"label": "baz",
+			"required": true
+		}
 	]
-}
-`
-	field, err := UnmarshalField([]byte(data))
+}`
+
+	channel, err := UnmarshalChannel([]byte(channelData))
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = field.Validate()
+
+	submissionData := `
+{
+	"title": "hello, world!",
+	"channel": "test",
+	"values": [[true, false], "hello"]
+}`
+
+	post, err := channel.UnmarshalSubmission([]byte(submissionData))
 	if err != nil {
 		log.Fatal(err)
 	}
-	blob, err := json.Marshal(field)
+
+	blob, err := json.Marshal(post)
 	if err != nil {
 		log.Fatal(err)
 	}
