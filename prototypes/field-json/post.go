@@ -1,9 +1,13 @@
 package main
 
+import (
+	"./fields"
+)
+
 type Post struct {
-	Title   string   `json:"title"`
-	Channel string   `json:"channel"`
-	Fields  []*Field `json:"fields"`
+	Title   string          `json:"title"`
+	Channel string          `json:"channel"`
+	Fields  []*fields.Field `json:"fields"`
 }
 
 type Submission struct {

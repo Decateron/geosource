@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./fields"
 	"encoding/json"
 	"errors"
 )
@@ -22,19 +23,19 @@ func UnmarshalChannel(blob []byte) (*Channel, error) {
 	}
 	json.Unmarshal(blob, &channel)
 
-	fields := make([]*Field, len(jsonFields))
+	channelFields := make([]*fields.Field, len(jsonFields))
 
 	for i, jsonField := range jsonFields {
-		field, err := UnmarshalField(jsonField)
+		field, err := fields.UnmarshalField(jsonField)
 		if err != nil {
 			return nil, err
 		}
 		if !field.IsEmpty() {
 			return nil, errors.New("Non-empty field submitted")
 		}
-		fields[i] = field
+		channelFields[i] = field
 	}
-	channel.Fields = fields
+	channel.Fields = channelFields
 
 	return &channel, nil
 }
@@ -44,7 +45,7 @@ func UnmarshalChannel(blob []byte) (*Channel, error) {
 // unmarshalling error or a form mismatch, an error is returned.
 func (channel *Channel) UnmarshalSubmission(blob []byte) (*Post, error) {
 
-	channelFields, ok := channel.Fields.([]*Field)
+	channelFields, ok := channel.Fields.([]*fields.Field)
 	if !ok {
 		return nil, errors.New("Invalid type of Fields in channel.")
 	}
@@ -61,11 +62,11 @@ func (channel *Channel) UnmarshalSubmission(blob []byte) (*Post, error) {
 	post := Post{
 		Title:   submission.Title,
 		Channel: submission.Channel,
-		Fields:  make([]*Field, len(channelFields)),
+		Fields:  make([]*fields.Field, len(channelFields)),
 	}
 
 	for i, field := range channelFields {
-		fieldForm, ok := field.Form.(Form)
+		fieldForm, ok := field.Form.(fields.Form)
 		if !ok {
 			return nil, errors.New("Invalid type of Form in field")
 		}
@@ -73,7 +74,7 @@ func (channel *Channel) UnmarshalSubmission(blob []byte) (*Post, error) {
 		if err != nil {
 			return nil, err
 		}
-		post.Fields[i] = &Field{
+		post.Fields[i] = &fields.Field{
 			Label:    field.Label,
 			Type:     field.Type,
 			Required: field.Required,
