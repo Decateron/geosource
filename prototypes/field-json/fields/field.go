@@ -11,11 +11,11 @@ const (
 )
 
 type Field struct {
-	Label    string      `json:"label"`
-	Type     string      `json:"type"`
-	Required bool        `json:"required"`
-	Form     interface{} `json:"form"`
-	Value    interface{} `json:"value,omitempty"`
+	Label    string `json:"label"`
+	Type     string `json:"type"`
+	Required bool   `json:"required"`
+	Form     Form   `json:"form"`
+	Value    Value  `json:"value,omitempty"`
 }
 
 type Form interface {
@@ -31,18 +31,10 @@ func (field *Field) IsEmpty() bool {
 }
 
 func (field *Field) Validate() error {
-	form, ok := field.Form.(Form)
-	if !ok {
-		return errors.New("Invalid form.")
-	}
 	if field.Value == nil {
 		return nil
 	}
-	value, ok := field.Value.(Value)
-	if !ok {
-		return errors.New("Invalid value.")
-	}
-	err := form.Validate(value)
+	err := field.Form.Validate(field.Value)
 	if err != nil {
 		return err
 	}
@@ -52,15 +44,16 @@ func (field *Field) Validate() error {
 func UnmarshalField(blob []byte) (*Field, error) {
 	var jsonForm json.RawMessage
 	var jsonValue json.RawMessage
-	field := Field{
-		Form:  &jsonForm,
-		Value: &jsonValue,
-	}
-	err := json.Unmarshal(blob, &field)
+	unmarshalField := struct {
+		Field
+		Form  interface{} `json:"form"`
+		Value interface{} `json:"value"`
+	}{Form: &jsonForm, Value: &jsonValue}
+	err := json.Unmarshal(blob, &unmarshalField)
 	if err != nil {
 		return nil, err
 	}
-	form, err := UnmarshalForm(field.Type, jsonForm)
+	form, err := UnmarshalForm(unmarshalField.Type, jsonForm)
 	if err != nil {
 		return nil, err
 	}
@@ -68,9 +61,9 @@ func UnmarshalField(blob []byte) (*Field, error) {
 	if err != nil {
 		return nil, err
 	}
-	field.Form = form
-	field.Value = value
-	return &field, nil
+	unmarshalField.Field.Form = form
+	unmarshalField.Field.Value = value
+	return &unmarshalField.Field, nil
 }
 
 func UnmarshalForm(fieldType string, blob []byte) (Form, error) {
