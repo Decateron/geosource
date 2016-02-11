@@ -60,32 +60,35 @@ func UnmarshalField(blob []byte) (*Field, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var form Form
-	switch field.Type {
-	case TYPE_CHECKBOXES:
-		if len(jsonForm) > 0 {
-			var checkboxesForm CheckboxesForm
-			err = json.Unmarshal(jsonForm, &checkboxesForm)
-			if err != nil {
-				return nil, err
-			}
-			form = &checkboxesForm
-		} else {
-			return nil, errors.New("No form provided for checkboxes field.")
-		}
-	case TYPE_TEXT:
-		form = &TextForm{}
-	default:
-		return nil, errors.New("Invalid type.")
+	form, err := UnmarshalForm(field.Type, jsonForm)
+	if err != nil {
+		return nil, err
 	}
-
 	value, err := form.UnmarshalValue(jsonValue)
 	if err != nil {
 		return nil, err
 	}
 	field.Form = form
 	field.Value = value
-
 	return &field, nil
+}
+
+func UnmarshalForm(fieldType string, blob []byte) (Form, error) {
+	switch fieldType {
+	case TYPE_CHECKBOXES:
+		if len(blob) > 0 {
+			var checkboxesForm CheckboxesForm
+			err := json.Unmarshal(blob, &checkboxesForm)
+			if err != nil {
+				return nil, err
+			}
+			return &checkboxesForm, nil
+		} else {
+			return nil, errors.New("No form provided for checkboxes field.")
+		}
+	case TYPE_TEXT:
+		return &TextForm{}, nil
+	default:
+		return nil, errors.New("Invalid type.")
+	}
 }
