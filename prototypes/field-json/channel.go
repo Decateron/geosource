@@ -15,17 +15,16 @@ type Channel struct {
 // if unsuccessful. All fields must be valid and empty for parsing to succeed.
 func UnmarshalChannel(blob []byte) (*Channel, error) {
 
-	var jsonFields []json.RawMessage
 	unmarshalChannel := struct {
 		Channel
-		Fields interface{} `json:"fields"`
-	}{Fields: &jsonFields}
+		JsonFields []json.RawMessage `json:"fields"`
+	}{}
 
 	json.Unmarshal(blob, &unmarshalChannel)
 
-	channelFields := make([]*fields.Field, len(jsonFields))
+	channelFields := make([]*fields.Field, len(unmarshalChannel.JsonFields))
 
-	for i, jsonField := range jsonFields {
+	for i, jsonField := range unmarshalChannel.JsonFields {
 		field, err := fields.UnmarshalField(jsonField)
 		if err != nil {
 			return nil, err
@@ -45,14 +44,13 @@ func UnmarshalChannel(blob []byte) (*Channel, error) {
 // unmarshalling error or a form mismatch, an error is returned.
 func (channel *Channel) UnmarshalSubmission(blob []byte) (*Post, error) {
 
-	var jsonValues []json.RawMessage
 	unmarshalSubmission := struct {
 		Submission
-		Values interface{} `json:"values"`
-	}{Values: &jsonValues}
+		JsonValues []json.RawMessage `json:"values"`
+	}{}
 
 	json.Unmarshal(blob, &unmarshalSubmission)
-	if len(jsonValues) != len(channel.Fields) {
+	if len(unmarshalSubmission.JsonValues) != len(channel.Fields) {
 		return nil, errors.New("An invalid number of values were provided.")
 	}
 
@@ -63,7 +61,7 @@ func (channel *Channel) UnmarshalSubmission(blob []byte) (*Post, error) {
 	}
 
 	for i, field := range channel.Fields {
-		value, err := field.Form.UnmarshalValue(jsonValues[i])
+		value, err := field.Form.UnmarshalValue(unmarshalSubmission.JsonValues[i])
 		if err != nil {
 			return nil, err
 		}

@@ -42,22 +42,20 @@ func (field *Field) Validate() error {
 }
 
 func UnmarshalField(blob []byte) (*Field, error) {
-	var jsonForm json.RawMessage
-	var jsonValue json.RawMessage
 	unmarshalField := struct {
 		Field
-		Form  interface{} `json:"form"`
-		Value interface{} `json:"value"`
-	}{Form: &jsonForm, Value: &jsonValue}
+		JsonForm  json.RawMessage `json:"form"`
+		JsonValue json.RawMessage `json:"value"`
+	}{}
 	err := json.Unmarshal(blob, &unmarshalField)
 	if err != nil {
 		return nil, err
 	}
-	form, err := UnmarshalForm(unmarshalField.Type, jsonForm)
+	form, err := UnmarshalForm(unmarshalField.Type, unmarshalField.JsonForm)
 	if err != nil {
 		return nil, err
 	}
-	value, err := form.UnmarshalValue(jsonValue)
+	value, err := form.UnmarshalValue(unmarshalField.JsonValue)
 	if err != nil {
 		return nil, err
 	}
