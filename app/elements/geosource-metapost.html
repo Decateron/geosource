@@ -1,0 +1,115 @@
+<link rel="import" href="geosource-imports.html">
+
+<dom-module id="geosource-metapost">
+	<style>
+
+		:host {
+			display: block;
+			padding: 20px;
+			height: 100%;
+			overflow: auto;
+			font-size: 16px;
+		}
+
+	    .header {
+	    	@apply(--layout-horizontal);
+	    }
+	    img {
+	    	width: 70px;
+	    	height: 70px;
+	    	border-radius: 50%;
+	    	margin-right: 20px;
+	    }
+	    .title {
+	    	margin: auto 0;
+	    	overflow: hidden;
+	    }
+		.buttons {
+	    	@apply(--layout-vertical);
+	    	margin: -8px;
+	    	margin-left: calc(20px - 8px);
+	    }
+	    .footer {
+	    	padding-top: 20px;
+	    	text-transform: uppercase;
+			font-size: 13px;
+			@apply(--layout-horizontal);
+	    }
+	    .info {
+	    	color: #555;
+	    	margin-top: auto;
+	    }
+	    paper-button {
+	    	color: #4184F3;
+	    	margin-top: auto;
+	    	margin-bottom: -0.7em;
+	    	margin-right: -0.57em;
+	    	margin-left: calc(20px - 0.57em);
+	    }
+	   	paper-icon-button {
+	    	color: #555;
+	    }
+	    paper-icon-button[favorite] {
+	    	color: #FF4081;
+	    }
+	</style>
+
+	<template>
+		<div class="header">
+			<img src="{{post.thumbnail}}">
+			<div class="title flex">{{post.title}}</div>
+			<template is="dom-if" if="{{!noButtons}}">
+				<div class="buttons">
+					<paper-icon-button icon="favorite" on-tap="favoriteTapped" favorite$="[[post.favorite]]"></paper-icon-button>
+					<paper-icon-button icon="room" on-tap="locationTapped"></paper-icon-button>
+				</div>
+			</template>
+		</div>
+		<div class="footer">
+			<div class="info flex">
+				Posted by 
+				<span>{{post.username}}</span> 
+				<span>{{timeAgo(post.time)}}</span> to 
+				<span>{{post.channel}}</span>
+			</div>
+			<template is="dom-if" if="{{!noButtons}}">
+				<paper-button>See More</paper-button>
+			</template>
+		</div>
+	</template>
+
+</dom-module>
+
+<script src="../../bower_components/moment/moment.js"></script>
+<script src="../../bower_components/moment-timezone/moment-timezone.js"></script>
+
+<script>
+	Polymer({		
+		is: "geosource-metapost",
+
+		properties: {
+			post: {
+				type: Object,
+				reflectToAttribute: true,
+			},
+			noButtons: {
+				type: Boolean,
+				reflectToAttribute: true,
+				value: false
+			}
+		},
+
+		timeAgo: function(time) {
+			return moment(time).fromNow();
+		},
+
+		locationTapped: function() {
+			this.fire('move-map', {post: this.post});
+		},
+
+		favoriteTapped: function() {
+			console.log("favorited", this.post);
+			this.set('post.favorite', !this.post.favorite);
+		},
+	});
+</script>

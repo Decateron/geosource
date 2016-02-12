@@ -1,0 +1,64 @@
+<link rel="import" href="geosource-imports.html">
+
+<dom-module id="geosource-settings-flags">
+	<style>
+		.item {
+			@apply(--layout-horizontal);
+			margin-bottom: 20px;
+		}
+		.item:first-child {
+			margin-top: 5px;
+		}
+		.item:last-child {
+			margin-bottom: 0;
+		}
+		.label {
+			margin: auto 0;
+		}
+	</style>
+	<template>
+		<geosource-settings-card title="Flags" icon="icons:flag">
+			<div class="item">
+				<div class="label flex">All</div>
+				<paper-toggle-button checked="{{allChecked}}"></paper-toggle-button>
+			</div>
+			<div class="item">
+				<div class="label flex">Mine</div>
+				<paper-toggle-button checked="{{mineChecked}}" disabled="{{allChecked}}"></paper-toggle-button>
+			</div>
+			<div class="item">
+				<div class="label flex">Favorites</div>
+				<paper-toggle-button checked="{{favoritesChecked}}" disabled="{{allChecked}}"></paper-toggle-button>
+			</div>
+			<div class="item">
+				<div class="label flex">Questions</div>
+				<paper-toggle-button checked="{{questionsChecked}}" disabled="{{allChecked}}"></paper-toggle-button>
+			</div>
+		</geosource-settings-card>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "geosource-settings-flags",
+
+		properties: {
+			allChecked: {
+				type: Boolean,
+				value: true
+			},
+			mineChecked: {
+				type: Boolean,
+				value: true
+			},
+			favoritesChecked: {
+				type: Boolean,
+				value: true
+			},
+			questionsChecked: {
+				type: Boolean,
+				value: true
+			}
+		}
+	});
+</script>

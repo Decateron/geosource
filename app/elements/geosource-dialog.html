@@ -1,0 +1,70 @@
+<link rel="import" href="geosource-imports.html">
+
+<dom-module id="geosource-dialog">
+	<style>
+		#fill {
+			width: 100%;
+			height: 100%;
+			z-index: 5;
+			position: absolute;
+		}
+	    #dialog {
+	    	width: 100%;
+	    	height: 100%;
+	    	background-color: #E5E5E5;
+	    }
+	    #container {
+	    	position: absolute;
+	    	top: 0;
+	    	bottom: 0;
+	    	left: 0;
+	    	right: 0;
+	    	margin: auto;
+	    	width: calc(100% - 80px);
+	    	height: calc(100% - 80px);
+	    	max-width: 800px;
+	    }
+	    #background {
+	    	width: 100%;
+	    	height: 100%;
+	    	background-color: rgba(0,0,0,0.5);
+	    }
+	</style>
+
+	<template>
+		<div id="fill" hidden$="[[!open]]">
+			<div id="background" on-tap="close"></div>
+			<paper-material elevation="4" id="container">
+				<div id="dialog">
+					<content></content>
+				</div>
+			</paper-material>
+		</div>
+	</template>
+
+</dom-module>
+
+<script>
+	Polymer({		
+		is: "geosource-dialog",
+
+		properties: {
+			open: {
+				type: Boolean,
+				value: false
+			}
+		},
+
+		close: function() {
+			this.open = false;
+		},
+
+		open: function() {
+			this.open = true;
+		},
+
+		toggle: function() {
+			this.open = !this.open;
+		}
+	});
+</script>

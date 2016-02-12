@@ -1,0 +1,441 @@
+<link rel="import" href="geosource-imports.html">
+
+<dom-module id="geosource-app">
+	<style>
+		:host {
+			font-size: 16px;
+		}
+		.drawer_title, .dialog_title {
+			font-size: 1.3em;
+		}
+		.drawer_title {
+			/* layout properties for a local DOM element */
+			@apply(--layout-horizontal --layout-center);
+			margin: auto;
+			text-transform: none;
+		}
+		.dialog_title {
+			margin-right: auto;
+			margin-left: 12px;
+		}
+		.button_title {
+			margin: auto;
+			font-size: 1.3em;
+		}
+		paper-toolbar::shadow .toolbar-tools paper-icon-button[icon=menu] {
+			margin-left: 0px;
+			margin-right: 0px;
+		}
+		paper-drawer-panel div[drawer] {
+			background-color: #eee;
+			box-shadow: rgba(0, 0, 0, 0.0980392) 0px 2px 4px, rgba(0, 0, 0, 0.0980392) 0px 0px 3px;
+			overflow-x: auto;
+		}
+		geosource-posts {
+			height: 100%;
+		}
+		geosource-metapost {
+			padding: 10px;
+			font-weight: 400;
+			font-size: 16px;
+			max-width: 300px;
+		}
+		#menu, #add, #user {
+			position: absolute;
+			z-index: 1;
+		}
+		#add, #user {
+			width: 40px;
+			height: 40px;
+		}
+		#menu {
+			top: 8px;
+			left: 8px;
+			color: #fff;
+			background: #3f51b5;
+			border-radius: 20px;
+			margin: 0;
+			padding: 0;
+		}
+		#add {
+			bottom: 8px;
+			right: 8px;
+		}
+		#user {
+			background-image: url("/images/profile-picture.svg");
+			background-size: 40px;
+			top: 8px;
+			right: 8px;
+		}
+		iron-icon {
+			padding: 8px;
+		}
+		#geosource_button {
+			@apply(--layout-horizontal);
+			margin: 0;
+			margin-right: 12px;
+			margin-left: 4px;
+			padding: 0;
+		}
+		paper-drawer-panel::shadow #drawer, paper-drawer-panel::shadow #scrim {
+			z-index: 4;
+		}
+		geosource-dialog {
+			z-index: 5;
+		}
+		.dialog_spinner {
+			margin: auto;
+		}
+		google-signin {
+			position: absolute;
+			z-index: 1;
+			right: 8px;
+			top: 8px;
+			margin: 0;
+		}
+		paper-button#login {
+			color: #fff;
+			background-color: #4184F3;
+		}
+		paper-button#logout {
+			color: #000;
+			background-color: #ccc;
+		}
+		paper-button#login, paper-button#logout {
+			position: absolute;
+			z-index: 1;
+			right: 8px;
+			top: 8px;
+			margin: 0;
+			box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+		}
+		paper-button {
+			text-transform: none;
+		}
+		paper-button.signin {
+			width: 100%;
+			color: #fff;
+			margin: 0;
+			margin-bottom: 10px;
+			padding: 0;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			border: 1px solid;
+			width: 250px;
+		}
+		paper-button.twitter {
+			background-color: #4099FF;
+			border-color: #3782D9;
+		}
+		paper-button.facebook {
+			background-color: #3B5998;
+			border-color: #334C81;
+		}
+		paper-button.google {
+			background-color: #DC4E41;
+			border-color: #BB4338;
+		}
+		paper-dialog#login_dialog {
+		}
+		social-media-icons {
+			width: 32px;
+			height: 32px;
+			border-color: rgba(0,0,0,0.15);
+			border-right-width: 1px;
+			border-right-style: solid;
+			padding: 8px;
+			outline-color: rgba(255, 255, 255, 0.15);
+			outline-width: 1px;
+			outline-style: solid;
+		}
+	</style>
+	<template>
+
+		<platinum-sw-register>
+			<platinum-sw-cache></platinum-sw-cache>
+		</platinum-sw-register>
+
+		<geosource-api-handler
+			id="api"
+			state="{{state}}"
+			on-create-user="openCreateUserDialog">
+		</geosource-api-handler>
+
+		<paper-dialog id="create_user_dialog"
+			with-backdrop
+			no-cancel-on-esc-key
+			no-cancel-on-outside-click>
+			<h2>Create a Username</h2>
+			<paper-dialog-scrollable>
+				<paper-input label="Enter a username..."></paper-input>
+			</paper-dialog-scrollable>
+			<div class="buttons">
+				<paper-button dialog-confirm>Submit</paper-button>
+			</div>
+		</paper-dialog>
+
+		<paper-dialog id="login_dialog" with-backdrop>
+			<h2>Login</h2>
+			<paper-dialog-scrollable>
+				<div class="vertical layout">
+					<a href="/api/auth/gplus">
+					<paper-button class="signin google">
+						<div class="horizontal layout center">
+						<social-media-icons icon="googleplus" color="#fff"></social-media-icons>
+						<div class="flex">Sign in with Google</div>
+						</div>
+					</paper-button>
+					</a>
+					<paper-button class="signin facebook">
+						<div class="horizontal layout center">
+						<social-media-icons icon="facebook" color="#fff"></social-media-icons>
+						<div class="flex">Sign in with Facebook</div>
+						</div>
+					</paper-button>
+					<paper-button class="signin twitter">
+						<div class="horizontal layout center">
+						<social-media-icons icon="twitter" color="#fff"></social-media-icons>
+						<div class="flex">Sign in with Twitter</div>
+						</div>
+					</paper-button>
+				</div>
+			</paper-dialog-scrollable>
+		</paper-dialog>
+
+		<paper-drawer-panel id="drawer" drawer-width="{{drawerWidth}}" narrow="{{drawerShut}}"
+			on-paper-responsive-change="resizeMap">
+			<div drawer class="drawer">
+				<paper-header-panel>
+					<paper-toolbar>
+						<paper-icon-button icon="settings" on-tap="toggleSettings"></paper-icon-button>
+						<div class="drawer_title">GeoSource</div>
+						<paper-icon-button icon="close" on-tap="toggleDrawer"></paper-icon-button>
+					</paper-toolbar>
+					<paper-drawer-panel id="settings" drawer-width="100%" force-narrow>
+						<div main>
+							<geosource-posts posts="{{posts}}" on-move-map="moveToPost"></geosource-posts>
+						</div>
+						<div drawer>
+							<geosource-settings></geosource-settings>
+						</div>
+					</paper-drawer-panel>
+				</paper-header-panel>
+			</div>
+			<div main>
+
+				<geosource-dialog id="create_post">
+					<paper-header-panel>
+						<paper-toolbar>
+							<div class="dialog_title">Create a Post</div>
+							<paper-icon-button icon="close" on-tap="toggleDialog"></paper-icon-button>
+						</paper-toolbar>
+						<div main>
+						</div>
+					</paper-header-panel>
+				</geosource-dialog>
+
+				<geosource-dialog id="user_dialog">
+					<paper-header-panel>
+						<paper-toolbar>
+							<div class="dialog_title">Decateron</div>
+							<paper-icon-button icon="close" on-tap="toggleUser"></paper-icon-button>
+						</paper-toolbar>
+						<div main>
+							<paper-spinner class="dialog_spinner" active></paper-spinner>
+						</div>
+					</paper-header-panel>
+				</geosource-dialog>
+
+				<paper-button id="menu" on-tap="toggleDrawer" hidden$="{{!drawerShut}}" raised>
+					<div id="geosource_button">
+						<iron-icon icon="menu"></iron-icon>
+						<div class="drawer_title">GeoSource</div>
+					</div>
+				</paper-button>
+				<paper-button id="login" on-tap="openLoginDialog" hidden$="{{loggedIn(userId)}}">Login</paper-button>
+				<paper-button id="logout" on-tap="logout" hidden$="{{!loggedIn(userId)}}">Logout</paper-button>
+
+<!-- 				<paper-fab-speed-dial id="add" direction="top">
+					<paper-fab icon="add" class="dropdown-trigger"></paper-fab>
+					<div class="dropdown-content">
+						<paper-fab mini icon="star-border"></paper-fab>
+						<paper-fab mini icon="star-half"></paper-fab>
+						<paper-fab mini icon="star"></paper-fab>
+					</div>
+				</paper-fab-speed-dial> -->
+
+				<paper-fab icon="add" id="add" on-tap="toggleDialog"></paper-fab>
+
+				<geosource-map id="map" posts="[[posts]]"></geosource-map>
+
+			</div>
+		</paper-drawer-panel>
+
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "geosource-app",
+
+		properties: {
+			userId: {
+				type: String,
+			},
+			state: {
+				type: String,
+			},
+			posts: {
+				type: Array,
+				value: [
+					{
+						pid: 0,
+						thumbnail: "/images/thumbnail.svg",
+						title: "Hello, World!",
+						username: "Josh Heinrichs",
+						channel: "World",
+						time: "2016-01-01T00:00:00.000Z",
+						favorite: true,
+						location: {
+							latitude: 52.1833,
+							longitude: -106.6333
+						}
+					},
+					{
+						pid: 1,
+						thumbnail: "/images/thumbnail.svg",
+						title: "Hello again, World!",
+						username: "Josh Heinrichs",
+						channel: "World",
+						time: "2016-01-01T00:00:00.000Z",
+						favorite: false,
+						location: {
+							latitude: 53.1833,
+							longitude: -116.6333
+						}
+					},
+					{
+						pid: 2,
+						thumbnail: "/images/thumbnail.svg",
+						title: "Hello again, World!",
+						username: "Josh Heinrichs",
+						channel: "World",
+						time: "2016-01-01T00:00:00.000Z",
+						favorite: false,
+						location: {
+							latitude: 54.1833,
+							longitude: -116.6333
+						}
+					},
+					{
+						pid: 3,
+						thumbnail: "/images/thumbnail.svg",
+						title: "Hello again, World!",
+						username: "Josh Heinrichs",
+						channel: "World",
+						time: "2016-01-01T00:00:00.000Z",
+						favorite: false,
+						location: {
+							latitude: 56.1833,
+							longitude: -116.6333
+						}
+					}
+				]
+			},
+			user: {
+				name: "Josh Heinrichs"
+			},
+			drawerWidth: {
+				type: String,
+				value: "400px"
+			},
+			drawerShut: {
+				type: Boolean
+			},
+		},
+
+		ready: function() {
+			console.log(this.userId);
+			this.updateLocation();
+		},
+
+		loggedIn: function(userId) {
+			return userId != "";
+		},
+
+		updateLocation: function() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(location) {
+					this.$.map.updateCenter(location.coords);
+				}.bind(this));
+			} else {
+				console.log("geolocation is not supported by this browser.");
+			}
+		},
+
+		toggleSettings: function() {
+			this.$.settings.togglePanel();
+		},
+
+		toggleDrawer: function() {
+			var drawer = this.$.drawer;
+			if (drawer.narrow) {
+				drawer.forceNarrow = false;
+				drawer.togglePanel();
+			} else {
+				drawer.forceNarrow = true;
+				drawer.narrow = true;
+			}
+		},
+
+		resizeMap: function() {
+			var drawer = this.$.drawer;
+			if (drawer.narrow && !drawer.forceNarrow) {
+				this.drawerWidth = "90%";
+			} else {
+				this.drawerWidth = "400px";
+			}
+		},
+
+		moveToPost: function(event, detail, sender) {
+			this.$.map.updateCenter(detail.post.location);
+		},
+
+		showCreate: function() {
+			this.message = "hello world!";
+			this.$.create.open();
+		},
+
+		toggleDialog: function() {
+			this.$.create_post.toggle();
+		},
+
+		toggleUser: function() {
+			this.$.user_dialog.toggle();
+		},
+
+		displayBounds: function() {
+			console.log(this.$.map.map.getBounds());
+		},
+
+		login: function(event, detail, sender) {
+			console.log("login");
+			this.$.api.login(event, detail, sender);
+		},
+
+		logout: function(event, detail, sender) {
+			console.log("logout");
+			this.$.api.logout(event, detail, sender);
+		},
+
+		openCreateUserDialog: function(event, detail, sender) {
+			console.log("opening dialog");
+			this.$.create_user_dialog.open();
+		},
+
+		openLoginDialog: function() {
+			this.$.login_dialog.open();
+		},
+	});
+</script>

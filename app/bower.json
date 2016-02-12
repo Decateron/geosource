@@ -1,0 +1,33 @@
+{
+  "name": "geosource",
+  "version": "0.0.0",
+  "homepage": "https://github.com/joshheinrichs/geosource",
+  "authors": [
+    "Josh Heinrichs <joshiheinrichs@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/Polymer#~1.2.3",
+    "iron-elements": "PolymerElements/iron-elements#~1.0.7",
+    "paper-elements": "PolymerElements/paper-elements#~1.0.7",
+    "google-signin": "GoogleWebComponents/google-signin#~1.2.0",
+    "google-map": "GoogleWebComponents/google-map#~1.1.7",
+    "moment": "~2.11.1",
+    "moment-timezone": "~0.5.0",
+    "platinum-elements": "PolymerElements/platinum-elements#~1.2.0",
+    "iron-scroll-threshold": "joshheinrichs/iron-scroll-threshold#~1.0.2",
+    "social-media-icons": "hejty/social-media-icons#~1.0.3",
+    "bower": "*",
+    "install": "~1.0.4",
+    "paper-fab-transitions": "~0.1.0"
+  }
+}

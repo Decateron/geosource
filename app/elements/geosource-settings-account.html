@@ -1,0 +1,22 @@
+<link rel="import" href="geosource-imports.html">
+
+<dom-module id="geosource-settings-account">
+	<style>
+		google-signin {
+			margin: 0;
+			width: 100%;
+		}
+	</style>
+	<template>
+		<geosource-settings-card title="Account" icon="icons:account-circle">
+			<google-signin theme="light" width="wide"></google-signin>
+			<google-signin-aware></google-signin-aware>
+		</geosource-settings-card>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "geosource-settings-account",
+	});
+</script>

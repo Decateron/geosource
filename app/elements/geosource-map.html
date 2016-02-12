@@ -1,0 +1,55 @@
+<link rel="import" href="geosource-imports.html">
+
+<dom-module id="geosource-map">
+	<style>
+	</style>
+	<template>
+		<google-map disable-default-ui id="map">
+			<template is="dom-repeat" items="{{posts}}" as="post">
+				<google-map-marker 
+					latitude="[[post.location.latitude]]" 
+					longitude="[[post.location.longitude]]"
+					icon="[[post.thumbnail]]"
+					click-events mouse-events
+					on-google-map-marker-mouseover="markerMouseover"
+					on-google-map-marker-mouseout="markerMouseout"
+					on-google-map-marker-click="markerClick">
+					<geosource-metapost no-buttons post="[[post]]"></geosource-metapost>
+				</google-map-marker>
+			</template>
+		</google-map>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "geosource-map",
+
+		properties: {
+			posts: {
+				type: Array,
+			},
+		},
+
+		markerMouseover: function(event) {
+			event.target.info.open(event.target.map, event.target.marker);
+		},
+
+		markerMouseout: function(event, detail, sender) {
+			event.target.info.close(event.target.map, event.target.marker);
+		},
+
+		markerClick: function(event, detail, sender) {
+			console.log("click")
+			console.log(event.model);
+		},
+
+		updateCenter: function(location) {
+			console.log("moving map to", location);
+			this.$.map.latitude = location.latitude;
+			this.$.map.longitude = location.longitude;
+			this.$.map._updateCenter();
+			console.log(this.$.map.map.getBounds());
+		}
+	});
+</script>

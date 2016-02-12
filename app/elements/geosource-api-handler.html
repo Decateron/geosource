@@ -1,0 +1,78 @@
+<link rel="import" href="geosource-imports.html">
+
+<dom-module id="geosource-api-handler">
+	<style></style>
+	<template>
+		<iron-ajax id="postLogin"
+			url="/api/login"
+			method="POST"
+			content-type="application/json"
+			handle-as="json"
+			on-response="loginResponse"
+			on-error="loginError">
+		</iron-ajax>
+		<iron-ajax id="postLogout"
+			url="/api/logout"
+			method="POST"
+			content-type="application/json"
+			handle-as="json"
+			on-response="logoutResponse"
+			on-error="logoutError">
+		</iron-ajax>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({
+		is: "geosource-api-handler",
+
+		properties: {
+			state: {
+				type: String,
+			},
+		},
+
+		login: function(event, detail, sender) {
+			console.log("signed in");
+			console.log(detail);
+			this.$.postLogin.params = {
+				state: this.state
+			};
+			if (detail.code) {
+				this.code = detail.code;
+				this.$.postLogin.body = {
+					code: this.code
+				};
+			}
+			this.$.postLogin.generateRequest();
+		},
+
+		loginResponse: function(event, detail, sender) {
+			console.log(detail.response);
+			if (!detail.response.username) {
+				console.log("no username");
+				this.fire('create-user');
+			} else {
+				this.username = detail.response.username;
+			}
+		},
+
+		loginError: function(event, detail, sender) {
+			console.log("login error");
+		},
+
+		logout: function(event, detail, sender) {
+			console.log("signed out");
+			this.$.postLogout.generateRequest();
+		},
+
+		logoutResponse: function(event, detail, sender) {
+			window.location.reload();
+		},
+
+		logoutError: function(event, detail, sender) {
+			console.log("logout error");
+		},
+
+	});
+</script>
