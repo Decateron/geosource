@@ -3,16 +3,13 @@ package api
 import (
 	"../config"
 	"errors"
-	"fmt"
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/gplus"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 	"html/template"
 	"log"
 	"net/http"
-	"os"
 )
 
 var apiConfig *config.Config
@@ -22,15 +19,6 @@ var indexTemplate = template.Must(template.ParseFiles("../app/index.html"))
 
 func Init(config *config.Config) {
 	apiConfig = config
-	oauthConfig = &oauth2.Config{
-		ClientID:     config.Google.ClientId,
-		ClientSecret: config.Google.ClientSecret,
-		// Scope determines which API calls you are authorized to make
-		Scopes:   []string{"https://www.googleapis.com/auth/plus.login", "https://www.googleapis.com/auth/userinfo.email"},
-		Endpoint: google.Endpoint,
-		// Use "postmessage" for the code-flow for server side apps
-		RedirectURL: "postmessage",
-	}
 	goth.UseProviders(
 		gplus.New(config.Google.ClientId, config.Google.ClientSecret, config.Google.CallbackUrl),
 		// facebook.New(config.Facebook.ClientId, config.Facebook.ClientSecret, config.Facebook.Callback),
@@ -42,13 +30,10 @@ func MakeHandler() (http.Handler, error) {
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
 	router, err := rest.MakeRouter(
-		// Login
-		rest.Post("/login", Login),
-		rest.Post("/logout", Logout),
-
 		// Auth
 		rest.Get("/auth/#provider", BeginAuth),
 		rest.Get("/auth/#provider/callback", CallbackAuth),
+		rest.Post("/logout", Logout),
 
 		// Channels
 		rest.Get("/channels", GetChannels),
@@ -106,17 +91,34 @@ func MakeHandler() (http.Handler, error) {
 }
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, SESSION_NAME)
-	state := randomString(64)
-	fmt.Println(state)
-	session.Values["state"] = state
-	session.Save(r, w)
+	// session, _ := store.Get(r, gothic.SessionName)
+	// state := randomString(64)
+	// fmt.Println(state)
+	// session.Values["state"] = state
+	// session.Save(r, w)
+	session, err := gothic.Store.Get(r, gothic.SessionName)
+	// if err != nil {
+	// 	log.Println(err)
+	// 	// send error rest.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
+	id, _ := session.Values["userid"].(string)
+	// if !ok {
+	// 	// send error
+	// 	return
+	// }
+	log.Println(session.Values["userid"])
+	// session.Values["userid"] = user.Id
+	// err = session.Save(req.Request, w.(http.ResponseWriter))
+	// if err != nil {
+	// 	rest.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
 
-	var data = struct {
-		ClientId, State string
-	}{apiConfig.Google.ClientId, state}
+	var data = struct{ Id string }{id}
+	//{apiConfig.Google.ClientId, state}
 
-	err := indexTemplate.Execute(w, data)
+	err = indexTemplate.Execute(w, data)
 	if err != nil {
 		log.Println("error rendering template:", err)
 		return

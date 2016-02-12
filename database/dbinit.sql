@@ -1,87 +1,94 @@
-CREATE DOMAIN username AS VARCHAR(20);
+CREATE TYPE visibility AS ENUM ('public', 'private');
+CREATE DOMAIN name AS TEXT;
+CREATE DOMAIN avatar AS TEXT;
 CREATE DOMAIN email AS VARCHAR(254);
 CREATE DOMAIN channelname AS VARCHAR(20);
-CREATE TYPE visibility AS ENUM ('public', 'private');
 CREATE DOMAIN title AS VARCHAR(140);
 CREATE DOMAIN comment AS VARCHAR(500);
+CREATE DOMAIN base64uuid AS VARCHAR(22);
+CREATE DOMAIN userid AS base64uuid;
+CREATE DOMAIN postid AS base64uuid;
+CREATE DOMAIN commentid AS base64uuid;
 
 CREATE TABLE users (
-	u_username username PRIMARY KEY,
-	u_email email NOT NULL UNIQUE
+	u_userid userid PRIMARY KEY,
+	u_email email NOT NULL,
+	u_name name NOT NULL,
+	u_avatar avatar
 );
-CREATE UNIQUE INDEX lower_username_idx ON users (lower(u_username));
+CREATE UNIQUE INDEX lower_email_idx ON users (lower(u_email));
 
 CREATE TABLE admins (
-	a_username username PRIMARY KEY,
-	FOREIGN KEY (a_username) REFERENCES users (u_username)
+	a_userid userid PRIMARY KEY,
+	FOREIGN KEY (a_userid) REFERENCES users (u_userid)
 );
 
 CREATE TABLE channels (
 	ch_channelname channelname PRIMARY KEY,
-	ch_username_creator username NOT NULL,
+	ch_userid_creator userid NOT NULL,
 	ch_visibility visibility NOT NULL,
-	ch_form jsonb NOT NULL,
-	FOREIGN KEY (ch_username_creator) REFERENCES channels (ch_channelname)
+	ch_fields jsonb NOT NULL,
+	FOREIGN KEY (ch_userid_creator) REFERENCES users (u_userid)
 );
 
 CREATE TABLE posts (
-	p_pid SERIAL PRIMARY KEY,
-	p_username_creator username NOT NULL,
+	p_postid postid PRIMARY KEY,
+	p_userid_creator userid NOT NULL,
 	p_channelname channelname NOT NULL,
 	p_title title NOT NULL,
 	p_time TIMESTAMP NOT NULL,
 	p_location POINT NOT NULL,
 	p_fields jsonb NOT NULL,
-	FOREIGN KEY (p_username_creator) REFERENCES users (u_username),
+	FOREIGN KEY (p_userid_creator) REFERENCES users (u_userid),
 	FOREIGN KEY (p_channelname) REFERENCES channels (ch_channelname)
 );
 CREATE INDEX post_gix ON posts USING GIST (p_location); 
 
 CREATE TABLE comments (
-	cmt_cid SERIAL PRIMARY KEY,
-	cmt_pid INTEGER NOT NULL,
-	cmt_cid_parent INTEGER,
+	cmt_commentid commentid PRIMARY KEY,
+	cmt_postid postid NOT NULL,
+	cmt_commentid_parent commentid,
 	cmt_comment comment NOT NULL,
-	FOREIGN KEY (cmt_pid) REFERENCES posts (p_pid),
-	FOREIGN KEY (cmt_cid_parent) REFERENCES comments (cmt_cid)
+	FOREIGN KEY (cmt_postid) REFERENCES posts (p_postid),
+	FOREIGN KEY (cmt_commentid_parent) REFERENCES comments (cmt_commentid)
 );
 
 CREATE TABLE user_favorites (
-	uf_username username NOT NULL,
-	uf_pid INTEGER NOT NULL,
-	FOREIGN KEY (uf_username) REFERENCES users (u_username),
-	FOREIGN KEY (uf_pid) REFERENCES posts (p_pid),
-	PRIMARY KEY (uf_username, uf_pid)
+	uf_userid userid NOT NULL,
+	uf_postid postid NOT NULL,
+	FOREIGN KEY (uf_userid) REFERENCES users (u_userid),
+	FOREIGN KEY (uf_postid) REFERENCES posts (p_postid),
+	PRIMARY KEY (uf_userid, uf_postid)
 );
 
 CREATE TABLE user_subscriptions (
-	us_username username NOT NULL,
+	us_userid userid NOT NULL,
 	us_channelname channelname NOT NULL,
-	FOREIGN KEY (us_username) REFERENCES users (u_username),
+	FOREIGN KEY (us_userid) REFERENCES users (u_userid),
 	FOREIGN KEY (us_channelname) REFERENCES channels (ch_channelname),
-	PRIMARY KEY (us_username, us_channelname)
+	PRIMARY KEY (us_userid, us_channelname)
 );
 
 CREATE TABLE channel_moderators (
-	chm_username username NOT NULL,
+	chm_userid userid NOT NULL,
 	chm_channelname channelname NOT NULL,
-	FOREIGN KEY (chm_username) REFERENCES users (u_username),
+	FOREIGN KEY (chm_userid) REFERENCES users (u_userid),
 	FOREIGN KEY (chm_channelname) REFERENCES channels (ch_channelname),
-	PRIMARY KEY (chm_username, chm_channelname)
+	PRIMARY KEY (chm_userid, chm_channelname)
 );
 
 CREATE TABLE channel_viewers (
-	chv_username username NOT NULL,
+	chv_userid userid NOT NULL,
 	chv_channelname channelname NOT NULL,
-	FOREIGN KEY (chv_username) REFERENCES users (u_username),
+	FOREIGN KEY (chv_userid) REFERENCES users (u_userid),
 	FOREIGN KEY (chv_channelname) REFERENCES channels (ch_channelname),
-	PRIMARY KEY (chv_username, chv_channelname)
+	PRIMARY KEY (chv_userid, chv_channelname)
 );
 
 CREATE TABLE channel_bans (
-	chb_username username NOT NULL,
+	chb_userid userid NOT NULL,
 	chb_channelname channelname NOT NULL,
-	FOREIGN KEY (chb_username) REFERENCES users (u_username),
+	FOREIGN KEY (chb_userid) REFERENCES users (u_userid),
 	FOREIGN KEY (chb_channelname) REFERENCES channels (ch_channelname),
-	PRIMARY KEY (chb_username, chb_channelname)
+	PRIMARY KEY (chb_userid, chb_channelname)
 );
