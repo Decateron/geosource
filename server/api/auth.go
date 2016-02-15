@@ -1,12 +1,12 @@
 package api
 
 import (
-	"code.google.com/p/go-uuid/uuid"
 	"encoding/base64"
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/joshheinrichs/geosource/server/transaction"
 	"github.com/joshheinrichs/geosource/server/types"
 	"github.com/markbates/goth/gothic"
+	"github.com/pborman/uuid"
 	"log"
 	"net/http"
 )
