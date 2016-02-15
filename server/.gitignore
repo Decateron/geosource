@@ -8,6 +8,9 @@ config_test.gcfg
 cert.pem
 key.pem
 
+# Code Coverage Report
+coverage.txt
+
 ### Go ###
 # Compiled Object files, Static and Dynamic libs (Shared Objects)
 *.o
