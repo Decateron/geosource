@@ -47,3 +47,12 @@ func TestCheckboxesValidate(t *testing.T) {
 	err = form.Validate(nil)
 	assert.Error(t, err)
 }
+
+func TestCheckboxesIsComplete(t *testing.T) {
+	value := &CheckboxesValue{}
+	assert.True(t, value.IsComplete())
+	value = &CheckboxesValue{true, false}
+	assert.True(t, value.IsComplete())
+	value = nil
+	assert.False(t, value.IsComplete())
+}

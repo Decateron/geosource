@@ -33,5 +33,5 @@ func (checkboxesForm *CheckboxesForm) UnmarshalValue(blob []byte) (Value, error)
 type CheckboxesValue []bool
 
 func (checkboxesValue *CheckboxesValue) IsComplete() bool {
-	return true
+	return checkboxesValue != nil
 }

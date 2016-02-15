@@ -31,5 +31,5 @@ func (textForm *TextForm) UnmarshalValue(blob []byte) (Value, error) {
 type TextValue string
 
 func (textValue *TextValue) IsComplete() bool {
-	return len(strings.TrimSpace(string(*textValue))) > 0
+	return textValue != nil && len(strings.TrimSpace(string(*textValue))) > 0
 }
