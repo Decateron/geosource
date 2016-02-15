@@ -3,7 +3,12 @@ dist: trusty
 language: go
 go:
   - 1.5
+before_install:
+  - pip install --user codecov
 install:
-  - "cd server && go get -d -t ./..."
+  - cd server 
+  - go get -d -t ./...
 script: 
-  - "go test ./..."
+  - go test ./...
+after_success:
+  - codecov
