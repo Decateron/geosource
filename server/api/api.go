@@ -2,14 +2,15 @@ package api
 
 import (
 	"errors"
+	"html/template"
+	"log"
+	"net/http"
+
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/joshheinrichs/geosource/server/config"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/gplus"
-	"html/template"
-	"log"
-	"net/http"
 )
 
 var apiConfig *config.Config

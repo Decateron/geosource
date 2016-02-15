@@ -2,13 +2,14 @@ package api
 
 import (
 	"encoding/base64"
+	"log"
+	"net/http"
+
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/joshheinrichs/geosource/server/transactions"
 	"github.com/joshheinrichs/geosource/server/types"
 	"github.com/markbates/goth/gothic"
 	"github.com/pborman/uuid"
-	"log"
-	"net/http"
 )
 
 func BeginAuth(w rest.ResponseWriter, req *rest.Request) {

@@ -2,11 +2,12 @@ package api
 
 import (
 	"encoding/json"
+	"log"
+	"net/http"
+
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/joshheinrichs/geosource/server/types"
 	"github.com/markbates/goth/gothic"
-	"log"
-	"net/http"
 )
 
 func GetChannels(w rest.ResponseWriter, req *rest.Request) {}

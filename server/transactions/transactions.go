@@ -2,6 +2,7 @@ package transactions
 
 import (
 	"fmt"
+
 	"github.com/jinzhu/gorm"
 	"github.com/joshheinrichs/geosource/server/config"
 	"github.com/joshheinrichs/geosource/server/types"

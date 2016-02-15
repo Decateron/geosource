@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"errors"
+
 	"github.com/joshheinrichs/geosource/server/types/fields"
 )
 

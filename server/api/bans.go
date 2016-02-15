@@ -1,9 +1,10 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/joshheinrichs/geosource/server/transactions"
-	"net/http"
 )
 
 func GetBans(w rest.ResponseWriter, req *rest.Request) {

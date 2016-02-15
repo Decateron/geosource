@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/joshheinrichs/geosource/server/types/fields"
 	"time"
+
+	"github.com/joshheinrichs/geosource/server/types/fields"
 )
 
 type Post struct {
