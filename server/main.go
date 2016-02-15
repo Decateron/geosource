@@ -21,7 +21,7 @@ func main() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	mainConfig = config.New()
-	err := mainConfig.ReadFile("../config.gcfg")
+	err := mainConfig.ReadFile("config.gcfg")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,7 +48,7 @@ func main() {
 		}
 	}()
 	log.Printf("Serving HTTPS on %s\n", mainConfig.Website.HttpsPort)
-	err = http.ListenAndServeTLS(mainConfig.Website.HttpsPort, "../cert.pem", "../key.pem", nil)
+	err = http.ListenAndServeTLS(mainConfig.Website.HttpsPort, "cert.pem", "key.pem", nil)
 	if err != nil {
 		log.Fatal(err)
 	}
