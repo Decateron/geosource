@@ -1,7 +1,7 @@
 package types
 
 import (
-	"./fields"
+	"github.com/joshheinrichs/geosource/server/types/fields"
 	"time"
 )
 

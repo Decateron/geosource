@@ -1,9 +1,9 @@
 package types
 
 import (
-	"./fields"
 	"encoding/json"
 	"errors"
+	"github.com/joshheinrichs/geosource/server/types/fields"
 )
 
 type Channel struct {

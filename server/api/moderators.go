@@ -1,8 +1,8 @@
 package api
 
 import (
-	"../transaction"
 	"github.com/ant0ine/go-json-rest/rest"
+	"github.com/joshheinrichs/geosource/server/transaction"
 	"net/http"
 )
 

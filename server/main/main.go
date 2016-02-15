@@ -1,11 +1,11 @@
 package main
 
 import (
-	"../api"
-	"../config"
-	"../transaction"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/joshheinrichs/geosource/server/api"
+	"github.com/joshheinrichs/geosource/server/config"
+	"github.com/joshheinrichs/geosource/server/transaction"
 	"log"
 	"net/http"
 )

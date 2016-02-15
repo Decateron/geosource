@@ -1,10 +1,10 @@
 package transaction
 
 import (
-	"../config"
-	"../types"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	"github.com/joshheinrichs/geosource/server/config"
+	"github.com/joshheinrichs/geosource/server/types"
 	_ "github.com/lib/pq"
 )
 
