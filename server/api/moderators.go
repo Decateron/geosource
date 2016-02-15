@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/ant0ine/go-json-rest/rest"
-	"github.com/joshheinrichs/geosource/server/transaction"
+	"github.com/joshheinrichs/geosource/server/transactions"
 	"net/http"
 )
 
@@ -10,7 +10,7 @@ func GetModerators(w rest.ResponseWriter, req *rest.Request) {
 	// TODO: get requester
 	requester := ""
 	channelname := req.PathParam("channelname")
-	moderators, err := transaction.GetModerators(requester, channelname)
+	moderators, err := transactions.GetModerators(requester, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -31,7 +31,7 @@ func AddModerator(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = transaction.AddModerator(requester, body.Username, channelname)
+	err = transactions.AddModerator(requester, body.Username, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -44,7 +44,7 @@ func RemoveModerator(w rest.ResponseWriter, req *rest.Request) {
 	requester := ""
 	username := req.PathParam("username")
 	channelname := req.PathParam("channelname")
-	err := transaction.RemoveModerator(requester, username, channelname)
+	err := transactions.RemoveModerator(requester, username, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return

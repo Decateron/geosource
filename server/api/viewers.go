@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/ant0ine/go-json-rest/rest"
-	"github.com/joshheinrichs/geosource/server/transaction"
+	"github.com/joshheinrichs/geosource/server/transactions"
 	"net/http"
 )
 
@@ -10,7 +10,7 @@ func GetViewers(w rest.ResponseWriter, req *rest.Request) {
 	// TODO: get requester
 	requester := ""
 	channelname := req.PathParam("channelname")
-	moderators, err := transaction.GetViewers(requester, channelname)
+	moderators, err := transactions.GetViewers(requester, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -31,7 +31,7 @@ func AddViewer(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = transaction.AddViewer(requester, body.Username, channelname)
+	err = transactions.AddViewer(requester, body.Username, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -44,7 +44,7 @@ func RemoveViewer(w rest.ResponseWriter, req *rest.Request) {
 	requester := ""
 	username := req.PathParam("username")
 	channelname := req.PathParam("channelname")
-	err := transaction.RemoveViewer(requester, username, channelname)
+	err := transactions.RemoveViewer(requester, username, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return

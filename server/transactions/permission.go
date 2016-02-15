@@ -1,4 +1,4 @@
-package transaction
+package transactions
 
 func CanModifyModerators(requester, channelname string) (bool, error) {
 	return false, nil

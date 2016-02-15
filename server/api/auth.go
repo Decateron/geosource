@@ -3,7 +3,7 @@ package api
 import (
 	"encoding/base64"
 	"github.com/ant0ine/go-json-rest/rest"
-	"github.com/joshheinrichs/geosource/server/transaction"
+	"github.com/joshheinrichs/geosource/server/transactions"
 	"github.com/joshheinrichs/geosource/server/types"
 	"github.com/markbates/goth/gothic"
 	"github.com/pborman/uuid"
@@ -23,7 +23,7 @@ func CallbackAuth(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user, err := transaction.GetUserByEmail(gothUser.Email)
+	user, err := transactions.GetUserByEmail(gothUser.Email)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -35,7 +35,7 @@ func CallbackAuth(w rest.ResponseWriter, req *rest.Request) {
 			Email:  gothUser.Email,
 			Id:     base64.RawURLEncoding.EncodeToString(uuid.NewRandom()),
 		}
-		err = transaction.AddUser(user)
+		err = transactions.AddUser(user)
 		if err != nil {
 			rest.Error(w, err.Error(), http.StatusInternalServerError)
 			return

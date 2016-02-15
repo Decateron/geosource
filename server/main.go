@@ -5,7 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joshheinrichs/geosource/server/api"
 	"github.com/joshheinrichs/geosource/server/config"
-	"github.com/joshheinrichs/geosource/server/transaction"
+	"github.com/joshheinrichs/geosource/server/transactions"
 	"log"
 	"net/http"
 )
@@ -26,7 +26,7 @@ func main() {
 		log.Fatal(err)
 	}
 	api.Init(mainConfig)
-	err = transaction.Init(mainConfig)
+	err = transactions.Init(mainConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
