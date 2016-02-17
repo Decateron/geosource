@@ -19,7 +19,11 @@ type Field struct {
 }
 
 type Form interface {
+	// Returns an error if the given value does not match the form, nil
+	// otherwise.
 	Validate(Value) error
+	// Attempts to unmarshal the given JSON into this form's corresponding
+	// value type. Returns an error if unsuccessful.
 	UnmarshalValue([]byte) (Value, error)
 }
 type Value interface {
@@ -30,6 +34,8 @@ func (field *Field) IsEmpty() bool {
 	return field.Value == nil
 }
 
+// Returns an error if the given field is invalid, such as in the case when
+// the form and value types are mismatched, nil otherwise.
 func (field *Field) Validate() error {
 	if field.Value == nil {
 		return nil
@@ -41,6 +47,8 @@ func (field *Field) Validate() error {
 	return nil
 }
 
+// Attempts to unmarshal the given JSON into a field. Returns an error if
+// unsuccessful.
 func UnmarshalField(blob []byte) (*Field, error) {
 	unmarshalField := struct {
 		Field
@@ -64,6 +72,9 @@ func UnmarshalField(blob []byte) (*Field, error) {
 	return &unmarshalField.Field, nil
 }
 
+// Attempts to unmarshal the given JSON into a form of the type specified by the
+// given string. Returns an error if an invalid type is given, or the JSON
+// cannot be unmarshaled into the corresponding form type.
 func UnmarshalForm(fieldType string, blob []byte) (Form, error) {
 	switch fieldType {
 	case TYPE_CHECKBOXES:
