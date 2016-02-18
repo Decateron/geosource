@@ -35,17 +35,19 @@ func TestTextValidate(t *testing.T) {
 
 func TestTextValidateValue(t *testing.T) {
 	form := TextForm{}
+	var value TextValue
+	ptr := &value
 
-	var value TextValue = "hello"
-	err := form.ValidateValue(&value)
-	assert.NoError(t, err)
+	value = "hello"
+	assert.NoError(t, form.ValidateValue(ptr))
 
 	value = ""
-	err = form.ValidateValue(&value)
-	assert.NoError(t, err)
+	assert.NoError(t, form.ValidateValue(ptr))
 
-	err = form.ValidateValue(nil)
-	assert.Error(t, err)
+	ptr = nil
+	assert.NoError(t, form.ValidateValue(ptr))
+
+	assert.Error(t, form.ValidateValue(nil))
 }
 
 func TestTextIsComplete(t *testing.T) {

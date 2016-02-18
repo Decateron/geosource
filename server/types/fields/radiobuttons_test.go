@@ -48,17 +48,22 @@ func TestRadiobuttonsValidate(t *testing.T) {
 
 func TestRadiobuttonsValidateValue(t *testing.T) {
 	form := RadiobuttonsForm{"foo", "bar"}
-	var value RadiobuttonsValue = "foo"
-	assert.NoError(t, form.ValidateValue(&value))
+	var value RadiobuttonsValue
+	ptr := &value
 
-	var ptr *RadiobuttonsValue = nil
+	value = "foo"
 	assert.NoError(t, form.ValidateValue(ptr))
 
 	value = "bar"
-	assert.NoError(t, form.ValidateValue(&value))
+	assert.NoError(t, form.ValidateValue(ptr))
 
 	value = "baz"
-	assert.Error(t, form.ValidateValue(&value))
+	assert.Error(t, form.ValidateValue(ptr))
+
+	ptr = nil
+	assert.NoError(t, form.ValidateValue(ptr))
+
+	assert.Error(t, form.ValidateValue(nil))
 }
 
 // func TestRadiobuttonsIsComplete(t *testing.T) {

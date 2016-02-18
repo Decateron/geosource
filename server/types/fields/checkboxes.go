@@ -22,6 +22,9 @@ func (checkboxesForm *CheckboxesForm) ValidateValue(value Value) error {
 	if !ok {
 		return errors.New("Type mismatch.")
 	}
+	if checkboxesValue == nil {
+		return nil
+	}
 	if len(*checkboxesForm) != len(*checkboxesValue) {
 		return errors.New("Length mismatch.")
 	}
