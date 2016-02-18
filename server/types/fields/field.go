@@ -9,6 +9,7 @@ const (
 	TYPE_TEXT         = "text"
 	TYPE_CHECKBOXES   = "checkboxes"
 	TYPE_RADIOBUTTONS = "radiobuttons"
+	TYPE_IMAGES       = "images"
 )
 
 type Field struct {
@@ -106,6 +107,8 @@ func UnmarshalForm(fieldType string, blob []byte) (Form, error) {
 			return nil, err
 		}
 		return &radiobuttonsForm, nil
+	case TYPE_IMAGES:
+		return &ImagesForm{}, nil
 	default:
 		return nil, errors.New("Invalid type.")
 	}
