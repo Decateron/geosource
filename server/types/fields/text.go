@@ -8,7 +8,11 @@ import (
 
 type TextForm struct{}
 
-func (textForm *TextForm) Validate(value Value) error {
+func (textForm *TextForm) Validate() error {
+	return nil
+}
+
+func (textForm *TextForm) ValidateValue(value Value) error {
 	_, ok := value.(*TextValue)
 	if !ok {
 		return errors.New("Type mismatch.")

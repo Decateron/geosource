@@ -7,7 +7,17 @@ import (
 
 type CheckboxesForm []string
 
-func (checkboxesForm *CheckboxesForm) Validate(value Value) error {
+func (checkboxesForm *CheckboxesForm) Validate() error {
+	if checkboxesForm == nil {
+		return errors.New("Missing form.")
+	}
+	if len(*checkboxesForm) <= 0 {
+		return errors.New("At least one checkbox is required.")
+	}
+	return nil
+}
+
+func (checkboxesForm *CheckboxesForm) ValidateValue(value Value) error {
 	checkboxesValue, ok := value.(*CheckboxesValue)
 	if !ok {
 		return errors.New("Type mismatch.")
@@ -19,15 +29,15 @@ func (checkboxesForm *CheckboxesForm) Validate(value Value) error {
 }
 
 func (checkboxesForm *CheckboxesForm) UnmarshalValue(blob []byte) (Value, error) {
-	if len(blob) > 0 {
-		var value CheckboxesValue
-		err := json.Unmarshal(blob, &value)
-		if err != nil {
-			return nil, err
-		}
-		return &value, nil
+	if len(blob) <= 0 {
+		return nil, nil
 	}
-	return nil, nil
+	var value CheckboxesValue
+	err := json.Unmarshal(blob, &value)
+	if err != nil {
+		return nil, err
+	}
+	return &value, nil
 }
 
 type CheckboxesValue []bool

@@ -24,27 +24,41 @@ func TestCheckboxesUnmarshalValue(t *testing.T) {
 	_, err = form.UnmarshalValue([]byte(data))
 	assert.Error(t, err)
 
-	data = `{"array": [true, false]}`
+	data = `{"value": [true, false]}`
 	_, err = form.UnmarshalValue([]byte(data))
 	assert.Error(t, err)
 }
 
 func TestCheckboxesValidate(t *testing.T) {
+	form := &CheckboxesForm{}
+	assert.Error(t, form.Validate())
+
+	form = nil
+	assert.Error(t, form.Validate())
+
+	form = &CheckboxesForm{"foo"}
+	assert.NoError(t, form.Validate())
+
+	form = &CheckboxesForm{"foo", "foo"}
+	assert.NoError(t, form.Validate())
+}
+
+func TestCheckboxesValidateValue(t *testing.T) {
 	form := CheckboxesForm{"foo", "bar"}
 
 	value := &CheckboxesValue{true, false}
-	err := form.Validate(value)
+	err := form.ValidateValue(value)
 	assert.NoError(t, err)
 
 	value = &CheckboxesValue{true, false, false}
-	err = form.Validate(value)
+	err = form.ValidateValue(value)
 	assert.Error(t, err)
 
 	value = &CheckboxesValue{}
-	err = form.Validate(value)
+	err = form.ValidateValue(value)
 	assert.Error(t, err)
 
-	err = form.Validate(nil)
+	err = form.ValidateValue(nil)
 	assert.Error(t, err)
 }
 

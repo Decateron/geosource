@@ -6,8 +6,9 @@ import (
 )
 
 const (
-	TYPE_TEXT       = "text"
-	TYPE_CHECKBOXES = "checkboxes"
+	TYPE_TEXT         = "text"
+	TYPE_CHECKBOXES   = "checkboxes"
+	TYPE_RADIOBUTTONS = "radiobuttons"
 )
 
 type Field struct {
@@ -19,9 +20,11 @@ type Field struct {
 }
 
 type Form interface {
+	// Returns an error if the form is invalid, nil otherwise.
+	Validate() error
 	// Returns an error if the given value does not match the form, nil
 	// otherwise.
-	Validate(Value) error
+	ValidateValue(Value) error
 	// Attempts to unmarshal the given JSON into this form's corresponding
 	// value type. Returns an error if unsuccessful.
 	UnmarshalValue([]byte) (Value, error)
@@ -40,7 +43,11 @@ func (field *Field) Validate() error {
 	if field.Value == nil {
 		return nil
 	}
-	err := field.Form.Validate(field.Value)
+	err := field.Form.Validate()
+	if err != nil {
+		return err
+	}
+	err = field.Form.ValidateValue(field.Value)
 	if err != nil {
 		return err
 	}
@@ -77,19 +84,28 @@ func UnmarshalField(blob []byte) (*Field, error) {
 // cannot be unmarshaled into the corresponding form type.
 func UnmarshalForm(fieldType string, blob []byte) (Form, error) {
 	switch fieldType {
-	case TYPE_CHECKBOXES:
-		if len(blob) > 0 {
-			var checkboxesForm CheckboxesForm
-			err := json.Unmarshal(blob, &checkboxesForm)
-			if err != nil {
-				return nil, err
-			}
-			return &checkboxesForm, nil
-		} else {
-			return nil, errors.New("No form provided for checkboxes field.")
-		}
 	case TYPE_TEXT:
 		return &TextForm{}, nil
+	case TYPE_CHECKBOXES:
+		if len(blob) <= 0 {
+			return nil, errors.New("No form provided for checkboxes field.")
+		}
+		var checkboxesForm CheckboxesForm
+		err := json.Unmarshal(blob, &checkboxesForm)
+		if err != nil {
+			return nil, err
+		}
+		return &checkboxesForm, nil
+	case TYPE_RADIOBUTTONS:
+		if len(blob) <= 0 {
+			return nil, errors.New("No form provided for radiobuttons field.")
+		}
+		var radiobuttonsForm RadiobuttonsForm
+		err := json.Unmarshal(blob, &radiobuttonsForm)
+		if err != nil {
+			return nil, err
+		}
+		return &radiobuttonsForm, nil
 	default:
 		return nil, errors.New("Invalid type.")
 	}
