@@ -21,15 +21,15 @@ func (textForm *TextForm) ValidateValue(value Value) error {
 }
 
 func (textForm *TextForm) UnmarshalValue(blob []byte) (Value, error) {
-	if len(blob) > 0 {
-		var value TextValue
-		err := json.Unmarshal(blob, &value)
-		if err != nil {
-			return nil, err
-		}
-		return &value, nil
+	if len(blob) <= 0 {
+		return nil, nil
 	}
-	return nil, nil
+	var value TextValue
+	err := json.Unmarshal(blob, &value)
+	if err != nil {
+		return nil, err
+	}
+	return &value, nil
 }
 
 type TextValue string
