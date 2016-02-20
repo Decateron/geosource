@@ -6,13 +6,36 @@ import (
 	"net/http"
 
 	"github.com/ant0ine/go-json-rest/rest"
+	"github.com/joshheinrichs/geosource/server/transactions"
 	"github.com/joshheinrichs/geosource/server/types"
 	"github.com/markbates/goth/gothic"
 )
 
 func GetChannels(w rest.ResponseWriter, req *rest.Request) {}
 
-func GetChannel(w rest.ResponseWriter, req *rest.Request) {}
+func GetChannel(w rest.ResponseWriter, req *rest.Request) {
+	session, err := gothic.Store.Get(req.Request, gothic.SessionName)
+	if err != nil {
+		log.Println("channel creation attempted by user that was not logged in")
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	userId, ok := session.Values["userid"].(string)
+	if !ok {
+		log.Println("invalid user id cookie")
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	channelname := req.PathParam("channelname")
+	channel, err := transactions.GetChannel(userId, channelname)
+	if err != nil {
+		log.Println(err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteJson(channel)
+	w.WriteHeader(http.StatusOK)
+}
 
 // func SetChannel(w rest.ResponseWriter, req *rest.Request) {}
 
@@ -43,6 +66,7 @@ func AddChannel(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 	channel.CreatorId = userId
+
 	data, err := json.Marshal(channel)
 	if err != nil {
 		log.Println(err)
@@ -50,6 +74,13 @@ func AddChannel(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 	log.Println(string(data))
+
+	err = transactions.AddChannel(channel)
+	if err != nil {
+		log.Println(err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }
 

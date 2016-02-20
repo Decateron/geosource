@@ -8,13 +8,13 @@ import (
 )
 
 type Channel struct {
-	Name       string          `json:"name" gorm:"column:ch_channelname"`
-	CreatorId  string          `json:"creatorId" gorm:"column:ch_userid_creator"`
-	Visibility string          `json:"visibility" gorm:"column:ch_visibility"`
-	Fields     []*fields.Field `json:"fields" gorm:"column:ch_fields"`
+	Name       string        `json:"name" gorm:"column:ch_channelname"`
+	CreatorId  string        `json:"creatorId" gorm:"column:ch_userid_creator"`
+	Visibility string        `json:"visibility" gorm:"column:ch_visibility"`
+	Fields     fields.Fields `json:"fields" gorm:"column:ch_fields" sql:"type:JSONB NOT NULL"`
 }
 
-func (channel Channel) TableName() string {
+func (channel *Channel) TableName() string {
 	return "channels"
 }
 

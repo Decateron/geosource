@@ -77,12 +77,15 @@ func RemoveAdmin(requesterUid, uid string) error {
 	return nil
 }
 
-func AddChannel(requesterUid, channel *types.Channel) error {
-	return nil
+func AddChannel(channel *types.Channel) error {
+	return db.Create(channel).Error
 }
 
 func GetChannel(requesterUid, channelname string) (*types.Channel, error) {
-	return nil, nil
+	// TODO: Account for requester permission
+	var channel types.Channel
+	err := db.First(&channel).Error
+	return &channel, err
 }
 
 func RemoveChannel(requesterUid, channelname string) error {

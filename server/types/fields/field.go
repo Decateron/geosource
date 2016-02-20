@@ -1,6 +1,7 @@
 package fields
 
 import (
+	"database/sql/driver"
 	"encoding/json"
 	"errors"
 )
@@ -18,6 +19,34 @@ type Field struct {
 	Required bool   `json:"required"`
 	Form     Form   `json:"form"`
 	Value    Value  `json:"value,omitempty"`
+}
+
+type Fields []*Field
+
+func (fields *Fields) Scan(value interface{}) error {
+	blob, ok := value.([]byte)
+	if !ok {
+		return errors.New("Could not convert interface to byte array.")
+	}
+	var jsonFields []json.RawMessage
+	err := json.Unmarshal(blob, &jsonFields)
+	if err != nil {
+		return err
+	}
+	*fields = make([]*Field, len(jsonFields))
+	for i, jsonField := range jsonFields {
+		field, err := UnmarshalField(jsonField)
+		if err != nil {
+			return err
+		}
+		(*fields)[i] = field
+	}
+	return nil
+}
+
+func (fields Fields) Value() (driver.Value, error) {
+	blob, err := json.Marshal(fields)
+	return string(blob), err
 }
 
 type Form interface {
