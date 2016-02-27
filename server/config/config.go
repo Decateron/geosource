@@ -14,6 +14,10 @@ type Website struct {
 	Url       string
 	HttpPort  string
 	HttpsPort string
+	// Path to the TLS certificate
+	Cert string
+	// Path to the TLS key
+	Key string
 }
 
 type Credentials struct {
@@ -35,6 +39,8 @@ func New() *Config {
 			Url:       "localhost",
 			HttpPort:  ":80",
 			HttpsPort: ":443",
+			Cert:      "cert.pem",
+			Key:       "key.pem",
 		},
 		Google:   Credentials{},
 		Database: Database{},

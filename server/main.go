@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/joshheinrichs/geosource/server/api"
 	"github.com/joshheinrichs/geosource/server/config"
 	"github.com/joshheinrichs/geosource/server/transactions"
-	"log"
-	"net/http"
 )
 
 var mainConfig *config.Config
@@ -48,7 +49,7 @@ func main() {
 		}
 	}()
 	log.Printf("Serving HTTPS on %s\n", mainConfig.Website.HttpsPort)
-	err = http.ListenAndServeTLS(mainConfig.Website.HttpsPort, "cert.pem", "key.pem", nil)
+	err = http.ListenAndServeTLS(mainConfig.Website.HttpsPort, mainConfig.Website.Cert, mainConfig.Website.Key, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
