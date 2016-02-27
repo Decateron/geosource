@@ -11,7 +11,28 @@ import (
 	"github.com/markbates/goth/gothic"
 )
 
-func GetChannels(w rest.ResponseWriter, req *rest.Request) {}
+func GetChannels(w rest.ResponseWriter, req *rest.Request) {
+	session, err := gothic.Store.Get(req.Request, gothic.SessionName)
+	if err != nil {
+		log.Println("channel creation attempted by user that was not logged in")
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	userId, ok := session.Values["userid"].(string)
+	if !ok {
+		log.Println("invalid user id cookie")
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	channels, err := transactions.GetChannels(userId)
+	if err != nil {
+		log.Println(err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteJson(channels)
+	w.WriteHeader(http.StatusOK)
+}
 
 func GetChannel(w rest.ResponseWriter, req *rest.Request) {
 	session, err := gothic.Store.Get(req.Request, gothic.SessionName)
@@ -65,6 +86,7 @@ func AddChannel(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	// TODO: Validate channel
 	channel.CreatorId = userId
 
 	data, err := json.Marshal(channel)

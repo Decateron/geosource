@@ -84,8 +84,21 @@ func AddChannel(channel *types.Channel) error {
 func GetChannel(requesterUid, channelname string) (*types.Channel, error) {
 	// TODO: Account for requester permission
 	var channel types.Channel
-	err := db.First(&channel).Error
+	err := db.Where("ch_channelname = ?", channelname).First(&channel).Error
 	return &channel, err
+}
+
+func GetChannels(requesterUid string) ([]string, error) {
+	var channels []*types.Channel
+	err := db.Order("ch_channelname").Find(&channels).Error
+	if err != nil {
+		return nil, err
+	}
+	channelnames := make([]string, len(channels))
+	for i, channel := range channels {
+		channelnames[i] = channel.Name
+	}
+	return channelnames, nil
 }
 
 func RemoveChannel(requesterUid, channelname string) error {
