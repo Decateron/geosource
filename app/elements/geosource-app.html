@@ -5,6 +5,13 @@
 		:host {
 			font-size: 16px;
 		}
+		.drawer_title {
+			/* layout properties for a local DOM element */
+			@apply(--layout-horizontal --layout-center);
+			margin: auto;
+			text-transform: none;
+			font-size: 1.3em;
+		}
 		.drawer_title, .dialog_title {
 			font-size: 1.3em;
 		}
@@ -40,11 +47,19 @@
 			font-size: 16px;
 			max-width: 300px;
 		}
-		#menu, #add, #user {
+		#menu, #add, #add2, #user {
 			position: absolute;
 			z-index: 1;
 		}
-		#add, #user {
+		#add {
+			bottom: 8px;
+			right: 8px;
+			width: 40px;
+			height: 40px;
+		}
+		#add2 {
+			bottom: 56px;
+			right: 8px;
 			width: 40px;
 			height: 40px;
 		}
@@ -56,16 +71,6 @@
 			border-radius: 20px;
 			margin: 0;
 			padding: 0;
-		}
-		#add {
-			bottom: 8px;
-			right: 8px;
-		}
-		#user {
-			background-image: url("/images/profile-picture.svg");
-			background-size: 40px;
-			top: 8px;
-			right: 8px;
 		}
 		iron-icon {
 			padding: 8px;
@@ -83,15 +88,8 @@
 		geosource-dialog {
 			z-index: 5;
 		}
-		.dialog_spinner {
-			margin: auto;
-		}
-		google-signin {
-			position: absolute;
-			z-index: 1;
-			right: 8px;
-			top: 8px;
-			margin: 0;
+		paper-button {
+			text-transform: none;
 		}
 		paper-button#login {
 			color: #fff;
@@ -108,9 +106,6 @@
 			top: 8px;
 			margin: 0;
 			box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
-		}
-		paper-button {
-			text-transform: none;
 		}
 		paper-button.signin {
 			width: 100%;
@@ -136,8 +131,6 @@
 			background-color: #DC4E41;
 			border-color: #BB4338;
 		}
-		paper-dialog#login_dialog {
-		}
 		social-media-icons {
 			width: 32px;
 			height: 32px;
@@ -149,6 +142,9 @@
 			outline-width: 1px;
 			outline-style: solid;
 		}
+		geosource-channel-creator {
+			margin: 20px;
+		}
 	</style>
 	<template>
 
@@ -156,24 +152,39 @@
 			<platinum-sw-cache></platinum-sw-cache>
 		</platinum-sw-register>
 
-		<geosource-api-handler
-			id="api"
+		<geosource-api-handler id="api"
 			state="{{state}}"
 			on-create-user="openCreateUserDialog">
 		</geosource-api-handler>
 
-		<paper-dialog id="create_user_dialog"
-			with-backdrop
-			no-cancel-on-esc-key
-			no-cancel-on-outside-click>
-			<h2>Create a Username</h2>
-			<paper-dialog-scrollable>
-				<paper-input label="Enter a username..."></paper-input>
-			</paper-dialog-scrollable>
-			<div class="buttons">
-				<paper-button dialog-confirm>Submit</paper-button>
-			</div>
-		</paper-dialog>
+		<geosource-dialog id="create_channel">
+			<paper-header-panel>
+				<paper-toolbar>
+					<div class="dialog_title">Create a Channel</div>
+					<paper-icon-button icon="close" on-tap="toggleChannelDialog"></paper-icon-button>
+				</paper-toolbar>
+				<div main>
+					<geosource-channel-creator
+						on-submit="createChannel">
+					</geosource-channel-creator>
+				</div>
+			</paper-header-panel>
+		</geosource-dialog>
+
+		<geosource-dialog id="create_post">
+			<paper-header-panel>
+				<paper-toolbar>
+					<div class="dialog_title">Create a Post</div>
+					<paper-icon-button icon="close" on-tap="togglePostDialog"></paper-icon-button>
+				</paper-toolbar>
+				<div main>
+					<geosource-post-creator></geosource-post-creator>
+<!-- 					<geosource-channel-creator
+						on-submit="createChannel">
+					</geosource-channel-creator> -->
+				</div>
+			</paper-header-panel>
+		</geosource-dialog>
 
 		<paper-dialog id="login_dialog" with-backdrop>
 			<h2>Login</h2>
@@ -224,29 +235,6 @@
 			</div>
 			<div main>
 
-				<geosource-dialog id="create_post">
-					<paper-header-panel>
-						<paper-toolbar>
-							<div class="dialog_title">Create a Post</div>
-							<paper-icon-button icon="close" on-tap="toggleDialog"></paper-icon-button>
-						</paper-toolbar>
-						<div main>
-						</div>
-					</paper-header-panel>
-				</geosource-dialog>
-
-				<geosource-dialog id="user_dialog">
-					<paper-header-panel>
-						<paper-toolbar>
-							<div class="dialog_title">Decateron</div>
-							<paper-icon-button icon="close" on-tap="toggleUser"></paper-icon-button>
-						</paper-toolbar>
-						<div main>
-							<paper-spinner class="dialog_spinner" active></paper-spinner>
-						</div>
-					</paper-header-panel>
-				</geosource-dialog>
-
 				<paper-button id="menu" on-tap="toggleDrawer" hidden$="{{!drawerShut}}" raised>
 					<div id="geosource_button">
 						<iron-icon icon="menu"></iron-icon>
@@ -256,16 +244,8 @@
 				<paper-button id="login" on-tap="openLoginDialog" hidden$="{{loggedIn(userId)}}">Login</paper-button>
 				<paper-button id="logout" on-tap="logout" hidden$="{{!loggedIn(userId)}}">Logout</paper-button>
 
-<!-- 				<paper-fab-speed-dial id="add" direction="top">
-					<paper-fab icon="add" class="dropdown-trigger"></paper-fab>
-					<div class="dropdown-content">
-						<paper-fab mini icon="star-border"></paper-fab>
-						<paper-fab mini icon="star-half"></paper-fab>
-						<paper-fab mini icon="star"></paper-fab>
-					</div>
-				</paper-fab-speed-dial> -->
-
-				<paper-fab icon="add" id="add" on-tap="toggleDialog"></paper-fab>
+				<paper-fab icon="add" id="add" on-tap="toggleChannelDialog"></paper-fab>
+				<paper-fab icon="add" id="add2" on-tap="togglePostDialog"></paper-fab>
 
 				<geosource-map id="map" posts="[[posts]]"></geosource-map>
 
@@ -363,6 +343,9 @@
 		loggedIn: function(userId) {
 			return userId != "";
 		},
+		logout: function() {
+			this.$.api.logout();
+		},
 
 		updateLocation: function() {
 			if (navigator.geolocation) {
@@ -402,12 +385,10 @@
 			this.$.map.updateCenter(detail.post.location);
 		},
 
-		showCreate: function() {
-			this.message = "hello world!";
-			this.$.create.open();
+		toggleChannelDialog: function() {
+			this.$.create_channel.toggle();
 		},
-
-		toggleDialog: function() {
+		togglePostDialog: function() {
 			this.$.create_post.toggle();
 		},
 
@@ -415,18 +396,8 @@
 			this.$.user_dialog.toggle();
 		},
 
-		displayBounds: function() {
-			console.log(this.$.map.map.getBounds());
-		},
-
-		login: function(event, detail, sender) {
-			console.log("login");
-			this.$.api.login(event, detail, sender);
-		},
-
-		logout: function(event, detail, sender) {
-			console.log("logout");
-			this.$.api.logout(event, detail, sender);
+		createChannel(event, detail, sender) {
+			this.$.api.createChannel(detail.channel);
 		},
 
 		openCreateUserDialog: function(event, detail, sender) {

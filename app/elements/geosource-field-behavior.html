@@ -1,0 +1,58 @@
+<script>
+	GeosourceFieldBehavior = {
+		properties: {
+			TYPE_TEXT: {
+				type: String,
+				value: "text",
+			},
+			TYPE_RADIOBUTTONS: {
+				type: String,
+				value: "radiobuttons",
+			},
+			TYPE_CHECKBOXES: {
+				type: String,
+				value: "checkboxes",
+			},
+			TYPE_IMAGES: {
+				type: String,
+				value: "images",
+			},
+		},
+
+		isText: function(type) {
+			return type == this.TYPE_TEXT;
+		},
+		isCheckboxes: function(type) {
+			return type == this.TYPE_CHECKBOXES;
+		},
+		isRadiobuttons: function(type) {
+			return type == this.TYPE_RADIOBUTTONS;
+		},
+		isImages: function(type) {
+			return type == this.TYPE_IMAGES;
+		},
+
+		getTypeLabel: function(type) {
+			if (this.isText(type)) {
+				return "Text";
+			} else if (this.isCheckboxes(type)) {
+				return "Check Boxes";
+			} else if (this.isRadiobuttons(type)) {
+				return "Radio Buttons";
+			} else if (this.isImages(type)) {
+				return "Images";
+			}
+		},
+		getTypeIcon: function(type) {
+			if (this.isText(type)) {
+				return "editor:format-color-text";
+			} else if (this.isCheckboxes(type)) {
+				return "icons:check-box";
+			} else if (this.isRadiobuttons(type)) {
+				return "icons:radio-button-checked";
+			} else if (this.isImages(type)) {
+				return "image:camera-alt";
+			}
+		},
+	};
+</script>
