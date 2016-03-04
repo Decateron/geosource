@@ -3,7 +3,6 @@ package types
 import (
 	"encoding/json"
 	"errors"
-	"log"
 
 	"github.com/joshheinrichs/geosource/server/types/fields"
 )
@@ -88,27 +87,4 @@ func (channel *Channel) UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
 		}
 	}
 	return &post, nil
-}
-
-func (channel *Channel) UnmarshalValuesToFields(blob []byte) ([]*fields.Field, error) {
-	var jsonValues []json.RawMessage
-	err := json.Unmarshal(blob, &jsonValues)
-	if err != nil {
-		return nil, err
-	}
-	// fields := make([]*fields.Field, len(jsonValues))
-	for i, field := range channel.Fields {
-		value, err := field.Form.UnmarshalValue(jsonValues[i])
-		if err != nil {
-			return nil, err
-		}
-		// fields[i].Value = value
-		channel.Fields[i].Value = value
-		log.Println("test213")
-		err = channel.Fields[i].Validate()
-		if err != nil {
-			return nil, err
-		}
-	}
-	return channel.Fields, nil
 }

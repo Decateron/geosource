@@ -36,29 +36,3 @@ type Submission struct {
 	Location Location       `json:"location"`
 	Values   []fields.Value `json:"values"`
 }
-
-// func UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
-// 	unmarshalSubmission := struct {
-// 		Submission
-// 		JsonValues json.RawMessage `json:"values"`
-// 	}{}
-// 	err := json.Unmarshal(blob, &unmarshalSubmission)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	channel, err := transactions.GetChannel(unmarshalSubmission.Channel)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	fields, err := channel.UnmarshalValues(unmarshalSubmission.JsonValues)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	post := Post{
-// 		Channel:  unmarshalSubmission.Channel,
-// 		Title:    unmarshalSubmission.Title,
-// 		Location: unmarshalSubmission.Location,
-// 		Fields:   fields,
-// 	}
-// 	return &post
-// }

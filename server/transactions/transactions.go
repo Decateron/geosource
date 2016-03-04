@@ -168,11 +168,6 @@ func GetPosts(requesterUid string) ([]*types.PostInfo, error) {
 		return nil, err
 	}
 	return posts, nil
-	// channelnames := make([]string, len(channels))
-	// for i, channel := range channels {
-	// 	channelnames[i] = channel.Name
-	// }
-	// return channelnames, nil
 }
 
 func GetPost(requesterUid, pid string) (*types.Post, error) {
