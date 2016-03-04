@@ -3,7 +3,7 @@
 <dom-module id="geosource-api-handler">
 	<style></style>
 	<template>
-		<iron-ajax id="postLogin"
+		<iron-ajax id="login"
 			url="/api/login"
 			method="POST"
 			content-type="application/json"
@@ -11,13 +11,22 @@
 			on-response="loginResponse"
 			on-error="loginError">
 		</iron-ajax>
-		<iron-ajax id="postLogout"
+
+		<iron-ajax id="logout"
 			url="/api/logout"
 			method="POST"
 			content-type="application/json"
 			handle-as="json"
 			on-response="logoutResponse"
 			on-error="logoutError">
+		</iron-ajax>
+
+		<iron-ajax id="getPosts"
+			url="/api/posts"
+			method="GET"
+			handle-as="json"
+			on-response="getPostsResponse"
+			on-error="getPostsError">
 		</iron-ajax>
 	</template>
 </dom-module>
@@ -30,23 +39,26 @@
 			state: {
 				type: String,
 			},
+			posts: {
+				type: Array,
+				notify: true,
+			},
 		},
 
 		login: function(event, detail, sender) {
 			console.log("signed in");
 			console.log(detail);
-			this.$.postLogin.params = {
+			this.$.login.params = {
 				state: this.state
 			};
 			if (detail.code) {
 				this.code = detail.code;
-				this.$.postLogin.body = {
+				this.$.login.body = {
 					code: this.code
 				};
 			}
-			this.$.postLogin.generateRequest();
+			this.$.login.generateRequest();
 		},
-
 		loginResponse: function(event, detail, sender) {
 			console.log(detail.response);
 			if (!detail.response.username) {
@@ -56,22 +68,33 @@
 				this.username = detail.response.username;
 			}
 		},
-
 		loginError: function(event, detail, sender) {
 			console.log("login error");
 		},
 
 		logout: function(event, detail, sender) {
 			console.log("signed out");
-			this.$.postLogout.generateRequest();
+			this.$.logout.generateRequest();
 		},
-
 		logoutResponse: function(event, detail, sender) {
 			window.location.reload();
 		},
-
 		logoutError: function(event, detail, sender) {
 			console.log("logout error");
+		},
+
+		getPosts: function() {
+			console.log("get posts");
+			this.$.getPosts.generateRequest();
+		},
+		getPostsResponse: function(event, detail, sender) {
+			console.log("get posts response");
+			console.log(this.posts);
+			this.set('posts', detail.response);
+			console.log(this.posts);
+		},
+		getPostsError: function(event, detail, sender) {
+			console.log("get posts error");
 		},
 
 	});

@@ -153,6 +153,7 @@
 		</platinum-sw-register>
 
 		<geosource-api-handler id="api"
+			posts="{{posts}}"
 			state="{{state}}"
 			on-create-user="openCreateUserDialog">
 		</geosource-api-handler>
@@ -268,60 +269,7 @@
 			},
 			posts: {
 				type: Array,
-				value: [
-					{
-						pid: 0,
-						thumbnail: "/images/thumbnail.svg",
-						title: "Hello, World!",
-						username: "Josh Heinrichs",
-						channel: "World",
-						time: "2016-01-01T00:00:00.000Z",
-						favorite: true,
-						location: {
-							latitude: 52.1833,
-							longitude: -106.6333
-						}
-					},
-					{
-						pid: 1,
-						thumbnail: "/images/thumbnail.svg",
-						title: "Hello again, World!",
-						username: "Josh Heinrichs",
-						channel: "World",
-						time: "2016-01-01T00:00:00.000Z",
-						favorite: false,
-						location: {
-							latitude: 53.1833,
-							longitude: -116.6333
-						}
-					},
-					{
-						pid: 2,
-						thumbnail: "/images/thumbnail.svg",
-						title: "Hello again, World!",
-						username: "Josh Heinrichs",
-						channel: "World",
-						time: "2016-01-01T00:00:00.000Z",
-						favorite: false,
-						location: {
-							latitude: 54.1833,
-							longitude: -116.6333
-						}
-					},
-					{
-						pid: 3,
-						thumbnail: "/images/thumbnail.svg",
-						title: "Hello again, World!",
-						username: "Josh Heinrichs",
-						channel: "World",
-						time: "2016-01-01T00:00:00.000Z",
-						favorite: false,
-						location: {
-							latitude: 56.1833,
-							longitude: -116.6333
-						}
-					}
-				]
+				value: [],
 			},
 			user: {
 				name: "Josh Heinrichs"
@@ -338,6 +286,7 @@
 		ready: function() {
 			console.log(this.userId);
 			this.updateLocation();
+			this.$.api.getPosts();
 		},
 
 		loggedIn: function(userId) {

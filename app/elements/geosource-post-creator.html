@@ -1,0 +1,307 @@
+<link rel="import" href="geosource-imports.html">
+<link rel="import" href="geosource-field-behavior.html">
+
+<dom-module id="geosource-post-creator">
+	<style>
+		:host {
+			display: block;
+			margin: 20px;
+		}
+		paper-textarea {
+			width: 200px;
+		}
+		.hidden {
+			display: block;
+			visibility: hidden;
+			width: 0;
+			height: 0;
+			padding: 0;
+			margin: 0;
+		}
+		img {
+			height: 75px;
+			margin: 15px;
+			margin-left: 0;
+			margin-bottom: 0;
+		}
+		paper-button {
+			color: #000;
+			text-transform: none;
+			margin: 0;
+			display: block;
+			width: 200px;
+		}
+		paper-button.field {
+			background-color: #ddd;
+		}
+		.title {
+			font-size: 18px;
+			font-weight: bold;
+		}
+		.contents {
+			background-color: #eee;
+			padding: 15px;
+			margin-bottom: 15px;
+		}
+		paper-textarea {
+			font-size: 14px;
+			width: 100%;
+		}
+		paper-checkbox {
+			padding: 0;
+			margin-top: 10px;
+		}
+		paper-checkbox:first-child {
+			margin-top: 0;
+		}
+		paper-radio-button {
+			padding: 0;
+			margin-top: 10px;
+		}
+		paper-radio-button:first-child {
+			margin-top: 0;
+		}
+		h2 {
+			margin-bottom: 0;
+		}
+		paper-dropdown-menu {
+			--paper-dropdown-menu: {
+				paper-menu-button.paper-dropdown-menu {
+					padding: 0;
+				}
+			};
+		}
+	</style>
+	<template>
+
+		<iron-ajax id="post_post" 
+			method="POST" content-type="application/json" url="/api/posts" handle-as="json"
+			on-response="postPostResponse" on-error="postPostError">
+		</iron-ajax>
+		<iron-ajax id="get_channels"
+			method="GET" url="/api/channels" handle-as="json"
+			on-response="getChannelsResponse" on-error="getChannelsError">
+		</iron-ajax>
+		<iron-ajax id="get_channel"
+			method="GET" handle-as="json"
+			on-response="getChannelResponse" on-error="getChannelError">
+		</iron-ajax>
+
+		<h2>Channel</h2>
+		<div class="contents">
+			<paper-dropdown-menu label="Select a channel..." no-label-float>
+				<paper-menu class="dropdown-content" selected="{{channelIndex}}" on-iron-select="onChannelSelect">
+					<template is="dom-repeat" items="{{channels}}">
+						<paper-item>{{item}}</paper-item>
+					</template>
+				</paper-menu>
+			</paper-dropdown-menu>
+		</div>
+
+		<template is="dom-if" if="{{post}}">
+			<h2>Title</h2>
+			<div class="contents">
+				<paper-input label="Enter a title..." no-label-float value="{{post.title}}"></paper-input>
+			</div>
+		</template>
+		<template is="dom-repeat" items="{{post.fields}}" as="field" index-as="fieldIndex">
+			<h2>{{field.label}}</h2>
+			<div class="contents">
+				<template is="dom-if" if="{{isText(field.type)}}">
+					<paper-input label="Enter text..." no-label-float value="{{field.value}}"></paper-input>
+				</template>
+				<template is="dom-if" if="{{isImages(field.type)}}">
+					<input class="hidden" id="file" name="field-2" type="file" capture="camera" accept="image/*" multiple on-change="displayFiles">
+					<paper-button class="field" on-tap="openFiles">
+						<iron-icon icon="image:camera-alt"></iron-icon>
+						<span>Add Pictures</span>
+					</paper-button>
+					<template is="dom-repeat" items="{{field.value}}" as="value">
+						<img src="{{value}}">
+					</template>
+					<!-- hack to force fieldIndex into model -->
+					<span style="display:none;">{{fieldIndex}}</span>
+				</template>
+				<template is="dom-if" if="{{isCheckboxes(field.type)}}">
+					<paper-radio-group>
+						<template is="dom-repeat" items="{{field.form}}" as="subfield">
+							<paper-checkbox checked="{{subfield.value}}">{{subfield.label}}</paper-checkbox><br>
+						</template>
+					</paper-radio-group>
+				</template>
+				<template is="dom-if" if="{{isRadiobuttons(field.type)}}">
+					<paper-radio-group selected="{{field.value}}">
+						<template is="dom-repeat" items="{{field.form}}" as="subfield">
+							<paper-radio-button name="{{subfield}}">{{subfield}}</paper-radio-button><br>
+						</template>
+					</paper-radio-group>
+				</template>
+			</div>
+		</template>
+		<template is="dom-if" if="{{post}}">
+			<div class="horizontal layout flex">
+				<paper-button class="flex" on-tap="cancel">Cancel</paper-button>
+				<paper-button class="flex" on-tap="save">Save Draft</paper-button>
+				<paper-button class="flex" on-tap="submit">Submit</paper-button>
+			</div>
+		</template>
+	</template>
+</dom-module>
+
+<script src="../bower_components/moment/moment.js"></script>
+<script>
+	Polymer({
+		is: "geosource-post-creator",
+		behaviors: [GeosourceFieldBehavior],
+
+		properties: {
+			channels: {
+				type: Array,
+				value: [],
+			},
+			channelIndex: {
+				type: Number,
+				value: null,
+				// observer: "channelIndexChanged",
+			},
+			channel: {
+				type: Object,
+				value: null,
+				// observer: "channelChanged",
+			},
+			post: {
+				type: Object,
+				value: null,
+			},
+		},
+
+		ready: function() {
+			this.$.get_channels.generateRequest();
+		},
+		getChannelsResponse: function(event) {
+			this.channels = event.detail.response;
+		},
+		getChannelResponse: function(event) {
+			console.log(event.detail.response);
+			this.channel = event.detail.response;
+			this.newPost(this.channel);
+		},
+		onChannelSelect: function(event) {
+			console.log("selected channel");
+			this.$.get_channel.url = "/api/channels/" + this.channels[this.channelIndex];
+			this.$.get_channel.generateRequest();
+		},
+
+		newPost: function(channel) {
+			this.post = {
+				title: "", 
+				time: moment().toString(), 
+				channel: channel.name, 
+				fields: channel.fields
+			};
+			navigator.geolocation.getCurrentPosition(function(position){
+				this.post.location = {
+					latitude: position.coords.latitude,
+					longitude: position.coords.longitude
+				};
+			}.bind(this));
+		},
+
+		// newPost: function() {
+		// 	this.post = {time: moment().toString()};
+		// 	navigator.geolocation.getCurrentPosition(function(position){
+		// 		this.post.location = {
+		// 			latitude: position.coords.latitude,
+		// 			longitude: position.coords.longitude
+		// 		};
+		// 	}.bind(this));
+		// },
+
+		loadPost: function(post) {
+			this.post = post;
+		},
+
+		// channelIndexChanged: function() {
+		// 	console.log(this.channelIndex);
+		// 	this.channel = this.channels[this.channelIndex];
+		// },
+
+		channelChanged: function() {
+			if (this.channel) {
+				var channelname = this.channel.name;
+				var fields = JSON.parse(JSON.stringify(this.channel.fields));
+				this.set('post.channelname', channelname);
+				this.set('post.title', "");
+				this.set('post.fields', fields);
+			}
+		},
+
+		openFiles: function(event) {
+			console.log(event.model);
+			event.model._nodes[0].click();
+			// this.$.file.click();
+		},
+
+		displayFiles: function(event) {
+			console.log(event.model);
+			var fieldIndex = event.model.fieldIndex;
+			var files = event.model._nodes[0].files;
+
+			// var value = new Array(files.length);
+			// event.model.field.value = value;
+			this.set('post.fields.'+fieldIndex+'.value', []);
+
+			for (var i=0; i<files.length; i++) {
+				var valueIndex = i;
+				var file = files[i];
+				var reader = new FileReader();
+				reader.onload = (function(valueIndex){
+					return function(event) {
+						console.log(valueIndex);
+						var base64 = event.target.result;
+						this.push('post.fields.'+fieldIndex+'.value', base64);
+					}.bind(this);
+				}.bind(this))(i);
+				var blob = file.slice(0, file.size);
+				reader.readAsDataURL(blob);
+			}
+		},
+
+		cancel: function() {
+			this.channelIndex = null;
+			this.channel = null;
+			this.post = null;
+			this.exit();
+		},
+
+		save: function() {
+			this.fire('submit-success', {post: this.post});
+		},
+
+		submit: function() {
+			console.log(this.post);
+			var values = [];
+			for (var i=0; i<this.post.fields.length; i++) {
+				values.push(this.post.fields[i].value);
+			}
+			var submission = {
+				title: this.post.title,
+				location: this.post.location,
+				channel: this.post.channel,
+				values: values
+			};
+			console.log(submission);
+			this.$.post_post.body = submission;
+			this.$.post_post.generateRequest();
+		},
+
+		postPostResponse: function() {
+			console.log("upload response");
+			this.exit();
+		},
+
+		exit: function() {
+			this.fire('exit');
+		},
+	});
+</script>
