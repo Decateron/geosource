@@ -6,8 +6,6 @@ import (
 	"github.com/joshheinrichs/geosource/server/types/fields"
 )
 
-// "github.com/joshheinrichs/geosource/server/transactions"
-
 type PostInfo struct {
 	Id        string    `json:"id" gorm:"column:p_postid"`
 	CreatorId string    `json:"creator" gorm:"column:p_userid_creator"`
