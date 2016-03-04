@@ -157,11 +157,32 @@ func RemoveBan(requesterUid, uid, channelname string) error {
 	return nil
 }
 
-func AddPost(requesterUid, post *types.Post) error {
-	return nil
+func AddPost(requesterUid string, post *types.Post) error {
+	return db.Create(post).Error
 }
 
-// func GetPosts
+func GetPosts(requesterUid string) ([]*types.PostInfo, error) {
+	var posts []*types.PostInfo
+	err := db.Order("p_time").Find(&posts).Error
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
+	// channelnames := make([]string, len(channels))
+	// for i, channel := range channels {
+	// 	channelnames[i] = channel.Name
+	// }
+	// return channelnames, nil
+}
+
+func GetPost(requesterUid, pid string) (*types.Post, error) {
+	var post types.Post
+	err := db.Where("p_postid = ?", pid).First(&post).Error
+	if err != nil {
+		return nil, err
+	}
+	return &post, nil
+}
 
 func RemovePost(requesterUid, postId string) error {
 	return nil
@@ -171,7 +192,7 @@ func IsPostCreator(requesterUid, uid, postId string) (bool, error) {
 	return false, nil
 }
 
-func AddComment(requesterUid, comment *types.Comment) error {
+func AddComment(requesterUid string, comment *types.Comment) error {
 	return nil
 }
 

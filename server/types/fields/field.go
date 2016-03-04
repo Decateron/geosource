@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+	"log"
 )
 
 const (
@@ -81,6 +82,7 @@ func (field *Field) Validate() error {
 	if err != nil {
 		return err
 	}
+	log.Println("validated")
 	return nil
 }
 

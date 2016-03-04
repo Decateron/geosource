@@ -11,15 +11,15 @@ import (
 	"github.com/pborman/uuid"
 )
 
-const (
-	MAX_WIDTH     = 2000
-	MAX_HEIGHT    = 2000
-	IMAGE_QUALITY = 70
-	IMAGE_TYPE    = ".jpg"
+// These variables are not set to constant so that they could be modified
+// programatically at some point if needed
 
-	APP_DIR   = "../../app/"
-	IMAGE_DIR = "images/"
-)
+var ImageMaxWidth uint = 2000
+var ImageMaxHeight uint = 2000
+var ImageQuality uint = 70
+var ImageType string = ".jpg"
+var AppDir string = "app/"
+var ImagesDir string = "images/"
 
 type ImagesForm struct{}
 
@@ -75,7 +75,7 @@ func SaveImage(base64str string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	filename := uuid.NewUUID().String() + IMAGE_TYPE
+	filename := uuid.NewUUID().String() + ImageType
 
 	mw := imagick.NewMagickWand()
 	defer mw.Destroy()
@@ -89,13 +89,13 @@ func SaveImage(base64str string) (string, error) {
 	height := mw.GetImageHeight()
 	newHeight := height
 
-	if width > MAX_WIDTH {
-		newWidth = MAX_WIDTH
-		newHeight = uint(float64(height) / float64(width/MAX_WIDTH))
+	if width > ImageMaxWidth {
+		newWidth = ImageMaxWidth
+		newHeight = uint(float64(height) / float64(width/ImageMaxWidth))
 	}
-	if newHeight > MAX_HEIGHT {
-		newHeight = MAX_HEIGHT
-		newWidth = uint(float64(width) / float64(height/MAX_HEIGHT))
+	if newHeight > ImageMaxHeight {
+		newHeight = ImageMaxHeight
+		newWidth = uint(float64(width) / float64(height/ImageMaxHeight))
 	}
 
 	// Resize the image using the Lanczos filter
@@ -105,12 +105,12 @@ func SaveImage(base64str string) (string, error) {
 		return "", err
 	}
 
-	err = mw.SetImageCompressionQuality(IMAGE_QUALITY)
+	err = mw.SetImageCompressionQuality(ImageQuality)
 	if err != nil {
 		return "", err
 	}
 
-	file, err := os.Create(APP_DIR + IMAGE_DIR + filename)
+	file, err := os.Create(AppDir + ImagesDir + filename)
 	if err != nil {
 		return "", err
 	}

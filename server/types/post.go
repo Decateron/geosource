@@ -6,23 +6,59 @@ import (
 	"github.com/joshheinrichs/geosource/server/types/fields"
 )
 
-type Post struct {
-	Id        string          `json:"id"`
-	CreatorId string          `json:"creator"`
-	Channel   string          `json:"channel"`
-	Title     string          `json:"title"`
-	Time      time.Time       `json:"time"`
-	Location  Location        `json:"location"`
-	Fields    []*fields.Field `json:"fields"`
+// "github.com/joshheinrichs/geosource/server/transactions"
+
+type PostInfo struct {
+	Id        string    `json:"id" gorm:"column:p_postid"`
+	CreatorId string    `json:"creator" gorm:"column:p_userid_creator"`
+	Channel   string    `json:"channel" gorm:"column:p_channelname"`
+	Title     string    `json:"title" gorm:"column:p_title"`
+	Time      time.Time `json:"time" gorm:"column:p_time"`
+	Location  Location  `json:"location" gorm:"column:p_location" sql:"type:POINT NOT NULL"`
 }
 
-type Location struct {
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
+func (postInfo *PostInfo) TableName() string {
+	return "posts"
+}
+
+type Post struct {
+	PostInfo
+	Fields fields.Fields `json:"fields" gorm:"column:p_fields" sql:"type:JSONB NOT NULL"`
+}
+
+func (post *Post) TableName() string {
+	return "posts"
 }
 
 type Submission struct {
-	Title   string         `json:"title"`
-	Channel string         `json:"channel"`
-	Values  []fields.Value `json:"values"`
+	Title    string         `json:"title"`
+	Channel  string         `json:"channel"`
+	Location Location       `json:"location"`
+	Values   []fields.Value `json:"values"`
 }
+
+// func UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
+// 	unmarshalSubmission := struct {
+// 		Submission
+// 		JsonValues json.RawMessage `json:"values"`
+// 	}{}
+// 	err := json.Unmarshal(blob, &unmarshalSubmission)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	channel, err := transactions.GetChannel(unmarshalSubmission.Channel)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	fields, err := channel.UnmarshalValues(unmarshalSubmission.JsonValues)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	post := Post{
+// 		Channel:  unmarshalSubmission.Channel,
+// 		Title:    unmarshalSubmission.Title,
+// 		Location: unmarshalSubmission.Location,
+// 		Fields:   fields,
+// 	}
+// 	return &post
+// }

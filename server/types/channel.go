@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"errors"
+	"log"
 
 	"github.com/joshheinrichs/geosource/server/types/fields"
 )
@@ -49,8 +50,7 @@ func UnmarshalChannel(blob []byte) (*Channel, error) {
 // Unmarshals the given JSON blob into a Submission, and attempts to validate
 // and return it in Post form. If the submission is invalid due to either an
 // unmarshalling error or a form mismatch, an error is returned.
-func (channel *Channel) UnmarshalSubmission(blob []byte) (*Post, error) {
-
+func (channel *Channel) UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
 	unmarshalSubmission := struct {
 		Submission
 		JsonValues []json.RawMessage `json:"values"`
@@ -62,9 +62,12 @@ func (channel *Channel) UnmarshalSubmission(blob []byte) (*Post, error) {
 	}
 
 	post := Post{
-		Title:   unmarshalSubmission.Title,
-		Channel: unmarshalSubmission.Channel,
-		Fields:  make([]*fields.Field, len(channel.Fields)),
+		PostInfo: PostInfo{
+			Title:    unmarshalSubmission.Title,
+			Channel:  unmarshalSubmission.Channel,
+			Location: unmarshalSubmission.Location,
+		},
+		Fields: make([]*fields.Field, len(channel.Fields)),
 	}
 
 	for i, field := range channel.Fields {
@@ -79,7 +82,33 @@ func (channel *Channel) UnmarshalSubmission(blob []byte) (*Post, error) {
 			Form:     field.Form,
 			Value:    value,
 		}
+		err = post.Fields[i].Validate()
+		if err != nil {
+			return nil, err
+		}
 	}
-
 	return &post, nil
+}
+
+func (channel *Channel) UnmarshalValuesToFields(blob []byte) ([]*fields.Field, error) {
+	var jsonValues []json.RawMessage
+	err := json.Unmarshal(blob, &jsonValues)
+	if err != nil {
+		return nil, err
+	}
+	// fields := make([]*fields.Field, len(jsonValues))
+	for i, field := range channel.Fields {
+		value, err := field.Form.UnmarshalValue(jsonValues[i])
+		if err != nil {
+			return nil, err
+		}
+		// fields[i].Value = value
+		channel.Fields[i].Value = value
+		log.Println("test213")
+		err = channel.Fields[i].Validate()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return channel.Fields, nil
 }
