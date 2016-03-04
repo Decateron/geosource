@@ -163,7 +163,7 @@ func AddPost(requesterUid string, post *types.Post) error {
 
 func GetPosts(requesterUid string) ([]*types.PostInfo, error) {
 	var posts []*types.PostInfo
-	err := db.Order("p_time").Find(&posts).Error
+	err := db.Order("p_time desc").Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}
