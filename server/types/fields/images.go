@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gographics/imagick/imagick"
 	"github.com/pborman/uuid"
+	"gopkg.in/gographics/imagick.v1/imagick"
 )
 
 // These variables are not set to constant so that they could be modified
