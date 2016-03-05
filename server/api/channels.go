@@ -8,19 +8,11 @@ import (
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/joshheinrichs/geosource/server/transactions"
 	"github.com/joshheinrichs/geosource/server/types"
-	"github.com/markbates/goth/gothic"
 )
 
 func GetChannels(w rest.ResponseWriter, req *rest.Request) {
-	session, err := gothic.Store.Get(req.Request, gothic.SessionName)
+	userId, err := GetUserId(req)
 	if err != nil {
-		log.Println("channel creation attempted by user that was not logged in")
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	userId, ok := session.Values["userid"].(string)
-	if !ok {
-		log.Println("invalid user id cookie")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -35,15 +27,8 @@ func GetChannels(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func GetChannel(w rest.ResponseWriter, req *rest.Request) {
-	session, err := gothic.Store.Get(req.Request, gothic.SessionName)
+	userId, err := GetUserId(req)
 	if err != nil {
-		log.Println("channel creation attempted by user that was not logged in")
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	userId, ok := session.Values["userid"].(string)
-	if !ok {
-		log.Println("invalid user id cookie")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -61,15 +46,8 @@ func GetChannel(w rest.ResponseWriter, req *rest.Request) {
 // func SetChannel(w rest.ResponseWriter, req *rest.Request) {}
 
 func AddChannel(w rest.ResponseWriter, req *rest.Request) {
-	session, err := gothic.Store.Get(req.Request, gothic.SessionName)
+	userId, err := GetUserId(req)
 	if err != nil {
-		log.Println("channel creation attempted by user that was not logged in")
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	userId, ok := session.Values["userid"].(string)
-	if !ok {
-		log.Println("invalid user id cookie")
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

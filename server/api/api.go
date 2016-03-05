@@ -125,3 +125,15 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func GetUserId(req *rest.Request) (string, error) {
+	session, err := gothic.Store.Get(req.Request, gothic.SessionName)
+	if err != nil {
+		return "", err
+	}
+	userId, ok := session.Values["userid"].(string)
+	if !ok {
+		return "", nil
+	}
+	return userId, nil
+}
