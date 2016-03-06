@@ -35,7 +35,8 @@ func TestImagesValidate(t *testing.T) {
 }
 
 func TestImagesValidateValue(t *testing.T) {
-	AppDir = "./"
+	AppDir = ""
+	MediaDir = ""
 	ImagesDir = ""
 
 	form := ImagesForm{}

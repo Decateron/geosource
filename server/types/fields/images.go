@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"os"
 	"strings"
 
 	"github.com/pborman/uuid"
@@ -19,6 +18,7 @@ var ImageMaxHeight uint = 2000
 var ImageQuality uint = 70
 var ImageType string = ".jpg"
 var AppDir string = "app/"
+var MediaDir string = "media/"
 var ImagesDir string = "images/"
 
 type ImagesForm struct{}
@@ -75,7 +75,7 @@ func SaveImage(base64str string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	filename := uuid.NewUUID().String() + ImageType
+	filename := MediaDir + ImagesDir + uuid.NewUUID().String() + ImageType
 
 	mw := imagick.NewMagickWand()
 	defer mw.Destroy()
@@ -110,12 +110,7 @@ func SaveImage(base64str string) (string, error) {
 		return "", err
 	}
 
-	file, err := os.Create(AppDir + ImagesDir + filename)
-	if err != nil {
-		return "", err
-	}
-
-	err = mw.WriteImageFile(file)
+	err = mw.WriteImage(AppDir + filename)
 	if err != nil {
 		return "", err
 	}
