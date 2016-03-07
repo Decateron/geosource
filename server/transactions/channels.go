@@ -1,6 +1,8 @@
 package transactions
 
 import (
+	"errors"
+
 	"github.com/joshheinrichs/geosource/server/types"
 )
 
@@ -29,9 +31,9 @@ func GetChannels(requesterUid string) ([]string, error) {
 }
 
 func RemoveChannel(requesterUid, channelname string) error {
-	return nil
+	return errors.New("function has not yet been implemented.")
 }
 
 func IsChannelCreator(requesterUid, uid, channelname string) (bool, error) {
-	return false, nil
+	return false, errors.New("function has not yet been implemented.")
 }

@@ -1,6 +1,8 @@
 package transactions
 
 import (
+	"errors"
+
 	"github.com/joshheinrichs/geosource/server/types"
 )
 
@@ -27,9 +29,9 @@ func GetPost(requesterUid, pid string) (*types.Post, error) {
 }
 
 func RemovePost(requesterUid, postId string) error {
-	return nil
+	return errors.New("function has not yet been implemented.")
 }
 
 func IsPostCreator(requesterUid, uid, postId string) (bool, error) {
-	return false, nil
+	return false, errors.New("function has not yet been implemented.")
 }

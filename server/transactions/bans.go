@@ -1,17 +1,21 @@
 package transactions
 
+import (
+	"errors"
+)
+
 func AddBan(requesterUid, uid, channelname string) error {
-	return nil
+	return errors.New("function has not yet been implemented.")
 }
 
 func GetBans(requesterUid, channelname string) ([]string, error) {
-	return nil, nil
+	return nil, errors.New("function has not yet been implemented.")
 }
 
 func IsBanned(requesterUid, uid, channelname string) (bool, error) {
-	return false, nil
+	return false, errors.New("function has not yet been implemented.")
 }
 
 func RemoveBan(requesterUid, uid, channelname string) error {
-	return nil
+	return errors.New("function has not yet been implemented.")
 }
