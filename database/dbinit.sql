@@ -1,5 +1,5 @@
 CREATE TYPE visibility AS ENUM ('public', 'private');
-CREATE DOMAIN name AS TEXT;
+CREATE DOMAIN username AS TEXT;
 CREATE DOMAIN avatar AS TEXT;
 CREATE DOMAIN email AS VARCHAR(254);
 CREATE DOMAIN channelname AS VARCHAR(20);
@@ -9,11 +9,12 @@ CREATE DOMAIN base64uuid AS VARCHAR(22);
 CREATE DOMAIN userid AS base64uuid;
 CREATE DOMAIN postid AS base64uuid;
 CREATE DOMAIN commentid AS base64uuid;
+CREATE DOMAIN thumbnail AS VARCHAR(60);
 
 CREATE TABLE users (
 	u_userid userid PRIMARY KEY,
 	u_email email NOT NULL,
-	u_name name NOT NULL,
+	u_username username NOT NULL,
 	u_avatar avatar
 );
 CREATE UNIQUE INDEX lower_email_idx ON users (lower(u_email));
@@ -36,6 +37,7 @@ CREATE TABLE posts (
 	p_userid_creator userid NOT NULL,
 	p_channelname channelname NOT NULL,
 	p_title title NOT NULL,
+	p_thumbnail thumbnail NOT NULL,
 	p_time TIMESTAMP NOT NULL,
 	p_location POINT NOT NULL,
 	p_fields jsonb NOT NULL,

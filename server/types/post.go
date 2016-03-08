@@ -11,6 +11,7 @@ type PostInfo struct {
 	CreatorId string    `json:"creator" gorm:"column:p_userid_creator"`
 	Channel   string    `json:"channel" gorm:"column:p_channelname"`
 	Title     string    `json:"title" gorm:"column:p_title"`
+	Thumbnail string    `json:"thumbnail" gorm:"column:p_thumbnail"`
 	Time      time.Time `json:"time" gorm:"column:p_time"`
 	Location  Location  `json:"location" gorm:"column:p_location" sql:"type:POINT NOT NULL"`
 }
@@ -26,6 +27,21 @@ type Post struct {
 
 func (post *Post) TableName() string {
 	return "posts"
+}
+
+func (post *Post) GenerateThumbnail() error {
+	for _, field := range post.Fields {
+		imagesValue, ok := field.Value.(*fields.ImagesValue)
+		if ok && imagesValue.IsComplete() {
+			thumbnail, err := imagesValue.GenerateThumbnail()
+			if err != nil {
+				return err
+			}
+			post.Thumbnail = thumbnail
+			return nil
+		}
+	}
+	return nil
 }
 
 type Submission struct {

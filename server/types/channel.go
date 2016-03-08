@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"errors"
+	"time"
 
 	"github.com/joshheinrichs/geosource/server/types/fields"
 )
@@ -65,6 +66,7 @@ func (channel *Channel) UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
 			Title:    unmarshalSubmission.Title,
 			Channel:  unmarshalSubmission.Channel,
 			Location: unmarshalSubmission.Location,
+			Time:     time.Now(),
 		},
 		Fields: make([]*fields.Field, len(channel.Fields)),
 	}
@@ -86,5 +88,10 @@ func (channel *Channel) UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
 			return nil, err
 		}
 	}
+	err := post.GenerateThumbnail()
+	if err != nil {
+		return nil, err
+	}
+
 	return &post, nil
 }

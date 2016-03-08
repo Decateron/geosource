@@ -17,9 +17,16 @@ var ImageMaxWidth uint = 2000
 var ImageMaxHeight uint = 2000
 var ImageQuality uint = 70
 var ImageType string = ".jpg"
+
+var ThumbnailMaxWidth uint = 100
+var ThumbnailMaxHeight uint = 100
+var ThumbnailQuality uint = 70
+var ThumbnailType string = ".jpg"
+
 var AppDir string = "app/"
 var MediaDir string = "media/"
-var ImagesDir string = "images/"
+var ImageDir string = "images/"
+var ThumbnailDir string = "thumbnails/"
 
 type ImagesForm struct{}
 
@@ -64,6 +71,37 @@ func (imagesValue *ImagesValue) IsComplete() bool {
 	return imagesValue != nil && len(*imagesValue) > 0
 }
 
+// This function assumes that the images have already been saved to files.
+func (imagesValue *ImagesValue) GenerateThumbnail() (string, error) {
+	if !imagesValue.IsComplete() {
+		return "", errors.New("No images to generate thumbnail for.")
+	}
+	filename := MediaDir + ThumbnailDir + uuid.NewUUID().String() + ThumbnailType
+	mw := imagick.NewMagickWand()
+	defer mw.Destroy()
+	err := mw.ReadImage(AppDir + (*imagesValue)[0])
+	if err != nil {
+		return "", err
+	}
+
+	err = mw.ThumbnailImage(ThumbnailMaxWidth, ThumbnailMaxHeight)
+	if err != nil {
+		return "", err
+	}
+
+	err = mw.SetImageCompressionQuality(ThumbnailQuality)
+	if err != nil {
+		return "", err
+	}
+
+	err = mw.WriteImage(AppDir + filename)
+	if err != nil {
+		return "", err
+	}
+
+	return filename, nil
+}
+
 // Converts the base64 string into an image, saves it to the file system, and
 // returns its filename. If it is unsuccessful, an error is returned.
 func SaveImage(base64str string) (string, error) {
@@ -75,7 +113,7 @@ func SaveImage(base64str string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	filename := MediaDir + ImagesDir + uuid.NewUUID().String() + ImageType
+	filename := MediaDir + ImageDir + uuid.NewUUID().String() + ImageType
 
 	mw := imagick.NewMagickWand()
 	defer mw.Destroy()

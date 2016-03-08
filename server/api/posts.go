@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/joshheinrichs/geosource/server/transactions"
@@ -82,15 +81,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
-	// post, err := types.UnmarshalSubmissionToPost(jsonBody)
-	// if err != nil {
-	// 	log.Println("invalid channel structure", err)
-	// 	rest.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-
 	post.CreatorId = userId
-	post.Time = time.Now()
 	post.Id = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
 
 	if err != nil {
