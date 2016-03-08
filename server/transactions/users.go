@@ -21,7 +21,7 @@ func GetUserByEmail(email string) (*types.User, error) {
 	var user types.User
 	err := db.Where("u_email = ?", email).First(&user).Error
 	if err != nil {
-		if err == gorm.RecordNotFound {
+		if err == gorm.ErrRecordNotFound {
 			return nil, nil
 		}
 		return nil, err

@@ -9,7 +9,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var db gorm.DB
+var db *gorm.DB
 
 var ErrInsufficientPermission error = errors.New("Insufficient permission.")
 
