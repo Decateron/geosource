@@ -1,6 +1,7 @@
 package transactions
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/jinzhu/gorm"
@@ -9,6 +10,8 @@ import (
 )
 
 var db gorm.DB
+
+var ErrInsufficientPermission error = errors.New("Insufficient permission.")
 
 func Init(config *config.Config) (err error) {
 	db, err = gorm.Open("postgres", fmt.Sprintf("host=%s dbname=%s user=%s password=%s",

@@ -10,14 +10,14 @@ func AddChannel(channel *types.Channel) error {
 	return db.Create(channel).Error
 }
 
-func GetChannel(requesterUid, channelname string) (*types.Channel, error) {
+func GetChannel(requester, channelname string) (*types.Channel, error) {
 	// TODO: Account for requester permission
 	var channel types.Channel
 	err := db.Where("ch_channelname = ?", channelname).First(&channel).Error
 	return &channel, err
 }
 
-func GetChannels(requesterUid string) ([]string, error) {
+func GetChannels(requester string) ([]string, error) {
 	var channels []*types.Channel
 	err := db.Order("ch_channelname").Find(&channels).Error
 	if err != nil {
@@ -30,10 +30,10 @@ func GetChannels(requesterUid string) ([]string, error) {
 	return channelnames, nil
 }
 
-func RemoveChannel(requesterUid, channelname string) error {
+func RemoveChannel(requester, channelname string) error {
 	return errors.New("function has not yet been implemented.")
 }
 
-func IsChannelCreator(requesterUid, uid, channelname string) (bool, error) {
+func IsChannelCreator(userid, channelname string) (bool, error) {
 	return false, errors.New("function has not yet been implemented.")
 }
