@@ -1,21 +1,34 @@
 package transactions
 
 import (
-	"errors"
-
+	"github.com/jinzhu/gorm"
 	"github.com/joshheinrichs/geosource/server/types"
 )
 
-func AddComment(requesterUid string, comment *types.Comment) error {
-	return errors.New("function has not yet been implemented.")
+func IsCommentCreator(requester, userid, commentid string) (bool, error) {
+	var comment types.Comment
+	err := db.Where("cmt_commentid = ?", commentid).First(&comment).Error
+	if err == gorm.ErrRecordNotFound {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
-// func GetComments
-
-func RemoveComment(requesterUid, commentId string) error {
-	return errors.New("function has not yet been implemented.")
+func AddComment(requester string, comment *types.Comment) error {
+	return db.Create(comment).Error
 }
 
-func IsCommentCreator(requesterUid, uid, commentId string) (bool, error) {
-	return false, errors.New("function has not yet been implemented.")
+func GetComments(requester, postid string) ([]*types.Comment, error) {
+	var comments []*types.Comment
+	err := db.Where("cmt_postid = ?", postid).Order("cmt_time").Find(&comments).Error
+	if err != nil {
+		return nil, err
+	}
+	return comments, nil
+}
+
+func RemoveComment(requester, commentid string) error {
+	return db.Where("cmd_commentid = ?", commentid).Delete(&types.Comment{}).Error
 }

@@ -49,8 +49,11 @@ CREATE INDEX post_gix ON posts USING GIST (p_location);
 CREATE TABLE comments (
 	cmt_commentid commentid PRIMARY KEY,
 	cmt_postid postid NOT NULL,
+	cmt_userid_creator userid NOT NULL,
 	cmt_commentid_parent commentid,
 	cmt_comment comment NOT NULL,
+	cmt_time TIMESTAMP NOT NULL,
+	FOREIGN KEY (cmt_userid_creator) REFERENCES users (u_userid), 
 	FOREIGN KEY (cmt_postid) REFERENCES posts (p_postid),
 	FOREIGN KEY (cmt_commentid_parent) REFERENCES comments (cmt_commentid)
 );

@@ -67,7 +67,6 @@ func MakeHandler() (http.Handler, error) {
 
 		// Comments
 		rest.Get("/posts/#pid/comments", GetComments),
-		rest.Get("/posts/#pid/comments/#cid", GetComment),
 		// rest.Put("/posts/#pid/comments/#cid", SetComment),
 		rest.Post("/posts/#pid/comments", AddComment),
 		rest.Delete("/posts/#pid/comments/#cid", RemoveComment),
