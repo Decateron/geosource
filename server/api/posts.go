@@ -84,7 +84,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 
 	post.CreatorId = userId
 	post.Id = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
-	post.time = time.Now().UTC()
+	post.Time = time.Now().UTC()
 
 	if err != nil {
 		log.Println(err)
