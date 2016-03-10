@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/joshheinrichs/geosource/server/transactions"
@@ -83,6 +84,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 
 	post.CreatorId = userId
 	post.Id = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
+	post.time = time.Now().UTC()
 
 	if err != nil {
 		log.Println(err)

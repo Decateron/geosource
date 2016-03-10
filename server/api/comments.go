@@ -45,7 +45,7 @@ func AddComment(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	comment.Time = time.Now()
+	comment.Time = time.Now().UTC()
 	comment.CreatorId = userId
 	comment.Id = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
 
