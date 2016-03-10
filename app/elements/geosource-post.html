@@ -1,0 +1,212 @@
+<link rel="import" href="geosource-imports.html">
+<link rel="import" href="geosource-field-behavior.html">
+
+<dom-module id="geosource-post">
+	<style>
+		:host {
+			display: block;
+		}
+		h2 {
+			font-size: 1.3em;
+			font-weight: 400;
+			margin-bottom: 0;
+		}
+		h2:first-child {
+			margin-top: 0;
+		}
+		.dialog_title {
+			margin-right: auto;
+			margin-left: 12px;
+		}
+		paper-button {
+			color: #000;
+			text-transform: none;
+			margin: 0;
+			display: block;
+			width: 200px;
+		}
+		paper-menu-button {
+			padding-left: 0;
+		}
+		paper-radio-button:first-child {
+			padding-left: 8px;
+		}
+		table {
+			width: 100%;
+			border-spacing: 0;
+			background-color: #eee;
+			padding: 10px;
+			margin-top: 10px;
+		}
+		th.table_header {
+			font-weight: bold;
+		}
+		th.field-type {
+			width: 150px;
+		}
+		th.field-required {
+			width: 80px;
+			margin:auto;
+		}
+		th.field-remove {
+			width: 42px;
+			margin:auto;
+			text-align: center;
+		}
+		th {
+			text-align: left;
+		}
+		iron-icon {
+			margin-right: 10px;
+		}
+		tr.field {
+			background-color: #eee;
+		}
+		tr.subfield {
+			background-color: #ddd;
+		}
+		td.subfield {
+			padding-left: 8px;
+		}
+		.error {
+			color: red;
+		}
+		img {
+			width: 100%;
+		}
+		#main {
+			margin: 20px;
+		}
+	</style>
+	<template>
+
+		<iron-ajax id="get_post"
+			method="GET" content-type="application/json" handle-as="json"
+			on-response="getPostResponse" on-error="getPostError">
+		</iron-ajax>
+
+		<iron-ajax id="get_comments"
+			method="GET" content-type="application/json" handle-as="json"
+			on-response="getCommentsResponse" on-error="getCommentsError">
+		</iron-ajax>
+
+		<iron-ajax id="post_comment"
+			method="POST" content-type="application/json" handle-as="json"
+			on-response="postCommentResponse" on-error="postCommentError">
+		</iron-ajax>
+
+		<geosource-dialog id="dialog">
+			<paper-header-panel>
+				<paper-toolbar>
+					<h1 class="dialog_title">{{post.title}}</h1>
+					<paper-icon-button icon="close" on-tap="close"></paper-icon-button>
+				</paper-toolbar>
+				<div main id="main">
+					<template is="dom-if" if="{{post}}">
+						<div>
+							Posted by <span>{{post.creator}}</span> to <span>{{post.channel}}</span> <span>{{displayTime(post.time)}}</span>
+						</div>
+						<template is="dom-repeat" items="{{post.fields}}" as="field">
+							<h3>{{field.label}}</h3>
+							<template is="dom-if" if="{{isText(field.type)}}">{{field.value}}</template>
+							<template is="dom-if" if="{{isImages(field.type)}">
+								<template is="dom-repeat" items="{{field.value}}" as="image">
+									<img src="{{image}}">
+								</template>
+							</template>
+						</template>
+					</template>
+					<h2>Comments</h2>
+					<template is="dom-repeat" items="{{comments}}" as="comment">
+						<div>
+							<span>{{comment.user}}</span>
+							<span> - </span>
+							<span>{{displayTime(comment.time)}}</span>
+							<span>: </span>
+							<span>{{comment.comment}}</span>
+						</div>
+					</template>
+					<h3>Add Comment</h3>
+					<paper-input id="comment_input" label="Enter some text"></paper-input>
+					<paper-button on-tap="postComment">Submit</paper-button>
+				</div>
+			</paper-header-panel>
+		</geosource-dialog>
+
+	</template>
+</dom-module>
+
+<script src="../bower_components/moment/moment.js"></script>
+<script>
+	Polymer({
+		is: "geosource-post",
+		behaviors: [GeosourceFieldBehavior],
+
+		properties: {
+			postid: {
+				type: Object,
+				value: null
+			},
+			post: {
+				type: Object,
+				value: null
+			},
+			comments: {
+				type: Object,
+				value: null
+			}
+		},
+
+		openPost: function(postid) {
+			console.log(postid);
+			this.postid = postid;
+			this.$.get_post.url = "/api/posts/" + postid;
+			this.$.get_post.generateRequest();
+			this.$.get_comments.url = "/api/posts/" + postid + "/comments";
+			this.$.get_comments.generateRequest();
+		},
+
+		close: function() {
+			this.postid = null;
+			this.post = null;
+			this.comments = null;
+			this.$.dialog.close();
+		},
+
+		getPostResponse: function(event) {
+			this.post = event.detail.response;
+			// TODO: Why does open() not work?
+			this.$.dialog.close();
+			this.$.dialog.toggle();
+		},
+		getPostError: function(event) {
+			console.log(event);
+		},
+
+		getCommentsResponse: function(event) {
+			this.comments = event.detail.response;
+		},
+		getCommentsError: function(event) {
+			console.log(event);
+		},
+
+		postComment: function(event) {
+			this.$.post_comment.url = "/api/posts/" + this.postid + "/comments";
+			this.$.post_comment.body = {
+				post: this.postid,
+				comment: this.$.comment_input.value
+			};
+			this.$.post_comment.generateRequest();
+		},
+		postCommentResponse: function(event) {
+			this.$.comment_input.value = "";
+		},
+		postCommentError: function(event) {
+			console.log(event);
+		},
+
+		displayTime: function(time) {
+			return moment(time).fromNow()
+		}
+	});
+</script>

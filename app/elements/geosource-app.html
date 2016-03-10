@@ -158,6 +158,8 @@
 			on-create-user="openCreateUserDialog">
 		</geosource-api-handler>
 
+		<geosource-post id="post"></geosource-post>
+
 		<geosource-dialog id="create_channel">
 			<paper-header-panel>
 				<paper-toolbar>
@@ -226,7 +228,7 @@
 					</paper-toolbar>
 					<paper-drawer-panel id="settings" drawer-width="100%" force-narrow>
 						<div main>
-							<geosource-posts posts="{{posts}}" on-move-map="moveToPost"></geosource-posts>
+							<geosource-posts posts="{{posts}}" on-move-map="moveToPost" on-open-post="openPost"></geosource-posts>
 						</div>
 						<div drawer>
 							<geosource-settings></geosource-settings>
@@ -356,6 +358,11 @@
 
 		openLoginDialog: function() {
 			this.$.login_dialog.open();
+		},
+
+		openPost: function(event, detail, sender) {
+			console.log(detail);
+			this.$.post.openPost(detail.postid);
 		},
 	});
 </script>

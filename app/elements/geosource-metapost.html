@@ -73,7 +73,7 @@
 				<span>{{post.channel}}</span>
 			</div>
 			<template is="dom-if" if="{{!noButtons}}">
-				<paper-button>See More</paper-button>
+				<paper-button on-tap="seeMoreTapped">See More</paper-button>
 			</template>
 		</div>
 	</template>
@@ -110,6 +110,11 @@
 		favoriteTapped: function() {
 			console.log("favorited", this.post);
 			this.set('post.favorite', !this.post.favorite);
+		},
+
+		seeMoreTapped: function() {
+			console.log(this.post);
+			this.fire('open-post', {postid: this.post.id});
 		},
 	});
 </script>
