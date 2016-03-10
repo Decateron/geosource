@@ -41,7 +41,7 @@
 
 		markerClick: function(event, detail, sender) {
 			console.log("click")
-			console.log(event.model);
+			this.fire('open-post', {postid: event.model.post.id});
 		},
 
 		updateCenter: function(location) {
