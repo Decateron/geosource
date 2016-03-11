@@ -32,7 +32,7 @@
 	</style>
 
 	<template>
-		<div id="fill" hidden$="[[!open]]">
+		<div id="fill" hidden$="[[!isOpen]]">
 			<div id="background" on-tap="close"></div>
 			<paper-material elevation="4" id="container">
 				<div id="dialog">
@@ -49,22 +49,22 @@
 		is: "geosource-dialog",
 
 		properties: {
-			open: {
+			isOpen: {
 				type: Boolean,
 				value: false
 			}
 		},
 
 		close: function() {
-			this.open = false;
+			this.isOpen = false;
 		},
 
 		open: function() {
-			this.open = true;
+			this.isOpen = true;
 		},
 
 		toggle: function() {
-			this.open = !this.open;
+			this.isOpen = !this.isOpen;
 		}
 	});
 </script>

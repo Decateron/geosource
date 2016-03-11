@@ -103,12 +103,12 @@
 					<td><paper-icon-button icon="close" on-tap="onRemoveFieldTap"></paper-icon-button></td>
 				</tr>
 				<template is="dom-if" if="{{isCheckboxes(field.type)}}">
-					<template is="dom-repeat" items="{{field.form}}" as="subfield" index-as="subfieldIndex">
+					<template is="dom-repeat" items="{{field.pairs}}" as="subfield" index-as="subfieldIndex">
 						<tr class="subfield">
 							<!-- hack to make indexes referenceable in javascript -->
 							<div style="display:none;"><span>{{fieldIndex}}</span><span>{{subfieldIndex}}"></span></div>
 							<td class="subfield"><iron-icon icon="{{getTypeIcon(TYPE_CHECKBOXES)}}"></iron-icon><span>Check Box</span></td>
-							<td><paper-input class="flex" value="{{subfield.value}}" label="Enter a label..." no-label-float></td>
+							<td><paper-input class="flex" value="{{subfield.form}}" label="Enter a label..." no-label-float></td>
 							<td><paper-checkbox checked="{{field.required}}" disabled></paper-checkbox></td>
 							<td><paper-icon-button icon="close" on-tap="onRemoveCheckBoxTap"></paper-icon-button></td>
 						</tr>
@@ -119,12 +119,12 @@
 					</tr>
 				</template>
 				<template is="dom-if" if="{{isRadiobuttons(field.type)}}">
-					<template is="dom-repeat" items="{{field.form}}" as="subfield" index-as="subfieldIndex">
+					<template is="dom-repeat" items="{{field.pairs}}" as="subfield" index-as="subfieldIndex">
 						<tr class="subfield">
 							<!-- hack to make indexes referenceable in javascript -->
 							<div style="display:none;"><span>{{fieldIndex}}</span><span>{{subfieldIndex}}"></span></div>
 							<td class="subfield"><iron-icon icon="{{getTypeIcon(TYPE_RADIOBUTTONS)}}"></iron-icon><span>Radio Button</span></td>
-							<td><paper-input class="flex" value="{{subfield.value}}" label="Enter a label..." no-label-float></td>
+							<td><paper-input class="flex" value="{{subfield.form}}" label="Enter a label..." no-label-float></td>
 							<td><paper-checkbox checked="{{field.required}}" disabled></paper-checkbox></td>
 							<td><paper-icon-button icon="close" on-tap="onRemoveRadioButtonTap"></paper-icon-button></td>
 						</tr>
@@ -181,11 +181,10 @@
 		},
 
 		addField: function(type, form) {
-			this.push('fields', {type: type, label: "", required: false, form: form});
-			console.log(this.fields);
+			this.push('fields', {type: type, label: "", required: false, form: form, pairs: []});
 		},
-		removeField: function(index) {
-			this.splice('fields', index, 1);
+		removeField: function(fieldIndex) {
+			this.splice('fields', fieldIndex, 1);
 		},
 
 		addText: function() {
@@ -200,22 +199,22 @@
 			this.addField(this.TYPE_CHECKBOXES, []);
 			this.addCheckBox(this.fields.length-1);
 		},
-		addCheckBox: function(index) {
-			this.push('fields.'+index+'.form', {value: ""});
+		addCheckBox: function(fieldIndex) {
+			this.push('fields.'+fieldIndex+'.pairs', {form: ""});
 		},
 		removeCheckBox: function(fieldIndex, subfieldIndex) {
-			this.splice('fields.'+fieldIndex+'.form', subfieldIndex, 1)
+			this.splice('fields.'+fieldIndex+'.pairs', subfieldIndex, 1);
 		},
 		
 		addRadioButtons: function() {
 			this.addField(this.TYPE_RADIOBUTTONS, []);
 			this.addRadioButton(this.fields.length-1);
 		},
-		addRadioButton: function(index) {
-			this.push('fields.'+index+'.form', {value: ""});
+		addRadioButton: function(fieldIndex) {
+			this.push('fields.'+fieldIndex+'.pairs', {form: ""});
 		},
 		removeRadioButton: function(fieldIndex, subfieldIndex) {
-			this.splice('fields.'+fieldIndex+'.form', subfieldIndex, 1);
+			this.splice('fields.'+fieldIndex+'.pairs', subfieldIndex, 1);
 		},
 
 
@@ -245,16 +244,8 @@
 		},
 
 		submit: function() {
-			var channel = {name: this.name, visibility: this.visibility, fields: this.fields};
-			//clone channel so fields aren't overwritten
-			channel = JSON.parse(JSON.stringify(channel)); 
-			for (var i=0; i<channel.fields.length; i++) {
-				if (channel.fields[i].form != null) {
-					for (var j=0; j<channel.fields[i].form.length; j++) {
-						channel.fields[i].form[j] = channel.fields[i].form[j].value;
-					}
-				}
-			}
+			var channel = {name: this.name, visibility: this.visibility, fields: this.unpairFields(this.fields)};
+			console.log(channel);
 			this.$.post_channel.body = channel;
 			this.$.post_channel.generateRequest();
 		},

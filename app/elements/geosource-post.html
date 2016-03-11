@@ -6,12 +6,11 @@
 		:host {
 			display: block;
 		}
-		h2 {
-			font-size: 1.3em;
+		h1,h2,h3,h4 {
 			font-weight: 400;
 			margin-bottom: 0;
 		}
-		h2:first-child {
+		h1,h2:first-child {
 			margin-top: 0;
 		}
 		.dialog_title {
@@ -77,6 +76,14 @@
 		#main {
 			margin: 20px;
 		}
+		.comment {
+			background-color: #fff;
+			padding: 20px;
+			margin-bottom: 20px;
+		}
+		#comment_submit {
+			width: 100%;
+		}
 	</style>
 	<template>
 
@@ -109,16 +116,30 @@
 						<template is="dom-repeat" items="{{post.fields}}" as="field">
 							<h3>{{field.label}}</h3>
 							<template is="dom-if" if="{{isText(field.type)}}">{{field.value}}</template>
-							<template is="dom-if" if="{{isImages(field.type)}">
+							<template is="dom-if" if="{{isImages(field.type)}}">
 								<template is="dom-repeat" items="{{field.value}}" as="image">
 									<img src="{{image}}">
 								</template>
+							</template>
+							<template is="dom-if" if="{{isCheckboxes(field.type)}}">
+								<paper-radio-group>
+									<template is="dom-repeat" items="{{field.pairs}}" as="checkbox">
+										<paper-checkbox disabled checked="{{checkbox.value}}">{{checkbox.form}}</paper-checkbox><br>
+									</template>
+								</paper-radio-group>
+							</template>
+							<template is="dom-if" if="{{isRadiobuttons(field.type)}}">
+								<paper-radio-group selected="{{field.value}}">
+									<template is="dom-repeat" items="{{field.form}}" as="radiobutton">
+										<paper-radio-button disabled name="{{radiobutton}}">{{radiobutton}}</paper-radio-button><br>
+									</template>
+								</paper-radio-group>
 							</template>
 						</template>
 					</template>
 					<h2>Comments</h2>
 					<template is="dom-repeat" items="{{comments}}" as="comment">
-						<div>
+						<div class="comment">
 							<span>{{comment.user}}</span>
 							<span> - </span>
 							<span>{{displayTime(comment.time)}}</span>
@@ -127,8 +148,10 @@
 						</div>
 					</template>
 					<h3>Add Comment</h3>
-					<paper-input id="comment_input" label="Enter some text"></paper-input>
-					<paper-button on-tap="postComment">Submit</paper-button>
+					<div class="vertical layout flex">
+						<paper-textarea class="flex" id="comment_input" label="Enter some text" no-label-float></paper-textarea>
+						<paper-button on-tap="postComment" id="comment_submit">Submit</paper-button>
+					</div>
 				</div>
 			</paper-header-panel>
 		</geosource-dialog>
@@ -174,10 +197,10 @@
 		},
 
 		getPostResponse: function(event) {
+			event.detail.response.fields = this.pairFields(event.detail.response.fields);
 			this.post = event.detail.response;
-			// TODO: Why does open() not work?
-			this.$.dialog.close();
-			this.$.dialog.toggle();
+			console.log(this.post);
+			this.$.dialog.open();
 		},
 		getPostError: function(event) {
 			console.log(event);

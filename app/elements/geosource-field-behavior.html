@@ -54,5 +54,48 @@
 				return "image:camera-alt";
 			}
 		},
+
+		pairFields: function(fields) {
+			for (var i=0; i<fields.length; i++) {
+				if (this.isRadiobuttons(fields[i].type)) {
+					fields[i].pairs = new Array(fields[i].form.length);
+					for (var j=0; j<fields[i].form.length; j++) {
+						fields[i].pairs[j] = {form: fields[i].form[j]};
+					}
+				} else if (this.isCheckboxes(fields[i].type)) {
+					fields[i].pairs = new Array(fields[i].form.length);
+					for (var j=0; j<fields[i].form.length; j++) {
+						fields[i].pairs[j] = {form: fields[i].form[j]};
+					}
+					if (fields[i].value != null) {
+						for (var j=0; j<fields[i].value.length; j++) {
+							fields[i].pairs[j].value = fields[i].value[j];
+						}
+					}
+				}
+			}
+			return fields;
+		},
+		unpairFields: function(fields) {
+			for (var i=0; i<fields.length; i++) {
+				if (this.isRadiobuttons(fields[i].type)) {
+					fields[i].form = new Array(fields[i].pairs.length);
+					for (var j=0; j<fields[i].pairs.length; j++) {
+						fields[i].form[j] = fields[i].pairs[j].form;
+					}
+				} else if (this.isCheckboxes(fields[i].type)) {
+					fields[i].form = new Array(fields[i].pairs.length);
+					fields[i].value = new Array(fields[i].pairs.length);
+					for (var j=0; j<fields[i].pairs.length; j++) {
+						fields[i].form[j] = fields[i].pairs[j].form;
+						fields[i].value[j] = fields[i].pairs[j].value;
+					}
+					if (fields[i].value.length == 0 || fields[i].value[0] === undefined) {
+						delete fields[i].value;
+					}
+				}
+			}
+			return fields;
+		}
 	};
 </script>

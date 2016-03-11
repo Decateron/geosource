@@ -124,8 +124,8 @@
 				</template>
 				<template is="dom-if" if="{{isCheckboxes(field.type)}}">
 					<paper-radio-group>
-						<template is="dom-repeat" items="{{field.form}}" as="subfield">
-							<paper-checkbox checked="{{subfield.value}}">{{subfield.label}}</paper-checkbox><br>
+						<template is="dom-repeat" items="{{field.pairs}}" as="checkbox">
+							<paper-checkbox checked="{{checkbox.value}}">{{checkbox.form}}</paper-checkbox><br>
 						</template>
 					</paper-radio-group>
 				</template>
@@ -197,8 +197,9 @@
 				title: "", 
 				time: moment().toString(), 
 				channel: channel.name, 
-				fields: channel.fields
+				fields: this.pairFields(channel.fields)
 			};
+			console.log(this.post);
 			navigator.geolocation.getCurrentPosition(function(position){
 				this.post.location = {
 					latitude: position.coords.latitude,
@@ -226,15 +227,15 @@
 		// 	this.channel = this.channels[this.channelIndex];
 		// },
 
-		channelChanged: function() {
-			if (this.channel) {
-				var channelname = this.channel.name;
-				var fields = JSON.parse(JSON.stringify(this.channel.fields));
-				this.set('post.channelname', channelname);
-				this.set('post.title', "");
-				this.set('post.fields', fields);
-			}
-		},
+		// channelChanged: function() {
+		// 	if (this.channel) {
+		// 		var channelname = this.channel.name;
+		// 		var fields = JSON.parse(JSON.stringify(this.channel.fields));
+		// 		this.set('post.channelname', channelname);
+		// 		this.set('post.title', "");
+		// 		this.set('post.fields', this.pairFields(fields));
+		// 	}
+		// },
 
 		openFiles: function(event) {
 			console.log(event.model);
@@ -279,6 +280,8 @@
 		},
 
 		submit: function() {
+			console.log(this.post);
+			this.post.fields = this.unpairFields(this.post.fields);
 			console.log(this.post);
 			var values = [];
 			for (var i=0; i<this.post.fields.length; i++) {
