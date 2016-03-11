@@ -9,64 +9,21 @@
 	    	background-color: #fff;
 	    	margin: 20px;
 	    }
-	    paper-spinner {
-	    	margin: 3.5px auto;
-	    }
-	    .header {
-	    	@apply(--layout-horizontal);
-	    	margin: 20px;
-	    	margin-bottom: 0;
-	    }
-	    .footer {
-	    	@apply(--layout-horizontal);
-	    	margin: 20px;
-	    	margin-top: 0;
-	    }
 	    #scroller {
 	    	height: 100%;
 	    	overflow: auto;
 	    }
-	    #new {
-	    	padding: 20px;
-			text-transform: uppercase;
-			font-size: 13px;
-			text-align: center;
-	    }
-	    paper-button {
-	    	margin: 0;
-	    	color: #4184F3;
-	    	font-size: 13px;
-	    	border-radius: 0;
-	    	width: 100%;
-	    }
-	    paper-button::shadow .content.paper-button  {
-	    	padding: 10px 20px;
-	    }
 	</style>
 
 	<template>
-
 		<div id="scroller">
-			<div class="flex">
-<!-- 				<div class="header flex" hidden$="{{!loadingNew}}">
-					<paper-spinner active></paper-spinner>
-				</div> -->
-				<paper-material z="1" hidden$="{{!newPosts}}">
-					<paper-button on-tap="loadNew"><span>{{newPosts}}</span> new posts. click here to load</paper-button>
-<!-- 					<div id="new">3 new posts. click here to load.</div>
-					<paper-ripple></paper-ripple> -->
-				</paper-material>
-			</div>
-				<template is="dom-repeat" items="{{posts}}" as="post">
-					<div>
-						<paper-material z="1">
-							<geosource-metapost post="[[post]]"></geosource-metapost>
-						</paper-material>
-					</div>
-				</template>
-			<div class="footer flex">
-				<paper-spinner active></paper-spinner>
-			</div>
+			<template is="dom-repeat" items="{{posts}}" as="post">
+				<div>
+					<paper-material z="1">
+						<geosource-metapost post="[[post]]"></geosource-metapost>
+					</paper-material>
+				</div>
+			</template>
 		</div>
 	</template>
 
@@ -79,73 +36,7 @@
 		properties: {
 			posts: {
 				type: Array,
-				// value: []
 			},
-			newPosts: {
-				type: Number,
-				value: 0
-			},
-			lowestPost: {
-				type: Number,
-				value: 0
-			},
-			highestPost: {
-				type: Number,
-				value: 0
-			}
 		},
-
-		// ready: function() {
-		// 	this.$.threshold.scrollTarget = this.$.scroller;
-		// 	this.loadingNew = false;
-		// 	this.checkForPosts();
-		// 	for(var i=0; i<20000; i++) {
-		// 		this.push('posts', this.generatePost(this.highestPost++));
-		// 	}
-		// },
-
-		// loadOld: function() {
-	 //    	this.async(function() {
-	 //        	for (var i=0; i<20000; i++) {
-	 //        		this.push('posts', this.generatePost(this.highestPost++));
-	 //        	}
-	 //        	this.$.threshold.clearLower();
-	 //        }, 1000);
-	 //    },
-
-	 //    loadNew: function() {
-	 //    	var newPosts = this.newPosts;
-	 //    	this.newPosts -= newPosts;
-	 //    	this.loadingNew = true;
-	 //    	this.async(function() {
-	 //        	for (var i=0; i<newPosts; i++) {
-	 //        		this.unshift('posts', this.generatePost(--this.lowestPost));
-	 //        	}
-	 //        	this.loadingNew = false;
-	 //        }, 1000);
-	 //    },
-
-	 //    checkForPosts: function() {
-	 //    	this.async(function() {
-	 //    		this.newPosts++;
-	 //    		this.checkForPosts();
-	 //    	}, 5000);
-	 //    },
-
-	 //    generatePost: function(number) {
-	 //    	var post = {
-	 //    		pid: number,
-	 //    		thumbnail: "/images/thumbnail.svg",
-	 //    		title: "Post " + number,
-		// 		username: "Josh Heinrichs",
-		// 		channel: "Birds",
-		// 		time: "2015-06-13",
-		// 		location: {
-		// 			latitiude: 52.1833,
-		// 			longitude: -106.6333
-		// 		}
-	 //    	};
-	 //    	return post;
-	 //    }
 	});
 </script>

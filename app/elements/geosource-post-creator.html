@@ -162,12 +162,10 @@
 			channelIndex: {
 				type: Number,
 				value: null,
-				// observer: "channelIndexChanged",
 			},
 			channel: {
 				type: Object,
 				value: null,
-				// observer: "channelChanged",
 			},
 			post: {
 				type: Object,
@@ -208,39 +206,14 @@
 			}.bind(this));
 		},
 
-		// newPost: function() {
-		// 	this.post = {time: moment().toString()};
-		// 	navigator.geolocation.getCurrentPosition(function(position){
-		// 		this.post.location = {
-		// 			latitude: position.coords.latitude,
-		// 			longitude: position.coords.longitude
-		// 		};
-		// 	}.bind(this));
-		// },
-
 		loadPost: function(post) {
 			this.post = post;
 		},
 
-		// channelIndexChanged: function() {
-		// 	console.log(this.channelIndex);
-		// 	this.channel = this.channels[this.channelIndex];
-		// },
-
-		// channelChanged: function() {
-		// 	if (this.channel) {
-		// 		var channelname = this.channel.name;
-		// 		var fields = JSON.parse(JSON.stringify(this.channel.fields));
-		// 		this.set('post.channelname', channelname);
-		// 		this.set('post.title', "");
-		// 		this.set('post.fields', this.pairFields(fields));
-		// 	}
-		// },
 
 		openFiles: function(event) {
 			console.log(event.model);
 			event.model._nodes[0].click();
-			// this.$.file.click();
 		},
 
 		displayFiles: function(event) {
