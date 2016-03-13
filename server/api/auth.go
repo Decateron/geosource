@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/base64"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -53,7 +54,7 @@ func CallbackAuth(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w.(http.ResponseWriter), req.Request, url := fmt.Sprintf("https://%s%s", mainConfig.Website.Url, mainConfig.Website.HttpsPort), http.StatusTemporaryRedirect)
+	http.Redirect(w.(http.ResponseWriter), req.Request, fmt.Sprintf("https://%s%s", apiConfig.Website.Url, apiConfig.Website.HttpsPort), http.StatusTemporaryRedirect)
 }
 
 func Logout(w rest.ResponseWriter, req *rest.Request) {
@@ -70,7 +71,7 @@ func Logout(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w.(http.ResponseWriter), req.Request, url := fmt.Sprintf("https://%s%s", mainConfig.Website.Url, mainConfig.Website.HttpsPort), http.StatusTemporaryRedirect)
+	http.Redirect(w.(http.ResponseWriter), req.Request, fmt.Sprintf("https://%s%s", apiConfig.Website.Url, apiConfig.Website.HttpsPort), http.StatusTemporaryRedirect)
 }
 
 // Adds the provider path parameter from the given rest quest as a query value
