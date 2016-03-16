@@ -26,7 +26,6 @@ type Channel struct {
 // Unmarshals the given JSON blob, returning a Channel on success, or an error
 // if unsuccessful. All fields must be valid and empty for parsing to succeed.
 func UnmarshalChannel(blob []byte) (*Channel, error) {
-
 	unmarshalChannel := struct {
 		Channel
 		JsonFields []json.RawMessage `json:"fields"`
