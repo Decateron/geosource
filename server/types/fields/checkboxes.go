@@ -14,6 +14,11 @@ func (checkboxesForm *CheckboxesForm) Validate() error {
 	if len(*checkboxesForm) <= 0 {
 		return errors.New("At least one checkbox is required.")
 	}
+	for _, label := range *checkboxesForm {
+		if len(label) == 0 {
+			return errors.New("All checkboxes must have labels.")
+		}
+	}
 	return nil
 }
 

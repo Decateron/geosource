@@ -16,6 +16,9 @@ func (radiobuttonsForm *RadiobuttonsForm) Validate() error {
 	}
 	labelMap := make(map[string]bool)
 	for _, label := range *radiobuttonsForm {
+		if len(label) == 0 {
+			return errors.New("All radiobuttons must have labels.")
+		}
 		_, ok := labelMap[label]
 		if ok {
 			return errors.New("Duplicate radiobutton label.")
