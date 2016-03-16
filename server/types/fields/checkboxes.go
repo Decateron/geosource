@@ -3,6 +3,7 @@ package fields
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 )
 
 type CheckboxesForm []string
@@ -15,6 +16,7 @@ func (checkboxesForm *CheckboxesForm) Validate() error {
 		return errors.New("At least one checkbox is required.")
 	}
 	for _, label := range *checkboxesForm {
+		label = strings.TrimSpace(label)
 		if len(label) == 0 {
 			return errors.New("All checkboxes must have labels.")
 		}

@@ -3,6 +3,7 @@ package fields
 import (
 	"encoding/json"
 	"errors"
+	"strings"
 )
 
 type RadiobuttonsForm []string
@@ -16,6 +17,7 @@ func (radiobuttonsForm *RadiobuttonsForm) Validate() error {
 	}
 	labelMap := make(map[string]bool)
 	for _, label := range *radiobuttonsForm {
+		label = strings.TrimSpace(label)
 		if len(label) == 0 {
 			return errors.New("All radiobuttons must have labels.")
 		}
