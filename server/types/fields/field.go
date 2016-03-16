@@ -4,7 +4,6 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
-	"log"
 )
 
 const (
@@ -23,6 +22,26 @@ type Field struct {
 }
 
 type Fields []*Field
+
+func (fields *Fields) ValidateForms() error {
+	for _, field := range *fields {
+		err := field.ValidateForm()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (fields *Fields) ValidateValues() error {
+	for _, field := range *fields {
+		err := field.ValidateValue()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 func (fields *Fields) Scan(value interface{}) error {
 	blob, ok := value.([]byte)
@@ -68,23 +87,31 @@ func (field *Field) IsEmpty() bool {
 	return field.Value == nil
 }
 
-// Returns an error if the given field is invalid, such as in the case when
-// the form and value types are mismatched, nil otherwise.
-func (field *Field) Validate() error {
-	if field.Value == nil {
-		return nil
-	}
-	err := field.Form.Validate()
-	if err != nil {
-		return err
-	}
-	err = field.Form.ValidateValue(field.Value)
-	if err != nil {
-		return err
-	}
-	log.Println("validated")
-	return nil
+func (field *Field) ValidateForm() error {
+	return field.Form.Validate()
 }
+
+func (field *Field) ValidateValue() error {
+	return field.Form.ValidateValue(field.Value)
+}
+
+// // Returns an error if the given field is invalid, such as in the case when
+// // the form and value types are mismatched, nil otherwise.
+// func (field *Field) Validate() error {
+// 	if field.Value == nil {
+// 		return nil
+// 	}
+// 	err := field.Form.Validate()
+// 	if err != nil {
+// 		return err
+// 	}
+// 	err = field.Form.ValidateValue(field.Value)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	log.Println("validated")
+// 	return nil
+// }
 
 // Attempts to unmarshal the given JSON into a field. Returns an error if
 // unsuccessful.

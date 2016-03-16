@@ -53,7 +53,15 @@ type Post struct {
 // Validates the post. Returns an error if any fields are invalid, nil
 // otherwise.
 func (post *Post) Validate() error {
-	return post.PostInfo.Validate()
+	err := post.PostInfo.Validate()
+	if err != nil {
+		return err
+	}
+	err = post.Fields.ValidateValues()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // Generates a thumbnail for the post, attempting to use an image within the

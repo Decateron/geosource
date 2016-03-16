@@ -92,6 +92,12 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	err = post.GenerateThumbnail()
+	if err != nil {
+		log.Println(err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	err = transactions.AddPost(userID, post)
 	if err != nil {

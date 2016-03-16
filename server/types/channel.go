@@ -59,12 +59,16 @@ func (channel *Channel) Validate() error {
 	} else if !channelNameRegexp.MatchString(channel.Name) {
 		return errors.New("Channel names may only contain alpha numeric characters, hyphens or underscores.")
 	}
+	err := channel.Fields.ValidateForms()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-// Unmarshals the given JSON blob into a Submission, and attempts to validate
-// and return it in Post form. If the submission is invalid due to either an
-// unmarshalling error or a form mismatch, an error is returned.
+// Unmarshals the given submission in JSON format into a post. If the submission
+// is invalid due to either an unmarshalling error or a form mismatch, an error
+// is returned.
 func (channel *Channel) UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
 	unmarshalSubmission := struct {
 		Submission
@@ -97,16 +101,7 @@ func (channel *Channel) UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
 			Form:     field.Form,
 			Value:    value,
 		}
-		err = post.Fields[i].Validate()
-		if err != nil {
-			return nil, err
-		}
 	}
-	err := post.GenerateThumbnail()
-	if err != nil {
-		return nil, err
-	}
-
 	return &post, nil
 }
 
