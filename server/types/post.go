@@ -7,8 +7,8 @@ import (
 )
 
 type PostInfo struct {
-	Id        string    `json:"id" gorm:"column:p_postid"`
-	CreatorId string    `json:"creator" gorm:"column:p_userid_creator"`
+	ID        string    `json:"id" gorm:"column:p_postid"`
+	CreatorID string    `json:"creator" gorm:"column:p_userid_creator"`
 	Channel   string    `json:"channel" gorm:"column:p_channelname"`
 	Title     string    `json:"title" gorm:"column:p_title"`
 	Thumbnail string    `json:"thumbnail" gorm:"column:p_thumbnail"`

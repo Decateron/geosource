@@ -13,13 +13,13 @@ import (
 )
 
 func GetComments(w rest.ResponseWriter, req *rest.Request) {
-	userId, err := GetUserId(req)
+	userID, err := GetUserID(req)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	comments, err := transactions.GetComments(userId, req.PathParam("pid"))
+	comments, err := transactions.GetComments(userID, req.PathParam("pid"))
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -32,7 +32,7 @@ func GetComments(w rest.ResponseWriter, req *rest.Request) {
 // func SetComment(w rest.ResponseWriter, req *rest.Request) {}
 
 func AddComment(w rest.ResponseWriter, req *rest.Request) {
-	userId, err := GetUserId(req)
+	userID, err := GetUserID(req)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -46,15 +46,15 @@ func AddComment(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 	comment.Time = time.Now().UTC()
-	comment.CreatorId = userId
-	comment.Id = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
+	comment.CreatorID = userID
+	comment.ID = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
 	err = comment.Validate()
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = transactions.AddComment(userId, &comment)
+	err = transactions.AddComment(userID, &comment)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)

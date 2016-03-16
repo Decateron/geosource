@@ -15,7 +15,7 @@ const (
 
 type Channel struct {
 	Name       string        `json:"name" gorm:"column:ch_channelname"`
-	CreatorId  string        `json:"creatorId" gorm:"column:ch_userid_creator"`
+	CreatorID  string        `json:"creatorID" gorm:"column:ch_userid_creator"`
 	Visibility string        `json:"visibility" gorm:"column:ch_visibility"`
 	Fields     fields.Fields `json:"fields" gorm:"column:ch_fields" sql:"type:JSONB NOT NULL"`
 }

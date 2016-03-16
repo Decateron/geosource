@@ -8,13 +8,13 @@ import (
 )
 
 func GetBans(w rest.ResponseWriter, req *rest.Request) {
-	userId, err := GetUserId(req)
+	userID, err := GetUserID(req)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	channelname := req.PathParam("channelname")
-	moderators, err := transactions.GetBans(userId, channelname)
+	moderators, err := transactions.GetBans(userID, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -24,7 +24,7 @@ func GetBans(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func AddBan(w rest.ResponseWriter, req *rest.Request) {
-	userId, err := GetUserId(req)
+	userID, err := GetUserID(req)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -38,7 +38,7 @@ func AddBan(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = transactions.AddBan(userId, body.Username, channelname)
+	err = transactions.AddBan(userID, body.Username, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -47,14 +47,14 @@ func AddBan(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func RemoveBan(w rest.ResponseWriter, req *rest.Request) {
-	userId, err := GetUserId(req)
+	userID, err := GetUserID(req)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	username := req.PathParam("username")
 	channelname := req.PathParam("channelname")
-	err = transactions.RemoveBan(userId, username, channelname)
+	err = transactions.RemoveBan(userID, username, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return

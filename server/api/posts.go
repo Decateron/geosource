@@ -13,12 +13,12 @@ import (
 )
 
 func GetPosts(w rest.ResponseWriter, req *rest.Request) {
-	userId, err := GetUserId(req)
+	userID, err := GetUserID(req)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	posts, err := transactions.GetPosts(userId)
+	posts, err := transactions.GetPosts(userID)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -29,12 +29,12 @@ func GetPosts(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func GetPost(w rest.ResponseWriter, req *rest.Request) {
-	userId, err := GetUserId(req)
+	userID, err := GetUserID(req)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	post, err := transactions.GetPost(userId, req.PathParam("pid"))
+	post, err := transactions.GetPost(userID, req.PathParam("pid"))
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -45,7 +45,7 @@ func GetPost(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func AddPost(w rest.ResponseWriter, req *rest.Request) {
-	userId, err := GetUserId(req)
+	userID, err := GetUserID(req)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -68,7 +68,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
-	channel, err := transactions.GetChannel(userId, submissionChannel.Channel)
+	channel, err := transactions.GetChannel(userID, submissionChannel.Channel)
 	if err != nil {
 		log.Println("could not find channel ", submissionChannel.Channel)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -82,8 +82,8 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
-	post.CreatorId = userId
-	post.Id = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
+	post.CreatorID = userID
+	post.ID = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
 	post.Time = time.Now().UTC()
 
 	if err != nil {
@@ -92,7 +92,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
-	err = transactions.AddPost(userId, post)
+	err = transactions.AddPost(userID, post)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)

@@ -21,7 +21,7 @@ type Website struct {
 }
 
 type Credentials struct {
-	ClientId     string
+	ClientID     string
 	ClientSecret string
 	CallbackUrl  string
 }

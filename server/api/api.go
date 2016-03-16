@@ -21,9 +21,9 @@ var indexTemplate = template.Must(template.ParseFiles("../app/index.html"))
 func Init(config *config.Config) {
 	apiConfig = config
 	goth.UseProviders(
-		gplus.New(config.Google.ClientId, config.Google.ClientSecret, config.Google.CallbackUrl),
-		// facebook.New(config.Facebook.ClientId, config.Facebook.ClientSecret, config.Facebook.Callback),
-		// twitter.New(config.Twitter.ClientId, config.Twitter.ClientSecret, config.Twitter.Callback),
+		gplus.New(config.Google.ClientID, config.Google.ClientSecret, config.Google.CallbackUrl),
+		// facebook.New(config.Facebook.ClientID, config.Facebook.ClientSecret, config.Facebook.Callback),
+		// twitter.New(config.Twitter.ClientID, config.Twitter.ClientSecret, config.Twitter.Callback),
 	)
 }
 
@@ -108,15 +108,15 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 	log.Println(session.Values["userid"])
-	// session.Values["userid"] = user.Id
+	// session.Values["userid"] = user.ID
 	// err = session.Save(req.Request, w.(http.ResponseWriter))
 	// if err != nil {
 	// 	rest.Error(w, err.Error(), http.StatusInternalServerError)
 	// 	return
 	// }
 
-	var data = struct{ Id string }{id}
-	//{apiConfig.Google.ClientId, state}
+	var data = struct{ ID string }{id}
+	//{apiConfig.Google.ClientID, state}
 
 	err = indexTemplate.Execute(w, data)
 	if err != nil {
@@ -125,14 +125,14 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetUserId(req *rest.Request) (string, error) {
+func GetUserID(req *rest.Request) (string, error) {
 	session, err := gothic.Store.Get(req.Request, gothic.SessionName)
 	if err != nil {
 		return "", err
 	}
-	userId, ok := session.Values["userid"].(string)
+	userID, ok := session.Values["userid"].(string)
 	if !ok {
 		return "", nil
 	}
-	return userId, nil
+	return userID, nil
 }
