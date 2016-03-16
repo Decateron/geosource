@@ -48,7 +48,12 @@ func AddComment(w rest.ResponseWriter, req *rest.Request) {
 	comment.Time = time.Now().UTC()
 	comment.CreatorId = userId
 	comment.Id = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
-
+	err = comment.Validate()
+	if err != nil {
+		log.Println(err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	err = transactions.AddComment(userId, &comment)
 	if err != nil {
 		log.Println(err)

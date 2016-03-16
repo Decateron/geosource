@@ -3,8 +3,14 @@ package types
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/joshheinrichs/geosource/server/types/fields"
+)
+
+const (
+	MAX_CHANNELNAME_LEN = 20
 )
 
 type Channel struct {
@@ -12,6 +18,18 @@ type Channel struct {
 	CreatorId  string        `json:"creatorId" gorm:"column:ch_userid_creator"`
 	Visibility string        `json:"visibility" gorm:"column:ch_visibility"`
 	Fields     fields.Fields `json:"fields" gorm:"column:ch_fields" sql:"type:JSONB NOT NULL"`
+}
+
+// Validates the channel. Returns an error if any fields are invalid, or nil
+// otherwise.
+func (channel *Channel) Validate() error {
+	channel.Name = strings.TrimSpace(channel.Name)
+	if len(channel.Name) == 0 {
+		return errors.New("Channel name cannot be empty.")
+	} else if len(channel.Name) > MAX_CHANNELNAME_LEN {
+		return errors.New(fmt.Sprintf("Length of channel name cannot exceed %i characters.", MAX_CHANNELNAME_LEN))
+	}
+	return nil
 }
 
 func (channel *Channel) TableName() string {
@@ -26,11 +44,9 @@ func UnmarshalChannel(blob []byte) (*Channel, error) {
 		Channel
 		JsonFields []json.RawMessage `json:"fields"`
 	}{}
-
 	json.Unmarshal(blob, &unmarshalChannel)
 
 	channelFields := make([]*fields.Field, len(unmarshalChannel.JsonFields))
-
 	for i, jsonField := range unmarshalChannel.JsonFields {
 		field, err := fields.UnmarshalField(jsonField)
 		if err != nil {

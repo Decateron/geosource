@@ -64,17 +64,13 @@ func AddChannel(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	// TODO: Validate channel
 	channel.CreatorId = userId
-
-	data, err := json.Marshal(channel)
+	err = channel.Validate()
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Println(string(data))
-
 	err = transactions.AddChannel(channel)
 	if err != nil {
 		log.Println(err)
