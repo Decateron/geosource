@@ -30,7 +30,7 @@ var ThumbnailDir string = "thumbnails/"
 
 type ImagesForm struct{}
 
-func (imagesForm *ImagesForm) Validate() error {
+func (imagesForm *ImagesForm) ValidateForm() error {
 	return nil
 }
 

@@ -8,7 +8,7 @@ import (
 
 type RadiobuttonsForm []string
 
-func (radiobuttonsForm *RadiobuttonsForm) Validate() error {
+func (radiobuttonsForm *RadiobuttonsForm) ValidateForm() error {
 	if radiobuttonsForm == nil {
 		return errors.New("Missing form.")
 	}

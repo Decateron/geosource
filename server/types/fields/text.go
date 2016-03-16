@@ -8,7 +8,7 @@ import (
 
 type TextForm struct{}
 
-func (textForm *TextForm) Validate() error {
+func (textForm *TextForm) ValidateForm() error {
 	return nil
 }
 

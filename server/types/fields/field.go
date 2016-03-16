@@ -21,6 +21,18 @@ type Field struct {
 	Value    Value  `json:"value,omitempty"`
 }
 
+func (field *Field) IsEmpty() bool {
+	return field.Value == nil
+}
+
+func (field *Field) ValidateForm() error {
+	return field.Form.ValidateForm()
+}
+
+func (field *Field) ValidateValue() error {
+	return field.Form.ValidateValue(field.Value)
+}
+
 type Fields []*Field
 
 func (fields *Fields) ValidateForms() error {
@@ -71,7 +83,7 @@ func (fields Fields) Value() (driver.Value, error) {
 
 type Form interface {
 	// Returns an error if the form is invalid, nil otherwise.
-	Validate() error
+	ValidateForm() error
 	// Returns an error if the given value does not match the form, nil
 	// otherwise.
 	ValidateValue(Value) error
@@ -81,18 +93,6 @@ type Form interface {
 }
 type Value interface {
 	IsComplete() bool
-}
-
-func (field *Field) IsEmpty() bool {
-	return field.Value == nil
-}
-
-func (field *Field) ValidateForm() error {
-	return field.Form.Validate()
-}
-
-func (field *Field) ValidateValue() error {
-	return field.Form.ValidateValue(field.Value)
 }
 
 // // Returns an error if the given field is invalid, such as in the case when

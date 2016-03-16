@@ -26,12 +26,12 @@ func TestImagesUnmarshalValue(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestImagesValidate(t *testing.T) {
+func TestImagesValidateForm(t *testing.T) {
 	form := &ImagesForm{}
-	assert.NoError(t, form.Validate())
+	assert.NoError(t, form.ValidateForm())
 
 	form = nil
-	assert.NoError(t, form.Validate())
+	assert.NoError(t, form.ValidateForm())
 }
 
 func TestImagesValidateValue(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 
 type CheckboxesForm []string
 
-func (checkboxesForm *CheckboxesForm) Validate() error {
+func (checkboxesForm *CheckboxesForm) ValidateForm() error {
 	if checkboxesForm == nil {
 		return errors.New("Missing form.")
 	}

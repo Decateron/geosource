@@ -25,12 +25,12 @@ func TestTextUnmarshalValue(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestTextValidate(t *testing.T) {
+func TestTextValidateForm(t *testing.T) {
 	form := &TextForm{}
-	assert.NoError(t, form.Validate())
+	assert.NoError(t, form.ValidateForm())
 
 	form = nil
-	assert.NoError(t, form.Validate())
+	assert.NoError(t, form.ValidateForm())
 }
 
 func TestTextValidateValue(t *testing.T) {

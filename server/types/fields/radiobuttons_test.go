@@ -29,21 +29,21 @@ func TestRadiobuttonsUnmarshalValue(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestRadiobuttonsValidate(t *testing.T) {
+func TestRadiobuttonsValidateForm(t *testing.T) {
 	form := &RadiobuttonsForm{}
-	assert.Error(t, form.Validate())
+	assert.Error(t, form.ValidateForm())
 
 	form = &RadiobuttonsForm{"foo", "bar", "foo"}
-	assert.Error(t, form.Validate())
+	assert.Error(t, form.ValidateForm())
 
 	form = nil
-	assert.Error(t, form.Validate())
+	assert.Error(t, form.ValidateForm())
 
 	form = &RadiobuttonsForm{"foo", "bar"}
-	assert.NoError(t, form.Validate())
+	assert.NoError(t, form.ValidateForm())
 
 	form = &RadiobuttonsForm{"foo"}
-	assert.NoError(t, form.Validate())
+	assert.NoError(t, form.ValidateForm())
 }
 
 func TestRadiobuttonsValidateValue(t *testing.T) {
