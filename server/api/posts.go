@@ -82,16 +82,16 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
-	post.CreatorID = userID
-	post.ID = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
-	post.Time = time.Now().UTC()
-
 	err = post.Validate()
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	post.CreatorID = userID
+	post.ID = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
+	post.Time = time.Now().UTC()
 	err = post.GenerateThumbnail()
 	if err != nil {
 		log.Println(err)
