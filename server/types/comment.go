@@ -20,6 +20,7 @@ type Comment struct {
 	Time      time.Time `json:"time" gorm:"column:cmt_time"`
 }
 
+// Returns an error if any fields in the comment are invalid, or nil otherwise.
 func (comment *Comment) Validate() error {
 	comment.Comment = strings.TrimSpace(comment.Comment)
 	if len(comment.Comment) == 0 {
@@ -30,6 +31,7 @@ func (comment *Comment) Validate() error {
 	return nil
 }
 
+// Returns the name of the comment's corresponding table in the database.
 func (comment *Comment) TableName() string {
 	return "comments"
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/joshheinrichs/geosource/server/types/fields"
 )
 
+// General meta information about a post.
 type PostInfo struct {
 	ID        string    `json:"id" gorm:"column:p_postid"`
 	CreatorID string    `json:"creator" gorm:"column:p_userid_creator"`
@@ -16,6 +17,7 @@ type PostInfo struct {
 	Location  Location  `json:"location" gorm:"column:p_location" sql:"type:POINT NOT NULL"`
 }
 
+// Returns the name of the postInfo's corresponding table in the database.
 func (postInfo *PostInfo) TableName() string {
 	return "posts"
 }
@@ -25,11 +27,11 @@ type Post struct {
 	Fields fields.Fields `json:"fields" gorm:"column:p_fields" sql:"type:JSONB NOT NULL"`
 }
 
-func (post *Post) TableName() string {
-	return "posts"
-}
-
+// Generates a thumbnail for the post, attempting to use an image within the
+// post if one exists. This function assumes that the images from the post have
+// been validated and written to storage.
 func (post *Post) GenerateThumbnail() error {
+	// TODO: Assign default thumbnail
 	for _, field := range post.Fields {
 		imagesValue, ok := field.Value.(*fields.ImagesValue)
 		if ok && imagesValue.IsComplete() {
@@ -44,9 +46,7 @@ func (post *Post) GenerateThumbnail() error {
 	return nil
 }
 
-type Submission struct {
-	Title    string         `json:"title"`
-	Channel  string         `json:"channel"`
-	Location Location       `json:"location"`
-	Values   []fields.Value `json:"values"`
+// Returns the name of the post's corresponding table in the database.
+func (post *Post) TableName() string {
+	return "posts"
 }

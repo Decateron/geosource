@@ -12,6 +12,7 @@ type Location struct {
 	Longitude float64 `json:"longitude"`
 }
 
+// Reads a POINT from the database.
 func (location *Location) Scan(value interface{}) error {
 	floatStrings := strings.Split(strings.Trim(string(value.([]byte)), "()"), ",")
 	location.Latitude, _ = strconv.ParseFloat(floatStrings[0], 64)
@@ -19,6 +20,8 @@ func (location *Location) Scan(value interface{}) error {
 	return nil
 }
 
+// Converts the location into a POINT format which can be inserted into the
+// database.
 func (location Location) Value() (driver.Value, error) {
 	return fmt.Sprintf("%f,%f", location.Latitude, location.Longitude), nil
 }
