@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/joshheinrichs/geosource/server/types/fields"
@@ -13,27 +14,13 @@ const (
 	MAX_CHANNELNAME_LEN = 20
 )
 
+var channelNameRegexp = regexp.MustCompile("^\\w+$")
+
 type Channel struct {
 	Name       string        `json:"name" gorm:"column:ch_channelname"`
 	CreatorID  string        `json:"creatorID" gorm:"column:ch_userid_creator"`
 	Visibility string        `json:"visibility" gorm:"column:ch_visibility"`
 	Fields     fields.Fields `json:"fields" gorm:"column:ch_fields" sql:"type:JSONB NOT NULL"`
-}
-
-// Validates the channel. Returns an error if any fields are invalid, or nil
-// otherwise.
-func (channel *Channel) Validate() error {
-	channel.Name = strings.TrimSpace(channel.Name)
-	if len(channel.Name) == 0 {
-		return errors.New("Channel name cannot be empty.")
-	} else if len(channel.Name) > MAX_CHANNELNAME_LEN {
-		return errors.New(fmt.Sprintf("Length of channel name cannot exceed %i characters.", MAX_CHANNELNAME_LEN))
-	}
-	return nil
-}
-
-func (channel *Channel) TableName() string {
-	return "channels"
 }
 
 // Unmarshals the given JSON blob, returning a Channel on success, or an error
@@ -60,6 +47,20 @@ func UnmarshalChannel(blob []byte) (*Channel, error) {
 	unmarshalChannel.Channel.Fields = channelFields
 
 	return &unmarshalChannel.Channel, nil
+}
+
+// Validates the channel. Returns an error if any fields are invalid, or nil
+// otherwise.
+func (channel *Channel) Validate() error {
+	channel.Name = strings.TrimSpace(channel.Name)
+	if len(channel.Name) == 0 {
+		return errors.New("Channel name cannot be empty.")
+	} else if len(channel.Name) > MAX_CHANNELNAME_LEN {
+		return errors.New(fmt.Sprintf("Length of channel name cannot exceed %i characters.", MAX_CHANNELNAME_LEN))
+	} else if !channelNameRegexp.MatchString(channel.Name) {
+		return errors.New("Channel names may only contain alpha numeric characters, hyphens or underscores.")
+	}
+	return nil
 }
 
 // Unmarshals the given JSON blob into a Submission, and attempts to validate
@@ -108,4 +109,9 @@ func (channel *Channel) UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
 	}
 
 	return &post, nil
+}
+
+// Returns the name of the channel's corresponding table in the database.
+func (channel *Channel) TableName() string {
+	return "channels"
 }
