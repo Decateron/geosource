@@ -1,9 +1,16 @@
 package types
 
 import (
+	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/joshheinrichs/geosource/server/types/fields"
+)
+
+const (
+	MAX_POSTTITLE_LEN = 140
 )
 
 // General meta information about a post.
@@ -22,9 +29,31 @@ func (postInfo *PostInfo) TableName() string {
 	return "posts"
 }
 
+// Validates the post info. Returns an error if any fields are invalid, nil
+// otherwise.
+func (postInfo *PostInfo) Validate() error {
+	postInfo.Title = strings.TrimSpace(postInfo.Title)
+	if len(postInfo.Title) == 0 {
+		return errors.New("Post title cannot be empty.")
+	} else if len(postInfo.Title) > MAX_POSTTITLE_LEN {
+		return errors.New(fmt.Sprintf("Length of post title cannot exceed %i characters", MAX_POSTTITLE_LEN))
+	}
+	err := postInfo.Location.Validate()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 type Post struct {
 	PostInfo
 	Fields fields.Fields `json:"fields" gorm:"column:p_fields" sql:"type:JSONB NOT NULL"`
+}
+
+// Validates the post. Returns an error if any fields are invalid, nil
+// otherwise.
+func (post *Post) Validate() error {
+	return post.PostInfo.Validate()
 }
 
 // Generates a thumbnail for the post, attempting to use an image within the

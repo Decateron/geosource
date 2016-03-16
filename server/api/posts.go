@@ -86,6 +86,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 	post.ID = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
 	post.Time = time.Now().UTC()
 
+	err = post.Validate()
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
