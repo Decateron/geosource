@@ -18,8 +18,8 @@ var ImageMaxHeight uint = 2000
 var ImageQuality uint = 70
 var ImageType string = ".jpg"
 
-var ThumbnailMaxWidth uint = 100
-var ThumbnailMaxHeight uint = 100
+var ThumbnailMaxWidth uint = 70
+var ThumbnailMaxHeight uint = 70
 var ThumbnailQuality uint = 70
 var ThumbnailType string = ".jpg"
 

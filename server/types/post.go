@@ -80,6 +80,7 @@ func (post *Post) GenerateThumbnail() error {
 			return nil
 		}
 	}
+	post.Thumbnail = fields.MediaDir + fields.ThumbnailDir + "default.svg"
 	return nil
 }
 
