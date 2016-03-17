@@ -48,7 +48,7 @@ func CallbackAuth(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	session.Values["userid"] = user.ID
+	session.Values["userID"] = user.ID
 	err = session.Save(req.Request, w.(http.ResponseWriter))
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -64,7 +64,7 @@ func Logout(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	session.Values["userid"] = ""
+	session.Values["userID"] = ""
 	err = session.Save(req.Request, w.(http.ResponseWriter))
 	if err != nil {
 		log.Printf("error saving session.\n")

@@ -46,17 +46,17 @@ func MakeHandler() (http.Handler, error) {
 		// Moderators
 		rest.Get("/channels/#channelname/moderators", GetModerators),
 		rest.Post("/channels/#channelname/moderators", AddModerator),
-		rest.Delete("/channels/#channelname/moderators/#username", RemoveModerator),
+		rest.Delete("/channels/#channelname/moderators/#userID", RemoveModerator),
 
 		// Viewers
 		rest.Get("/channels/#channelname/viewers", GetViewers),
 		rest.Post("/channels/#channelname/viewers", AddViewer),
-		rest.Delete("/channels/#channelname/viewers/#username", RemoveViewer),
+		rest.Delete("/channels/#channelname/viewers/#userID", RemoveViewer),
 
 		// Banned
 		rest.Get("/channels/#channelname/bans", GetBans),
 		rest.Post("/channels/#channelname/bans", AddBan),
-		rest.Delete("/channels/#channelname/bans/#username", RemoveBan),
+		rest.Delete("/channels/#channelname/bans/#userID", RemoveBan),
 
 		// Posts
 		rest.Get("/posts", GetPosts),
@@ -73,15 +73,20 @@ func MakeHandler() (http.Handler, error) {
 
 		// Users
 		rest.Get("/users", GetUsers),
-		rest.Get("/users/#username", GetUser),
-		// rest.Put("/users/#username", SetUser),
-		rest.Post("/users/#username", AddUser),
-		rest.Delete("/users/#username", RemoveUser),
+		rest.Get("/users/#userID", GetUser),
+		// rest.Put("/users/#userID", SetUser),
+		rest.Post("/users/#userID", AddUser),
+		rest.Delete("/users/#userID", RemoveUser),
 
 		// Subscriptions
-		rest.Get("/users/#username/subscriptions", GetSubscriptions),
-		rest.Post("/users/#username/subscriptions", AddSubscription),
-		rest.Delete("/users/#username/subscriptions/#channelname", RemoveSubscription),
+		rest.Get("/users/#userID/subscriptions", GetSubscriptions),
+		rest.Post("/users/#userID/subscriptions", AddSubscription),
+		rest.Delete("/users/#userID/subscriptions/#channelname", RemoveSubscription),
+
+		// Favorites
+		rest.Get("/users/#userID/favorites", GetFavorites),
+		rest.Post("/users/#userID/favorites", AddFavorite),
+		rest.Delete("/users/#userID/favorites/#postID", RemoveFavorite),
 	)
 	if err != nil {
 		return nil, err
@@ -102,13 +107,13 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// 	// send error rest.Error(w, err.Error(), http.StatusInternalServerError)
 	// 	return
 	// }
-	id, _ := session.Values["userid"].(string)
+	id, _ := session.Values["userID"].(string)
 	// if !ok {
 	// 	// send error
 	// 	return
 	// }
-	log.Println(session.Values["userid"])
-	// session.Values["userid"] = user.ID
+	log.Println(session.Values["userID"])
+	// session.Values["userID"] = user.ID
 	// err = session.Save(req.Request, w.(http.ResponseWriter))
 	// if err != nil {
 	// 	rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -130,7 +135,7 @@ func GetUserID(req *rest.Request) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	userID, ok := session.Values["userid"].(string)
+	userID, ok := session.Values["userID"].(string)
 	if !ok {
 		return "", nil
 	}

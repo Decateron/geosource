@@ -11,12 +11,12 @@ import (
 )
 
 func GetChannels(w rest.ResponseWriter, req *rest.Request) {
-	userID, err := GetUserID(req)
+	requester, err := GetUserID(req)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	channels, err := transactions.GetChannels(userID)
+	channels, err := transactions.GetChannels(requester)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -27,13 +27,13 @@ func GetChannels(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func GetChannel(w rest.ResponseWriter, req *rest.Request) {
-	userID, err := GetUserID(req)
+	requester, err := GetUserID(req)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	channelname := req.PathParam("channelname")
-	channel, err := transactions.GetChannel(userID, channelname)
+	channel, err := transactions.GetChannel(requester, channelname)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -46,7 +46,7 @@ func GetChannel(w rest.ResponseWriter, req *rest.Request) {
 // func SetChannel(w rest.ResponseWriter, req *rest.Request) {}
 
 func AddChannel(w rest.ResponseWriter, req *rest.Request) {
-	userID, err := GetUserID(req)
+	requester, err := GetUserID(req)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -64,7 +64,7 @@ func AddChannel(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	channel.CreatorID = userID
+	channel.CreatorID = requester
 	err = channel.Validate()
 	if err != nil {
 		log.Println(err)

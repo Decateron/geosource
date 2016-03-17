@@ -45,7 +45,7 @@ func GetPost(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func AddPost(w rest.ResponseWriter, req *rest.Request) {
-	userID, err := GetUserID(req)
+	requester, err := GetUserID(req)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -68,7 +68,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
-	channel, err := transactions.GetChannel(userID, submissionChannel.Channel)
+	channel, err := transactions.GetChannel(requester, submissionChannel.Channel)
 	if err != nil {
 		log.Println("could not find channel ", submissionChannel.Channel)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -89,7 +89,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
-	post.CreatorID = userID
+	post.CreatorID = requester
 	post.ID = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
 	post.Time = time.Now().UTC()
 	err = post.GenerateThumbnail()
@@ -99,7 +99,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
-	err = transactions.AddPost(userID, post)
+	err = transactions.AddPost(requester, post)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)

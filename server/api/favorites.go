@@ -1,60 +1,46 @@
 package api
 
 import (
-	"encoding/base64"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/ant0ine/go-json-rest/rest"
 	"github.com/joshheinrichs/geosource/server/transactions"
-	"github.com/joshheinrichs/geosource/server/types"
-	"github.com/pborman/uuid"
 )
 
-func GetComments(w rest.ResponseWriter, req *rest.Request) {
+func GetFavorites(w rest.ResponseWriter, req *rest.Request) {
 	requester, err := GetUserID(req)
 	if err != nil {
-		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	comments, err := transactions.GetComments(requester, req.PathParam("pid"))
+	favorites, err := transactions.GetFavorites(requester, req.PathParam("userID"))
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.WriteJson(comments)
+	w.WriteJson(favorites)
 	w.WriteHeader(http.StatusOK)
 }
 
-// func SetComment(w rest.ResponseWriter, req *rest.Request) {}
-
-func AddComment(w rest.ResponseWriter, req *rest.Request) {
+func AddFavorite(w rest.ResponseWriter, req *rest.Request) {
 	requester, err := GetUserID(req)
 	if err != nil {
-		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	var comment types.Comment
-	err = req.DecodeJsonPayload(&comment)
+	body := struct {
+		PostID string `json:"postID"`
+	}{}
+	err = req.DecodeJsonPayload(&body)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	comment.Time = time.Now().UTC()
-	comment.CreatorID = requester
-	comment.ID = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
-	err = comment.Validate()
-	if err != nil {
-		log.Println(err)
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = transactions.AddComment(requester, &comment)
+	log.Println(requester, req.PathParam("userID"), body.PostID)
+	err = transactions.AddFavorite(requester, req.PathParam("userID"), body.PostID)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -63,4 +49,17 @@ func AddComment(w rest.ResponseWriter, req *rest.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func RemoveComment(w rest.ResponseWriter, req *rest.Request) {}
+func RemoveFavorite(w rest.ResponseWriter, req *rest.Request) {
+	requester, err := GetUserID(req)
+	if err != nil {
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = transactions.RemoveFavorite(requester, req.PathParam("userID"), req.PathParam("postID"))
+	if err != nil {
+		log.Println(err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
