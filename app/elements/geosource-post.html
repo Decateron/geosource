@@ -37,12 +37,14 @@
 			margin: 20px;
 		}
 		.comment {
-			background-color: #fff;
-			padding: 20px;
-			margin-bottom: 20px;
+			margin-bottom: 15px;
 		}
 		#comment_submit {
 			width: 100%;
+		}
+		.contents {
+			background-color: #eee;
+			padding: 15px;
 		}
 	</style>
 	<template>
@@ -75,40 +77,39 @@
 						</div>
 						<template is="dom-repeat" items="{{post.fields}}" as="field">
 							<h3>{{field.label}}</h3>
-							<template is="dom-if" if="{{isText(field.type)}}">{{field.value}}</template>
-							<template is="dom-if" if="{{isImages(field.type)}}">
-								<template is="dom-repeat" items="{{field.value}}" as="image">
-									<img src="{{image}}">
+							<div class="contents">
+								<template is="dom-if" restamp if="{{isText(field.type)}}">{{field.value}}</template>
+								<template is="dom-if" restamp if="{{isImages(field.type)}}">
+									<template is="dom-repeat" items="{{field.value}}" as="image">
+										<img src="{{image}}">
+									</template>
 								</template>
-							</template>
-							<template is="dom-if" if="{{isCheckboxes(field.type)}}">
-								<paper-radio-group>
-									<template is="dom-repeat" items="{{field.pairs}}" as="checkbox">
-										<paper-checkbox disabled checked="{{checkbox.value}}">{{checkbox.form}}</paper-checkbox><br>
-									</template>
-								</paper-radio-group>
-							</template>
-							<template is="dom-if" if="{{isRadiobuttons(field.type)}}">
-								<paper-radio-group selected="{{field.value}}">
-									<template is="dom-repeat" items="{{field.form}}" as="radiobutton">
-										<paper-radio-button disabled name="{{radiobutton}}">{{radiobutton}}</paper-radio-button><br>
-									</template>
-								</paper-radio-group>
-							</template>
+								<template is="dom-if" restamp if="{{isCheckboxes(field.type)}}">
+									<paper-radio-group>
+										<template is="dom-repeat" items="{{field.pairs}}" as="checkbox">
+											<paper-checkbox disabled checked="{{checkbox.value}}">{{checkbox.form}}</paper-checkbox><br>
+										</template>
+									</paper-radio-group>
+								</template>
+								<template is="dom-if" restamp if="{{isRadiobuttons(field.type)}}">
+									<paper-radio-group selected="{{field.value}}">
+										<template is="dom-repeat" items="{{field.form}}" as="radiobutton">
+											<paper-radio-button disabled name="{{radiobutton}}">{{radiobutton}}</paper-radio-button><br>
+										</template>
+									</paper-radio-group>
+								</template>
+							</div>
 						</template>
 					</template>
 					<h2>Comments</h2>
 					<template is="dom-repeat" items="{{comments}}" as="comment">
-						<div class="comment">
-							<span>{{comment.user}}</span>
-							<span> - </span>
-							<span>{{displayTime(comment.time)}}</span>
-							<span>: </span>
+						<div class="comment contents">
+							<span><b>{{comment.user}}</b></span><span> - </span><span>{{displayTime(comment.time)}}</span><span>:</span><br>
 							<span>{{comment.comment}}</span>
 						</div>
 					</template>
 					<h3>Add Comment</h3>
-					<div class="vertical layout flex">
+					<div class="vertical layout flex contents">
 						<paper-textarea class="flex" id="comment_input" label="Enter some text" no-label-float></paper-textarea>
 						<paper-button on-tap="postComment" id="comment_submit">Submit</paper-button>
 					</div>
@@ -158,7 +159,7 @@
 
 		getPostResponse: function(event) {
 			event.detail.response.fields = this.pairFields(event.detail.response.fields);
-			this.post = event.detail.response;
+			this.set('post', event.detail.response);
 			console.log(this.post);
 			this.$.dialog.open();
 		},
