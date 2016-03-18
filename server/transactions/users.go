@@ -29,9 +29,9 @@ func GetUserByEmail(email string) (*types.User, error) {
 	return &user, nil
 }
 
-func GetUserById(id string) (*types.User, error) {
+func GetUserById(userID string) (*types.User, error) {
 	var user types.User
-	err := db.Where("u_userid = ?", id).First(&user).Error
+	err := db.Where("u_userid = ?", userID).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
@@ -44,10 +44,10 @@ func GetUsername(email string) (*string, error) {
 
 // Returns a user with the given username or nil if they do not exist. An error
 // is returned if the database was accessed unsuccessfully.
-func GetUser(requesterUid, uid string) (*types.User, error) {
+func GetUser(requester, userID string) (*types.User, error) {
 	return nil, errors.New("function has not yet been implemented.")
 }
 
-func RemoveUser(requesterUid, uid string) error {
+func RemoveUser(requester, userID string) error {
 	return errors.New("function has not yet been implemented.")
 }

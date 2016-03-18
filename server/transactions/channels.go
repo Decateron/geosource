@@ -34,6 +34,6 @@ func RemoveChannel(requester, channelname string) error {
 	return errors.New("function has not yet been implemented.")
 }
 
-func IsChannelCreator(userid, channelname string) (bool, error) {
+func IsChannelCreator(userID, channelname string) (bool, error) {
 	return false, errors.New("function has not yet been implemented.")
 }

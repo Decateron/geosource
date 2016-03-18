@@ -2,24 +2,11 @@ package transactions
 
 import (
 	"log"
-	"os"
 	"testing"
 
-	"github.com/joshheinrichs/geosource/server/config"
 	"github.com/joshheinrichs/geosource/server/types"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestMain(m *testing.M) {
-	testConfig := config.New()
-	testConfig.ReadFile("../config_test.gcfg")
-	err := Init(testConfig)
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
-	os.Exit(m.Run())
-}
 
 func TestAddUser(t *testing.T) {
 	newUser := types.User{
