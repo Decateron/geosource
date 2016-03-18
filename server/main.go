@@ -19,7 +19,7 @@ func redirectHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	log.SetFlags(log.LstdFlags | log.Llongfile)
 
 	mainConfig = config.New()
 	err := mainConfig.ReadFile("config.gcfg")
