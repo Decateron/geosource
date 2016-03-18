@@ -29,7 +29,7 @@ func GetUserByEmail(email string) (*types.User, error) {
 	return &user, nil
 }
 
-func GetUserById(userID string) (*types.User, error) {
+func GetUserByID(userID string) (*types.User, error) {
 	var user types.User
 	err := db.Where("u_userid = ?", userID).First(&user).Error
 	if err != nil {
