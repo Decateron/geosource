@@ -16,7 +16,7 @@ before_script:
   - psql -U postgres -c "create database geosource_test;"
   - psql -U postgres -d geosource_test -c "\i dbinit.sql"
   - cd ../server
-  - cp config_travis.yml config_test.yml
+  - cp config_travis.gcfg config_test.gcfg
 script: 
   - ./go.test.sh
 after_success:
