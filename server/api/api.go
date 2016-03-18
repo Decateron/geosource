@@ -20,6 +20,7 @@ var indexTemplate = template.Must(template.ParseFiles("../app/index.html"))
 
 func Init(config *config.Config) {
 	apiConfig = config
+	rest.ErrorFieldName = "error"
 	goth.UseProviders(
 		gplus.New(config.Google.ClientID, config.Google.ClientSecret, config.Google.CallbackUrl),
 		// facebook.New(config.Facebook.ClientID, config.Facebook.ClientSecret, config.Facebook.Callback),
