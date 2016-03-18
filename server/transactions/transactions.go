@@ -14,8 +14,21 @@ var db *gorm.DB
 var ErrInsufficientPermission error = errors.New("Insufficient permission.")
 
 func Init(config *config.Config) (err error) {
-	db, err = gorm.Open("postgres", fmt.Sprintf("host=%s dbname=%s user=%s password=%s",
-		config.Database.Host, config.Database.Database, config.Database.User, config.Database.Password))
+	arguments := ""
+	if len(config.Database.Host) > 0 {
+		arguments += fmt.Sprintf("host=%s ", config.Database.Host)
+	}
+	if len(config.Database.Database) > 0 {
+		arguments += fmt.Sprintf("dbname=%s ", config.Database.Database)
+	}
+	if len(config.Database.User) > 0 {
+		arguments += fmt.Sprintf("user=%s ", config.Database.User)
+	}
+	if len(config.Database.Password) > 0 {
+		arguments += fmt.Sprintf("password=%s ", config.Database.Password)
+	}
+
+	db, err = gorm.Open("postgres", arguments)
 	if err != nil {
 		return err
 	}
