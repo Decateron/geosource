@@ -2,6 +2,7 @@ package transactions
 
 import (
 	"log"
+	"os"
 	"testing"
 
 	"github.com/joshheinrichs/geosource/server/config"
@@ -12,7 +13,12 @@ import (
 func TestMain(m *testing.M) {
 	testConfig := config.New()
 	testConfig.ReadFile("../config_test.gcfg")
-	Init(testConfig)
+	err := Init(testConfig)
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+	os.Exit(m.Run())
 }
 
 func TestAddUser(t *testing.T) {
@@ -33,7 +39,7 @@ func TestGetUserByEmail(t *testing.T) {
 		Avatar: "baz",
 		Email:  "zap",
 	}
-	assert.NoError(t, AddUser(&newUser))
+	AddUser(&newUser) // Add user if it doesn't exist
 	dbUser, err := GetUserByEmail(newUser.Email)
 	assert.NoError(t, err)
 	assert.Equal(t, &newUser, dbUser)

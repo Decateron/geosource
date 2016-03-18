@@ -1,5 +1,7 @@
 sudo: required
 dist: trusty
+services:
+  - postgresql
 language: go
 go:
   - 1.5
@@ -8,6 +10,13 @@ before_install:
 install:
   - cd server 
   - go get -d -t ./...
+before_script:
+  - cd ../database
+  - psql -U postgres -c "create extension postgis"
+  - psql -U postgres -c "create database geosource_test;"
+  - psql -U postgres -d geosource_test -c "\i dbinit.sql"
+  - cd ../server
+  - cp config_travis.yml config_test.yml
 script: 
   - ./go.test.sh
 after_success:
