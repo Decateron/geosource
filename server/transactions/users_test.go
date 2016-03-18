@@ -49,7 +49,7 @@ func TestGetUserByID(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, &newUser, dbUser)
 
-	dbUser, err = GetUserByEmail("u3-asdf")
+	dbUser, err = GetUserByID("u3-asdf")
 	assert.NoError(t, err)
 	assert.Nil(t, dbUser)
 }
