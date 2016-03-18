@@ -33,6 +33,9 @@ func GetUserByID(userID string) (*types.User, error) {
 	var user types.User
 	err := db.Where("u_userid = ?", userID).First(&user).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &user, nil
