@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// A checkboxes form is an array of labels for the checkboxes.
 type CheckboxesForm []string
 
 func (checkboxesForm *CheckboxesForm) ValidateForm() error {
@@ -50,6 +51,8 @@ func (checkboxesForm *CheckboxesForm) UnmarshalValue(blob []byte) (Value, error)
 	return &value, nil
 }
 
+// A checkboxes value is a parallel array of bools which correspond to the
+// labels in the form.
 type CheckboxesValue []bool
 
 func (checkboxesValue *CheckboxesValue) IsComplete() bool {

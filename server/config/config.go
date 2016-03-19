@@ -11,8 +11,11 @@ type Config struct {
 }
 
 type Website struct {
-	Url       string
-	HttpPort  string
+	// Url from which the site can be accessed.
+	Url string
+	// Port over which HTTP is served
+	HttpPort string
+	// Port over which HTTPS is served
 	HttpsPort string
 	// Path to the TLS certificate
 	Cert string
@@ -33,6 +36,7 @@ type Database struct {
 	Password string
 }
 
+// Returns a new config file with default values set where applicable.
 func New() *Config {
 	return &Config{
 		Website: Website{
@@ -42,12 +46,12 @@ func New() *Config {
 			Cert:      "cert.pem",
 			Key:       "key.pem",
 		},
-		Google:   Credentials{},
-		Database: Database{},
 	}
 }
 
-// Reads in config from a file with the given filename
+// Reads in config information from given file assumed to be in gcfg format,
+// overwriting any existing values. Returns an error if the file cannot be read,
+// nil otherwise.
 func (config *Config) ReadFile(filename string) error {
 	err := gcfg.ReadFileInto(config, filename)
 	if err != nil {

@@ -2,9 +2,41 @@ package transactions
 
 import (
 	"errors"
+	"time"
 
 	"github.com/joshheinrichs/geosource/server/types"
 )
+
+type PostQuery struct {
+	Flags struct {
+		// If true, all posts will be searched, regardless of the channels and
+		// other flags that were set in the query.
+		All bool `url:"all"`
+		// If true, posts that were created by the user will be included in
+		// the search results.
+		Mine bool `url:"mine"`
+		// If true, posts that were favorited by the user will be included in
+		// the search results.
+		Favorites bool `url:"favorites"`
+	} `url:"flags"`
+	Time struct {
+		Start time.Time `url:"start"`
+		End   time.Time `url:"end"`
+	} `url:"time"`
+	Location struct {
+		// The upper left bound of the region
+		Start types.Location `url:"start"`
+		// The lower right bound of the region
+		End types.Location `url:"end"`
+	}
+	// The set of channels to query. If the all flag is true, this field is
+	// ignored.
+	Channels []string `url:"channels"`
+}
+
+func IsPostCreator(requester, userID, postID string) (bool, error) {
+	return false, errors.New("function has not yet been implemented.")
+}
 
 func AddPost(requester string, post *types.Post) error {
 	return db.Create(post).Error
@@ -30,8 +62,4 @@ func GetPost(requester, postID string) (*types.Post, error) {
 
 func RemovePost(requester, postID string) error {
 	return errors.New("function has not yet been implemented.")
-}
-
-func IsPostCreator(requester, userID, postID string) (bool, error) {
-	return false, errors.New("function has not yet been implemented.")
 }

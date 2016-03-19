@@ -2,18 +2,28 @@ package transactions
 
 import "errors"
 
-func CanModifyViewers(requester, channelname string) (bool, error) {
+// Returns true if the user with the given ID has permission to view viewers
+// for the given channel, false otherwise.
+func CanModifyViewers(userID, channelname string) (bool, error) {
 	return false, errors.New("function has not yet been implemented.")
 }
 
-func CanViewViewers(requester, channelname string) (bool, error) {
+// Returns true if the user with the given ID has permission to modify viewers
+// for the given channel, false otherwise.
+func CanViewViewers(userID, channelname string) (bool, error) {
 	return false, errors.New("function has not yet been implemented.")
 }
 
+// Returns true if the user with the given ID is viewer for the given channel,
+// false otherwise.
 func IsViewer(userID, channelname string) (bool, error) {
 	return false, errors.New("function has not yet been implemented.")
 }
 
+// Adds the user with ID userID to the viewer list for the given channel.
+// This transaction is executed under the permission level of the given
+// requester. Returns an error if the requester does not have sufficient
+// permission, or if some other error occurs within the database.
 func AddViewer(requester, userID, channelname string) error {
 	permission, err := CanModifyViewers(requester, channelname)
 	if err != nil {
@@ -24,6 +34,10 @@ func AddViewer(requester, userID, channelname string) error {
 	return db.Exec("INSERT INTO channel_viewers (chv_userid, chv_channelname) VALUES (?, ?);", userID, channelname).Error
 }
 
+// Returns the list of users which are viewers for the given channel. This
+// transaction is executed under the permission level of the given requester.
+// Returns an error if the requester does not have sufficient permission, or
+// if some other error occurs within the database.
 func GetViewers(requester, channelname string) ([]string, error) {
 	permission, err := CanViewViewers(requester, channelname)
 	if err != nil {
@@ -39,6 +53,10 @@ func GetViewers(requester, channelname string) ([]string, error) {
 	return viewers, nil
 }
 
+// Removes the user with ID userID from the viewer list for the given channel.
+// This transaction is executed under the permission level of the given
+// requester. Returns an error if the requester does not have sufficient
+// permission, or if some other error occurs within the database.
 func RemoveViewer(requester, userID, channelname string) error {
 	permission, err := CanModifyViewers(requester, channelname)
 	if err != nil {

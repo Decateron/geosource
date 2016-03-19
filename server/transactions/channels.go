@@ -6,6 +6,10 @@ import (
 	"github.com/joshheinrichs/geosource/server/types"
 )
 
+func IsChannelCreator(userID, channelname string) (bool, error) {
+	return false, errors.New("function has not yet been implemented.")
+}
+
 func AddChannel(channel *types.Channel) error {
 	return db.Create(channel).Error
 }
@@ -32,8 +36,4 @@ func GetChannels(requester string) ([]string, error) {
 
 func RemoveChannel(requester, channelname string) error {
 	return errors.New("function has not yet been implemented.")
-}
-
-func IsChannelCreator(userID, channelname string) (bool, error) {
-	return false, errors.New("function has not yet been implemented.")
 }

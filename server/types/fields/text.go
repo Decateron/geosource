@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+// No form is needed for images as there are no limitations that can be set by
+// the user.
 type TextForm struct{}
 
 func (textForm *TextForm) ValidateForm() error {
@@ -32,6 +34,7 @@ func (textForm *TextForm) UnmarshalValue(blob []byte) (Value, error) {
 	return &value, nil
 }
 
+// A text value is simply a string, representing the text input by the user.
 type TextValue string
 
 func (textValue *TextValue) IsComplete() bool {

@@ -28,6 +28,8 @@ var MediaDir string = "media/"
 var ImageDir string = "images/"
 var ThumbnailDir string = "thumbnails/"
 
+// No form is needed for images as there is no restrictions that may be set
+// by the user.
 type ImagesForm struct{}
 
 func (imagesForm *ImagesForm) ValidateForm() error {
@@ -65,6 +67,9 @@ func (imagesForm *ImagesForm) UnmarshalValue(blob []byte) (Value, error) {
 	return &value, nil
 }
 
+// An images value is an array of strings. These strings are expected to be
+// submitted by the user as base64 encoded images. After saving and conversion,
+// the URL of the images are stored inside instead.
 type ImagesValue []string
 
 func (imagesValue *ImagesValue) IsComplete() bool {

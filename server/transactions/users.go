@@ -1,8 +1,6 @@
 package transactions
 
 import (
-	"errors"
-
 	"github.com/jinzhu/gorm"
 	"github.com/joshheinrichs/geosource/server/types"
 )
@@ -17,6 +15,8 @@ func AddUser(user *types.User) error {
 	return nil
 }
 
+// Returns the user with the given email if one exists, nil otherwise. Returns
+// an error if some error occurs within the database.
 func GetUserByEmail(email string) (*types.User, error) {
 	var user types.User
 	err := db.Where("u_email = ?", email).First(&user).Error
@@ -29,6 +29,8 @@ func GetUserByEmail(email string) (*types.User, error) {
 	return &user, nil
 }
 
+// Returns the user with the given ID if one exists, nil otherwise. Returns an
+// error if some error occurs within the database.
 func GetUserByID(userID string) (*types.User, error) {
 	var user types.User
 	err := db.Where("u_userid = ?", userID).First(&user).Error
@@ -39,18 +41,4 @@ func GetUserByID(userID string) (*types.User, error) {
 		return nil, err
 	}
 	return &user, nil
-}
-
-func GetUsername(email string) (*string, error) {
-	return nil, errors.New("function has not yet been implemented.")
-}
-
-// Returns a user with the given username or nil if they do not exist. An error
-// is returned if the database was accessed unsuccessfully.
-func GetUser(requester, userID string) (*types.User, error) {
-	return nil, errors.New("function has not yet been implemented.")
-}
-
-func RemoveUser(requester, userID string) error {
-	return errors.New("function has not yet been implemented.")
 }
