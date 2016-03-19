@@ -9,9 +9,14 @@ import (
 )
 
 func TestMain(m *testing.M) {
+	log.SetFlags(log.LstdFlags | log.Llongfile)
 	testConfig := config.New()
-	testConfig.ReadFile("../config_test.gcfg")
-	err := Init(testConfig)
+	err := testConfig.ReadFile("../config_test.gcfg")
+	if err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+	err = Init(testConfig)
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
