@@ -3,7 +3,7 @@ dist: trusty
 services:
   - postgresql
 addons:
-  postgresql: "9.4"
+  postgresql: "9.4.1"
 language: go
 go:
   - 1.5
