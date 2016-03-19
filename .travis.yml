@@ -9,7 +9,7 @@ go:
   - 1.5
 before_install:
   - pip install --user codecov
-  - sudo apt-get install postgresql-9.4-postgis-2.1
+  - sudo apt-get install -y postgresql-9.4-postgis-2.1
 install:
   - cd server 
   - go get -d -t ./...
