@@ -42,9 +42,13 @@ func AddPost(requester string, post *types.Post) error {
 	return db.Create(post).Error
 }
 
-func GetPosts(requester string) ([]*types.PostInfo, error) {
-	var posts []*types.PostInfo
-	err := db.Order("p_time desc").Find(&posts).Error
+func GetPosts(requester string) ([]*types.PersonalizedPostInfo, error) {
+	var posts []*types.PersonalizedPostInfo
+	err := db.Table("posts").
+		Joins("LEFT JOIN user_favorites ON (p_postid = uf_postid)").
+		Joins("LEFT JOIN users ON (u_userid = p_userid_creator)").
+		Select("*, (uf_postid IS NOT NULL) AS favorited").
+		Order("p_time desc").Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}

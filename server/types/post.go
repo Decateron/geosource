@@ -16,7 +16,7 @@ const (
 // General meta information about a post.
 type PostInfo struct {
 	ID        string    `json:"id" gorm:"column:p_postid"`
-	CreatorID string    `json:"creator" gorm:"column:p_userid_creator"`
+	CreatorID string    `json:"creatorID" gorm:"column:p_userid_creator"`
 	Channel   string    `json:"channel" gorm:"column:p_channelname"`
 	Title     string    `json:"title" gorm:"column:p_title"`
 	Thumbnail string    `json:"thumbnail" gorm:"column:p_thumbnail"`
@@ -87,4 +87,10 @@ func (post *Post) GenerateThumbnail() error {
 // Returns the name of the post's corresponding table in the database.
 func (post *Post) TableName() string {
 	return "posts"
+}
+
+type PersonalizedPostInfo struct {
+	Post
+	Favorited   bool   `json:"favorited" gorm:"column:favorited" `
+	CreatorName string `json:"creatorName" gorm:"column:u_username" `
 }
