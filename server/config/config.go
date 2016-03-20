@@ -1,3 +1,5 @@
+// Package config provides a common structure that is shared throughout the
+// program to enable alterable settings.
 package config
 
 import (
@@ -23,12 +25,15 @@ type Website struct {
 	Key string
 }
 
+// Credentials is a generalized OAuth token structure which is shared by various
+// login providers such as Google, Facebook, and Twitter.
 type Credentials struct {
 	ClientID     string
 	ClientSecret string
 	CallbackUrl  string
 }
 
+// Database contains information related to the location of the database.
 type Database struct {
 	Host     string
 	Database string
@@ -36,7 +41,7 @@ type Database struct {
 	Password string
 }
 
-// Returns a new config file with default values set where applicable.
+// New constructs a new config file with default values set where applicable.
 func New() *Config {
 	return &Config{
 		Website: Website{
@@ -49,9 +54,9 @@ func New() *Config {
 	}
 }
 
-// Reads in config information from given file assumed to be in gcfg format,
-// overwriting any existing values. Returns an error if the file cannot be read,
-// nil otherwise.
+// ReadFile reads in config information from the file with the given name,
+// assumed to be in gcfg format, overwriting any existing values. Returns an
+// error if the file cannot be read, nil otherwise.
 func (config *Config) ReadFile(filename string) error {
 	err := gcfg.ReadFileInto(config, filename)
 	if err != nil {
