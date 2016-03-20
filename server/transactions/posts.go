@@ -55,9 +55,14 @@ func GetPosts(requester string) ([]*types.PersonalizedPostInfo, error) {
 	return posts, nil
 }
 
-func GetPost(requester, postID string) (*types.Post, error) {
-	var post types.Post
-	err := db.Where("p_postid = ?", postID).First(&post).Error
+func GetPost(requester, postID string) (*types.PersonalizedPost, error) {
+	var post types.PersonalizedPost
+	err := db.Table("posts").
+		Where("p_postid = ?", postID).
+		Joins("LEFT JOIN user_favorites ON (p_postid = uf_postid AND uf_userid = ?)", requester).
+		Joins("LEFT JOIN users ON (u_userid = p_userid_creator)").
+		Select("*, (uf_postid IS NOT NULL) AS favorited").
+		First(&post).Error
 	if err != nil {
 		return nil, err
 	}

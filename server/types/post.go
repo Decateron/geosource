@@ -89,8 +89,17 @@ func (post *Post) TableName() string {
 	return "posts"
 }
 
+type PersonalizedPostFields struct {
+	Favorited   bool   `json:"favorited" gorm:"column:favorited"`
+	CreatorName string `json:"creatorName" gorm:"column:u_username"`
+}
+
 type PersonalizedPostInfo struct {
+	PostInfo
+	PersonalizedPostFields
+}
+
+type PersonalizedPost struct {
 	Post
-	Favorited   bool   `json:"favorited" gorm:"column:favorited" `
-	CreatorName string `json:"creatorName" gorm:"column:u_username" `
+	PersonalizedPostFields
 }

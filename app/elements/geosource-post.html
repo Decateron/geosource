@@ -68,7 +68,7 @@
 			<div main id="main">
 				<template is="dom-if" if="{{post}}">
 					<div>
-						Posted by <span>{{post.creator}}</span> to <span>{{post.channel}}</span> <span>{{displayTime(post.time)}}</span>
+						Posted by <span>{{post.creatorName}}</span> to <span>{{post.channel}}</span> <span>{{displayTime(post.time)}}</span>
 					</div>
 					<template is="dom-repeat" items="{{post.fields}}" as="field">
 						<h3>{{field.label}}</h3>
