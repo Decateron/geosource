@@ -1,3 +1,5 @@
+// Package transactions provides a set of functions which allow for interaction
+// with the database.
 package transactions
 
 import (
@@ -13,6 +15,8 @@ var db *gorm.DB
 
 var ErrInsufficientPermission error = errors.New("Insufficient permission.")
 
+// Init opens a connection to the database based on the information in the
+// given config. Returns an error if the connection  could not be established.
 func Init(config *config.Config) (err error) {
 	arguments := ""
 	if len(config.Database.Host) > 0 {
