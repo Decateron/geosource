@@ -64,57 +64,51 @@
 			on-response="postCommentResponse" on-error="postCommentError">
 		</iron-ajax>
 
-		<geosource-dialog id="dialog">
-			<paper-header-panel>
-				<paper-toolbar>
-					<h1 class="dialog_title">{{post.title}}</h1>
-					<paper-icon-button icon="close" on-tap="close"></paper-icon-button>
-				</paper-toolbar>
-				<div main id="main">
-					<template is="dom-if" if="{{post}}">
-						<div>
-							Posted by <span>{{post.creator}}</span> to <span>{{post.channel}}</span> <span>{{displayTime(post.time)}}</span>
-						</div>
-						<template is="dom-repeat" items="{{post.fields}}" as="field">
-							<h3>{{field.label}}</h3>
-							<div class="contents">
-								<template is="dom-if" restamp if="{{isText(field.type)}}">{{field.value}}</template>
-								<template is="dom-if" restamp if="{{isImages(field.type)}}">
-									<template is="dom-repeat" items="{{field.value}}" as="image">
-										<img src="{{image}}">
-									</template>
-								</template>
-								<template is="dom-if" restamp if="{{isCheckboxes(field.type)}}">
-									<paper-radio-group>
-										<template is="dom-repeat" items="{{field.pairs}}" as="checkbox">
-											<paper-checkbox disabled checked="{{checkbox.value}}">{{checkbox.form}}</paper-checkbox><br>
-										</template>
-									</paper-radio-group>
-								</template>
-								<template is="dom-if" restamp if="{{isRadiobuttons(field.type)}}">
-									<paper-radio-group selected="{{field.value}}">
-										<template is="dom-repeat" items="{{field.form}}" as="radiobutton">
-											<paper-radio-button disabled name="{{radiobutton}}">{{radiobutton}}</paper-radio-button><br>
-										</template>
-									</paper-radio-group>
-								</template>
-							</div>
-						</template>
-					</template>
-					<h2>Comments</h2>
-					<template is="dom-repeat" items="{{comments}}" as="comment">
-						<div class="comment contents">
-							<span><b>{{comment.user}}</b></span><span> - </span><span>{{displayTime(comment.time)}}</span><span>:</span><br>
-							<span>{{comment.comment}}</span>
-						</div>
-					</template>
-					<h3>Add Comment</h3>
-					<div class="vertical layout flex contents">
-						<paper-textarea class="flex" id="comment_input" label="Enter some text" no-label-float></paper-textarea>
-						<paper-button on-tap="postComment" id="comment_submit">Submit</paper-button>
+		<geosource-dialog id="dialog" title="{{post.title}}">
+			<div main id="main">
+				<template is="dom-if" if="{{post}}">
+					<div>
+						Posted by <span>{{post.creator}}</span> to <span>{{post.channel}}</span> <span>{{displayTime(post.time)}}</span>
 					</div>
+					<template is="dom-repeat" items="{{post.fields}}" as="field">
+						<h3>{{field.label}}</h3>
+						<div class="contents">
+							<template is="dom-if" restamp if="{{isText(field.type)}}">{{field.value}}</template>
+							<template is="dom-if" restamp if="{{isImages(field.type)}}">
+								<template is="dom-repeat" items="{{field.value}}" as="image">
+									<img src="{{image}}">
+								</template>
+							</template>
+							<template is="dom-if" restamp if="{{isCheckboxes(field.type)}}">
+								<paper-radio-group>
+									<template is="dom-repeat" items="{{field.pairs}}" as="checkbox">
+										<paper-checkbox disabled checked="{{checkbox.value}}">{{checkbox.form}}</paper-checkbox><br>
+									</template>
+								</paper-radio-group>
+							</template>
+							<template is="dom-if" restamp if="{{isRadiobuttons(field.type)}}">
+								<paper-radio-group selected="{{field.value}}">
+									<template is="dom-repeat" items="{{field.form}}" as="radiobutton">
+										<paper-radio-button disabled name="{{radiobutton}}">{{radiobutton}}</paper-radio-button><br>
+									</template>
+								</paper-radio-group>
+							</template>
+						</div>
+					</template>
+				</template>
+				<h2>Comments</h2>
+				<template is="dom-repeat" items="{{comments}}" as="comment">
+					<div class="comment contents">
+						<span><b>{{comment.user}}</b></span><span> - </span><span>{{displayTime(comment.time)}}</span><span>:</span><br>
+						<span>{{comment.comment}}</span>
+					</div>
+				</template>
+				<h3>Add Comment</h3>
+				<div class="vertical layout flex contents">
+					<paper-textarea class="flex" id="comment_input" label="Enter some text" no-label-float></paper-textarea>
+					<paper-button on-tap="postComment" id="comment_submit">Submit</paper-button>
 				</div>
-			</paper-header-panel>
+			</div>
 		</geosource-dialog>
 
 	</template>
@@ -141,7 +135,7 @@
 			}
 		},
 
-		openPost: function(postid) {
+		open: function(postid) {
 			console.log(postid);
 			this.postid = postid;
 			this.$.get_post.url = "/api/posts/" + postid;

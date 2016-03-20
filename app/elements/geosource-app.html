@@ -147,46 +147,25 @@
 		}
 	</style>
 	<template>
-
 		<platinum-sw-register>
 			<platinum-sw-cache></platinum-sw-cache>
 		</platinum-sw-register>
 
 		<geosource-api-handler id="api"
 			posts="{{posts}}"
-			state="{{state}}"
 			on-create-user="openCreateUserDialog">
 		</geosource-api-handler>
 
 		<geosource-post id="post"></geosource-post>
 
-		<geosource-dialog id="create_channel">
-			<paper-header-panel>
-				<paper-toolbar>
-					<div class="dialog_title">Create a Channel</div>
-					<paper-icon-button icon="close" on-tap="toggleChannelDialog"></paper-icon-button>
-				</paper-toolbar>
-				<div main>
-					<geosource-channel-creator
-						on-submit="createChannel">
-					</geosource-channel-creator>
-				</div>
-			</paper-header-panel>
+		<geosource-dialog id="create_channel" title="Create a Channel">
+			<geosource-channel-creator
+				on-submit="createChannel">
+			</geosource-channel-creator>
 		</geosource-dialog>
 
-		<geosource-dialog id="create_post">
-			<paper-header-panel>
-				<paper-toolbar>
-					<div class="dialog_title">Create a Post</div>
-					<paper-icon-button icon="close" on-tap="togglePostDialog"></paper-icon-button>
-				</paper-toolbar>
-				<div main>
-					<geosource-post-creator></geosource-post-creator>
-<!-- 					<geosource-channel-creator
-						on-submit="createChannel">
-					</geosource-channel-creator> -->
-				</div>
-			</paper-header-panel>
+		<geosource-dialog id="create_post" title="Create a Post">
+			<geosource-post-creator></geosource-post-creator>
 		</geosource-dialog>
 
 		<paper-dialog id="login_dialog" with-backdrop>
@@ -218,7 +197,7 @@
 		</paper-dialog>
 
 		<paper-drawer-panel id="drawer" drawer-width="{{drawerWidth}}" narrow="{{drawerShut}}"
-			on-paper-responsive-change="resizeMap">
+			on-paper-responsive-change="resizeDrawer">
 			<div drawer class="drawer">
 				<paper-header-panel>
 					<paper-toolbar>
@@ -228,7 +207,7 @@
 					</paper-toolbar>
 					<paper-drawer-panel id="settings" drawer-width="100%" force-narrow>
 						<div main>
-							<geosource-posts posts="{{posts}}" on-move-map="moveToPost" on-open-post="openPost"></geosource-posts>
+							<geosource-posts posts="{{posts}}" user-id="[[userID]]" on-move-map="moveToPost" on-open-post="openPostDialog"></geosource-posts>
 						</div>
 						<div drawer>
 							<geosource-settings></geosource-settings>
@@ -244,13 +223,13 @@
 						<div class="drawer_title">GeoSource</div>
 					</div>
 				</paper-button>
-				<paper-button id="login" on-tap="openLoginDialog" hidden$="{{loggedIn(userId)}}">Login</paper-button>
-				<paper-button id="logout" on-tap="logout" hidden$="{{!loggedIn(userId)}}">Logout</paper-button>
+				<paper-button id="login" on-tap="openLoginDialog" hidden$="{{isLoggedIn(userID)}}">Login</paper-button>
+				<paper-button id="logout" on-tap="logout" hidden$="{{!isLoggedIn(userID)}}">Logout</paper-button>
 
-				<paper-fab icon="add" id="add" on-tap="toggleChannelDialog"></paper-fab>
-				<paper-fab icon="add" id="add2" on-tap="togglePostDialog"></paper-fab>
+				<paper-fab icon="add" id="add" on-tap="openChannelCreatorDialog"></paper-fab>
+				<paper-fab icon="add" id="add2" on-tap="openPostCreatorDialog"></paper-fab>
 
-				<geosource-map id="map" posts="[[posts]]" on-open-post="openPost"></geosource-map>
+				<geosource-map id="map" posts="[[posts]]" on-open-post="openPostDialog"></geosource-map>
 
 			</div>
 		</paper-drawer-panel>
@@ -263,55 +242,39 @@
 		is: "geosource-app",
 
 		properties: {
-			userId: {
-				type: String,
-			},
-			state: {
+			userID: {
 				type: String,
 			},
 			posts: {
 				type: Array,
 				value: [],
 			},
-			user: {
-				name: "Josh Heinrichs"
-			},
 			drawerWidth: {
 				type: String,
-				value: "400px"
+				value: "400px",
 			},
 			drawerShut: {
-				type: Boolean
+				type: Boolean,
 			},
 		},
 
 		ready: function() {
-			console.log(this.userId);
-			this.updateLocation();
+			console.log(this.userID);
+			this.moveToUser();
 			this.$.api.getPosts();
 		},
 
-		loggedIn: function(userId) {
-			return userId != "";
+		/** Returns true if the user is logged in, false otherwise. */
+		isLoggedIn: function(userID) {
+			return userID != "";
 		},
+
+		/** Logs out the user. */
 		logout: function() {
 			this.$.api.logout();
 		},
 
-		updateLocation: function() {
-			if (navigator.geolocation) {
-				navigator.geolocation.getCurrentPosition(function(location) {
-					this.$.map.updateCenter(location.coords);
-				}.bind(this));
-			} else {
-				console.log("geolocation is not supported by this browser.");
-			}
-		},
-
-		toggleSettings: function() {
-			this.$.settings.togglePanel();
-		},
-
+		/** Toggles the drawer open and closed. */
 		toggleDrawer: function() {
 			var drawer = this.$.drawer;
 			if (drawer.narrow) {
@@ -323,7 +286,8 @@
 			}
 		},
 
-		resizeMap: function() {
+		/** Resizes the drawer based on whether or not its hidden by default */
+		resizeDrawer: function() {
 			var drawer = this.$.drawer;
 			if (drawer.narrow && !drawer.forceNarrow) {
 				this.drawerWidth = "90%";
@@ -332,37 +296,39 @@
 			}
 		},
 
-		moveToPost: function(event, detail, sender) {
-			this.$.map.updateCenter(detail.post.location);
+		/** Toggles the settings drawer open and closed. */
+		toggleSettings: function() {
+			this.$.settings.togglePanel();
 		},
 
-		toggleChannelDialog: function() {
-			this.$.create_channel.toggle();
-		},
-		togglePostDialog: function() {
-			this.$.create_post.toggle();
+		/** Moves the map to the position of the post given in the event detail. */
+		moveToPost: function(event) {
+			this.$.map.updateCenter(event.detail.post.location);
 		},
 
-		toggleUser: function() {
-			this.$.user_dialog.toggle();
-		},
-
-		createChannel(event, detail, sender) {
-			this.$.api.createChannel(detail.channel);
-		},
-
-		openCreateUserDialog: function(event, detail, sender) {
-			console.log("opening dialog");
-			this.$.create_user_dialog.open();
+		/** Moves the map to the user's current position. */
+		moveToUser: function() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(location) {
+					this.$.map.updateCenter(location.coords);
+				}.bind(this));
+			} else {
+				console.log("geolocation is not supported by this browser.");
+			}
 		},
 
 		openLoginDialog: function() {
 			this.$.login_dialog.open();
 		},
-
-		openPost: function(event, detail, sender) {
+		openPostDialog: function(event, detail, sender) {
 			console.log(detail);
-			this.$.post.openPost(detail.postid);
+			this.$.post.open(detail.postid);
+		},
+		openChannelCreatorDialog: function() {
+			this.$.create_channel.open();
+		},
+		openPostCreatorDialog: function() {
+			this.$.create_post.open();
 		},
 	});
 </script>

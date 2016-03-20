@@ -49,18 +49,26 @@
 	   	paper-icon-button {
 	    	color: #555;
 	    }
-	    paper-icon-button[favorite] {
+	    paper-icon-button[favorited] {
 	    	color: #FF4081;
 	    }
 	</style>
 
 	<template>
+		<iron-ajax id="postFavorite"
+			method="POST" content-type="application/json" handle-as="json"
+			on-response="favoriteResponse" on-error="favoriteError">
+		</iron-ajax>
+		<iron-ajax id="deleteFavorite"
+			method="DELETE" content-type="application/json" handle-as="json"
+			on-response="unfavoriteResponse" on-error="unfavoriteError">
+		</iron-ajax>
 		<div class="header">
 			<img src="{{post.thumbnail}}">
 			<div class="title flex">{{post.title}}</div>
 			<template is="dom-if" if="{{!noButtons}}">
 				<div class="buttons">
-					<paper-icon-button icon="favorite" on-tap="favoriteTapped" favorite$="[[post.favorite]]"></paper-icon-button>
+					<paper-icon-button disabled="[[!canFavorite]]" icon="favorite" on-tap="favoriteTapped" favorited$="[[post.favorited]]"></paper-icon-button>
 					<paper-icon-button icon="room" on-tap="locationTapped"></paper-icon-button>
 				</div>
 			</template>
@@ -68,7 +76,7 @@
 		<div class="footer">
 			<div class="info flex">
 				Posted by 
-				<span>{{post.username}}</span> 
+				<span>{{post.creatorName}}</span> 
 				<span>{{timeAgo(post.time)}}</span> to 
 				<span>{{post.channel}}</span>
 			</div>
@@ -95,8 +103,21 @@
 			noButtons: {
 				type: Boolean,
 				reflectToAttribute: true,
-				value: false
-			}
+				value: false,
+			},
+			canFavorite: {
+				type: Boolean,
+				value: true,
+			},
+			userId: {
+				type: String,
+			},
+		},
+
+		ready: function() {
+			this.$.postFavorite.url = "/api/users/" + this.userId + "/favorites";
+			this.$.postFavorite.body = {"postid": this.post.id};
+			this.$.deleteFavorite.url = "/api/users/" + this.userId + "/favorites/" + this.post.id;
 		},
 
 		timeAgo: function(time) {
@@ -104,12 +125,43 @@
 		},
 
 		locationTapped: function() {
-			this.fire('move-map', {post: this.post});
+			this.fire('move-map', {postID: this.post});
 		},
 
 		favoriteTapped: function() {
-			console.log("favorited", this.post);
-			this.set('post.favorite', !this.post.favorite);
+			if (this.post.favorited) {
+				this.unfavorite();
+			} else {
+				this.favorite();
+			}
+		},
+
+		favorite: function() {
+			if (this.canFavorite) {
+				this.canFavorite = false;
+				this.$.postFavorite.generateRequest();
+			}
+		},
+		favoriteResponse: function() {
+			this.set('post.favorited', true);
+			this.canFavorite = true;
+		},
+		favoriteError: function() {
+			this.canFavorite = true;
+		},
+
+		unfavorite: function() {
+			if (this.canFavorite) {
+				this.canFavorite = false;
+				this.$.deleteFavorite.generateRequest();
+			}
+		},
+		unfavoriteResponse: function() {
+			this.set('post.favorited', false);
+			this.canFavorite = true;
+		},
+		unfavoriteError: function() {
+			this.canFavorite = true;
 		},
 
 		seeMoreTapped: function() {

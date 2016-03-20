@@ -36,7 +36,17 @@
 			<div id="background" on-tap="close"></div>
 			<paper-material elevation="4" id="container">
 				<div id="dialog">
-					<content></content>
+					<paper-header-panel>
+						<paper-toolbar>
+							<div class="horizontal layout center flex">
+								<h1 class="dialog_title flex">{{title}}</h1>
+								<paper-icon-button icon="close" on-tap="close"></paper-icon-button>
+							</div>
+						</paper-toolbar>
+						<div main>
+							<content></content>
+						</div>
+					</paper-header-panel>
 				</div>
 			</paper-material>
 		</div>
@@ -52,6 +62,10 @@
 			isOpen: {
 				type: Boolean,
 				value: false
+			},
+			title: {
+				type: String,
+				value: ""
 			}
 		},
 

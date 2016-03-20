@@ -20,7 +20,7 @@
 			<template is="dom-repeat" items="{{posts}}" as="post">
 				<div>
 					<paper-material z="1">
-						<geosource-metapost post="[[post]]"></geosource-metapost>
+						<geosource-metapost post="[[post]]" user-id="[[userId]]"></geosource-metapost>
 					</paper-material>
 				</div>
 			</template>
@@ -36,6 +36,9 @@
 		properties: {
 			posts: {
 				type: Array,
+			},
+			userId: {
+				type: String,
 			},
 		},
 	});

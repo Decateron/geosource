@@ -87,64 +87,89 @@
 			on-response="getChannelResponse" on-error="getChannelError">
 		</iron-ajax>
 
-		<h2>Channel</h2>
-		<div class="contents">
-			<paper-dropdown-menu label="Select a channel..." no-label-float>
-				<paper-menu class="dropdown-content" selected="{{channelIndex}}" on-iron-select="onChannelSelect">
-					<template is="dom-repeat" items="{{channels}}">
-						<paper-item>{{item}}</paper-item>
-					</template>
-				</paper-menu>
-			</paper-dropdown-menu>
-		</div>
+			<template is="dom-if" if="{{!post}}">
+				<h2>Channel</h2>
+				<div class="contents">
+					<paper-dropdown-menu label="Select a channel..." no-label-float>
+						<paper-menu class="dropdown-content" selected="{{channelIndex}}" on-iron-select="onChannelSelect">
+							<template is="dom-repeat" items="{{channels}}">
+								<paper-item>{{item}}</paper-item>
+							</template>
+						</paper-menu>
+					</paper-dropdown-menu>
+				</div>
+				<h2>Drafts</h2>
+				<div class="contents">
+					<table>
+						<tr class="header">
+							<td>Title</td>
+							<td>Channel</td>
+							<td>Time</td>
+							<td>Location</td>
+							<td class="delete"></td>
+						</tr>
+						<template is="dom-repeat" items="{{drafts}}" as="draft" index="index">
+							<tr class="item">
+								<td on-tap="openDraft">{{draft.title}}</td>
+								<td on-tap="openDraft">{{draft.channelname}}</td>
+								<td on-tap="openDraft">{{draft.time}}</td>
+								<td on-tap="openDraft">{{draft.location}}</td>
+								<td><paper-icon-button icon="close" on-tap="deleteDraft"></paper-icon-button></td>
+							</tr>
+							<!-- Force index into model -->
+							<span style="display:none;">{{index}}</span>
+						</template>
+					</table>
+				</div>
+			</template>
 
-		<template is="dom-if" if="{{post}}">
-			<h2>Title</h2>
-			<div class="contents">
-				<paper-input label="Enter a title..." no-label-float value="{{post.title}}"></paper-input>
-			</div>
-		</template>
-		<template is="dom-repeat" items="{{post.fields}}" as="field" index-as="fieldIndex">
-			<h2>{{field.label}}</h2>
-			<div class="contents">
-				<template is="dom-if" if="{{isText(field.type)}}">
-					<paper-input label="Enter text..." no-label-float value="{{field.value}}"></paper-input>
-				</template>
-				<template is="dom-if" if="{{isImages(field.type)}}">
-					<input class="hidden" id="file" name="field-2" type="file" capture="camera" accept="image/*" multiple on-change="displayFiles">
-					<paper-button class="field" on-tap="openFiles">
-						<iron-icon icon="image:camera-alt"></iron-icon>
-						<span>Add Pictures</span>
-					</paper-button>
-					<template is="dom-repeat" items="{{field.value}}" as="value">
-						<img src="{{value}}">
+			<template is="dom-if" if="{{post}}">
+				<h2>Title</h2>
+				<div class="contents">
+					<paper-input label="Enter a title..." no-label-float value="{{post.title}}"></paper-input>
+				</div>
+			</template>
+			<template is="dom-repeat" items="{{post.fields}}" as="field" index-as="fieldIndex">
+				<h2>{{field.label}}</h2>
+				<div class="contents">
+					<template is="dom-if" restamp if="{{isText(field.type)}}">
+						<paper-input label="Enter text..." no-label-float value="{{field.value}}"></paper-input>
 					</template>
-					<!-- hack to force fieldIndex into model -->
-					<span style="display:none;">{{fieldIndex}}</span>
-				</template>
-				<template is="dom-if" if="{{isCheckboxes(field.type)}}">
-					<paper-radio-group>
-						<template is="dom-repeat" items="{{field.pairs}}" as="checkbox">
-							<paper-checkbox checked="{{checkbox.value}}">{{checkbox.form}}</paper-checkbox><br>
+					<template is="dom-if" restamp if="{{isImages(field.type)}}">
+						<input class="hidden" id="file" name="field-2" type="file" capture="camera" accept="image/*" multiple on-change="displayFiles">
+						<paper-button class="field" on-tap="openFiles">
+							<iron-icon icon="image:camera-alt"></iron-icon>
+							<span>Add Pictures</span>
+						</paper-button>
+						<template is="dom-repeat" items="{{field.value}}" as="value">
+							<img src="{{value}}">
 						</template>
-					</paper-radio-group>
-				</template>
-				<template is="dom-if" if="{{isRadiobuttons(field.type)}}">
-					<paper-radio-group selected="{{field.value}}">
-						<template is="dom-repeat" items="{{field.form}}" as="subfield">
-							<paper-radio-button name="{{subfield}}">{{subfield}}</paper-radio-button><br>
-						</template>
-					</paper-radio-group>
-				</template>
-			</div>
-		</template>
-		<template is="dom-if" if="{{post}}">
-			<div class="horizontal layout flex">
-				<paper-button class="flex" on-tap="cancel">Cancel</paper-button>
-				<paper-button class="flex" on-tap="save">Save Draft</paper-button>
-				<paper-button class="flex" on-tap="submit">Submit</paper-button>
-			</div>
-		</template>
+						<!-- hack to force fieldIndex into model -->
+						<span style="display:none;">{{fieldIndex}}</span>
+					</template>
+					<template is="dom-if" restamp if="{{isCheckboxes(field.type)}}">
+						<paper-radio-group>
+							<template is="dom-repeat" items="{{field.pairs}}" as="checkbox">
+								<paper-checkbox checked="{{checkbox.value}}">{{checkbox.form}}</paper-checkbox><br>
+							</template>
+						</paper-radio-group>
+					</template>
+					<template is="dom-if" restamp if="{{isRadiobuttons(field.type)}}">
+						<paper-radio-group selected="{{field.value}}">
+							<template is="dom-repeat" items="{{field.form}}" as="subfield">
+								<paper-radio-button name="{{subfield}}">{{subfield}}</paper-radio-button><br>
+							</template>
+						</paper-radio-group>
+					</template>
+				</div>
+			</template>
+			<template is="dom-if" if="{{post}}">
+				<div class="horizontal layout flex">
+					<paper-button class="flex" on-tap="cancel">Cancel</paper-button>
+					<paper-button class="flex" on-tap="save">Save</paper-button>
+					<paper-button class="flex" on-tap="submit">Submit</paper-button>
+				</div>
+			</template>
 	</template>
 </dom-module>
 
@@ -163,6 +188,14 @@
 				type: Number,
 				value: null,
 			},
+			drafts: {
+				type: Array,
+				value: [],
+			},
+			draftIndex: {
+				type: Number,
+				value: null,
+			},
 			channel: {
 				type: Object,
 				value: null,
@@ -176,18 +209,20 @@
 		ready: function() {
 			this.$.get_channels.generateRequest();
 		},
+
 		getChannelsResponse: function(event) {
 			this.channels = event.detail.response;
 		},
+
+		onChannelSelect: function(event) {
+			this.$.get_channel.url = "/api/channels/" + encodeURI(this.channels[this.channelIndex]);
+			this.$.get_channel.generateRequest();
+		},
+
 		getChannelResponse: function(event) {
 			console.log(event.detail.response);
 			this.channel = event.detail.response;
 			this.newPost(this.channel);
-		},
-		onChannelSelect: function(event) {
-			console.log("selected channel");
-			this.$.get_channel.url = "/api/channels/" + this.channels[this.channelIndex];
-			this.$.get_channel.generateRequest();
 		},
 
 		newPost: function(channel) {
@@ -209,7 +244,6 @@
 		loadPost: function(post) {
 			this.post = post;
 		},
-
 
 		openFiles: function(event) {
 			console.log(event.model);
@@ -249,7 +283,7 @@
 		},
 
 		save: function() {
-			this.fire('submit-success', {post: this.post});
+			this.fire('save', {post: this.post});
 		},
 
 		submit: function() {
