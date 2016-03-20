@@ -124,13 +124,13 @@
 			</template>
 
 			<template is="dom-if" if="{{post}}">
-				<h2>Title</h2>
+				<h2>Title*</h2>
 				<div class="contents">
 					<paper-input label="Enter a title..." no-label-float value="{{post.title}}"></paper-input>
 				</div>
 			</template>
 			<template is="dom-repeat" items="{{post.fields}}" as="field" index-as="fieldIndex">
-				<h2>{{field.label}}</h2>
+				<h2>{{field.label}}<span hidden$="[[!field.required]]">*</span></h2>
 				<div class="contents">
 					<template is="dom-if" restamp if="{{isText(field.type)}}">
 						<paper-input label="Enter text..." no-label-float value="{{field.value}}"></paper-input>
@@ -155,7 +155,7 @@
 						</paper-radio-group>
 					</template>
 					<template is="dom-if" restamp if="{{isRadiobuttons(field.type)}}">
-						<paper-radio-group selected="{{field.value}}">
+						<paper-radio-group selected="{{field.value}}" allow-empty-selection="[[!field.required]]">
 							<template is="dom-repeat" items="{{field.form}}" as="subfield">
 								<paper-radio-button name="{{subfield}}">{{subfield}}</paper-radio-button><br>
 							</template>
