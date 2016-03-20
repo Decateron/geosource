@@ -55,6 +55,10 @@ func (checkboxesForm *CheckboxesForm) UnmarshalValue(blob []byte) (Value, error)
 // labels in the form.
 type CheckboxesValue []bool
 
+func (checkboxesValue *CheckboxesValue) IsEmpty() bool {
+	return !checkboxesValue.IsComplete()
+}
+
 func (checkboxesValue *CheckboxesValue) IsComplete() bool {
 	return checkboxesValue != nil
 }

@@ -63,6 +63,10 @@ func (radiobuttonsForm *RadiobuttonsForm) UnmarshalValue(blob []byte) (Value, er
 // inside the form.
 type RadiobuttonsValue string
 
+func (radiobuttonsValue *RadiobuttonsValue) IsEmpty() bool {
+	return !radiobuttonsValue.IsComplete()
+}
+
 func (radiobuttonsValue *RadiobuttonsValue) IsComplete() bool {
-	return radiobuttonsValue != nil
+	return radiobuttonsValue != nil && len(*radiobuttonsValue) > 0
 }

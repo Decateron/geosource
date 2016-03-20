@@ -72,6 +72,10 @@ func (imagesForm *ImagesForm) UnmarshalValue(blob []byte) (Value, error) {
 // the URL of the images are stored inside instead.
 type ImagesValue []string
 
+func (imagesValue *ImagesValue) IsEmpty() bool {
+	return !imagesValue.IsComplete()
+}
+
 func (imagesValue *ImagesValue) IsComplete() bool {
 	return imagesValue != nil && len(*imagesValue) > 0
 }

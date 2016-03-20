@@ -37,6 +37,10 @@ func (textForm *TextForm) UnmarshalValue(blob []byte) (Value, error) {
 // A text value is simply a string, representing the text input by the user.
 type TextValue string
 
+func (textValue *TextValue) IsEmpty() bool {
+	return !textValue.IsComplete()
+}
+
 func (textValue *TextValue) IsComplete() bool {
 	return textValue != nil && len(strings.TrimSpace(string(*textValue))) > 0
 }

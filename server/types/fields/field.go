@@ -47,7 +47,7 @@ func UnmarshalField(blob []byte) (*Field, error) {
 }
 
 func (field *Field) IsEmpty() bool {
-	return field.Value == nil
+	return field.Value.IsEmpty()
 }
 
 func (field *Field) ValidateForm() error {
@@ -55,6 +55,11 @@ func (field *Field) ValidateForm() error {
 }
 
 func (field *Field) ValidateValue() error {
+	if field.Required && field.IsEmpty() {
+		return errors.New("Required field is empty")
+	} else if field.IsEmpty() {
+		return nil
+	}
 	return field.Form.ValidateValue(field.Value)
 }
 
@@ -104,6 +109,7 @@ func UnmarshalForm(fieldType string, blob []byte) (Form, error) {
 }
 
 type Value interface {
+	IsEmpty() bool
 	IsComplete() bool
 }
 
