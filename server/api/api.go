@@ -1,7 +1,6 @@
 package api
 
 import (
-	"errors"
 	"html/template"
 	"log"
 	"net/http"
@@ -15,9 +14,10 @@ import (
 
 var apiConfig *config.Config
 
-var ErrInsufficientPermission error = errors.New("Insufficient permission.")
 var indexTemplate = template.Must(template.ParseFiles("../app/index.html"))
 
+// Init initializes the API, setting up the OAuth providers whose required
+// information is contained within the given config.
 func Init(config *config.Config) {
 	apiConfig = config
 	rest.ErrorFieldName = "error"
@@ -28,6 +28,8 @@ func Init(config *config.Config) {
 	)
 }
 
+// MakeHandler constructs and returns an HTTP handler for the API. Returns an
+// error if unsuccessful.
 func MakeHandler() (http.Handler, error) {
 	api := rest.NewApi()
 	api.Use(rest.DefaultDevStack...)
@@ -96,49 +98,24 @@ func MakeHandler() (http.Handler, error) {
 	return api.MakeHandler(), nil
 }
 
+// IndexHandler executes the template index, inserting the user's ID if it is
+// contained within their session.
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	// session, _ := store.Get(r, gothic.SessionName)
-	// state := randomString(64)
-	// fmt.Println(state)
-	// session.Values["state"] = state
-	// session.Save(r, w)
-	session, err := gothic.Store.Get(r, gothic.SessionName)
-	// if err != nil {
-	// 	log.Println(err)
-	// 	// send error rest.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
+	session, _ := gothic.Store.Get(r, gothic.SessionName)
 	id, _ := session.Values["userID"].(string)
-	// if !ok {
-	// 	// send error
-	// 	return
-	// }
 	log.Println(session.Values["userID"])
-	// session.Values["userID"] = user.ID
-	// err = session.Save(req.Request, w.(http.ResponseWriter))
-	// if err != nil {
-	// 	rest.Error(w, err.Error(), http.StatusInternalServerError)
-	// 	return
-	// }
-
 	var data = struct{ ID string }{id}
-	//{apiConfig.Google.ClientID, state}
-
-	err = indexTemplate.Execute(w, data)
+	err := indexTemplate.Execute(w, data)
 	if err != nil {
 		log.Println("error rendering template:", err)
 		return
 	}
 }
 
-func GetUserID(req *rest.Request) (string, error) {
-	session, err := gothic.Store.Get(req.Request, gothic.SessionName)
-	if err != nil {
-		return "", err
-	}
-	userID, ok := session.Values["userID"].(string)
-	if !ok {
-		return "", nil
-	}
-	return userID, nil
+// GetRequesterID returns the ID of the requester. If there is no ID associated
+// with the requester, an empty string is returned.
+func GetRequesterID(req *rest.Request) string {
+	session, _ := gothic.Store.Get(req.Request, gothic.SessionName)
+	userID, _ := session.Values["userID"].(string)
+	return userID
 }

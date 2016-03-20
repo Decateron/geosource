@@ -9,11 +9,7 @@ import (
 )
 
 func GetFavorites(w rest.ResponseWriter, req *rest.Request) {
-	requester, err := GetUserID(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	requester := GetRequesterID(req)
 	favorites, err := transactions.GetFavorites(requester, req.PathParam("userID"))
 	if err != nil {
 		log.Println(err)
@@ -25,15 +21,11 @@ func GetFavorites(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func AddFavorite(w rest.ResponseWriter, req *rest.Request) {
-	requester, err := GetUserID(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	requester := GetRequesterID(req)
 	body := struct {
 		PostID string `json:"postID"`
 	}{}
-	err = req.DecodeJsonPayload(&body)
+	err := req.DecodeJsonPayload(&body)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -50,12 +42,8 @@ func AddFavorite(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func RemoveFavorite(w rest.ResponseWriter, req *rest.Request) {
-	requester, err := GetUserID(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = transactions.RemoveFavorite(requester, req.PathParam("userID"), req.PathParam("postID"))
+	requester := GetRequesterID(req)
+	err := transactions.RemoveFavorite(requester, req.PathParam("userID"), req.PathParam("postID"))
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)

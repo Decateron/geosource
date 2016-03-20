@@ -13,12 +13,7 @@ import (
 )
 
 func GetComments(w rest.ResponseWriter, req *rest.Request) {
-	requester, err := GetUserID(req)
-	if err != nil {
-		log.Println(err)
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	requester := GetRequesterID(req)
 	comments, err := transactions.GetComments(requester, req.PathParam("pid"))
 	if err != nil {
 		log.Println(err)
@@ -32,20 +27,16 @@ func GetComments(w rest.ResponseWriter, req *rest.Request) {
 // func SetComment(w rest.ResponseWriter, req *rest.Request) {}
 
 func AddComment(w rest.ResponseWriter, req *rest.Request) {
-	requester, err := GetUserID(req)
-	if err != nil {
-		log.Println(err)
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	requester := GetRequesterID(req)
 	var comment types.Comment
-	err = req.DecodeJsonPayload(&comment)
+	err := req.DecodeJsonPayload(&comment)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	comment.Time = time.Now().UTC()
+	comment.PostID = req.PathParam("pid")
 	comment.CreatorID = requester
 	comment.ID = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
 	err = comment.Validate()

@@ -9,11 +9,7 @@ import (
 )
 
 func GetSubscriptions(w rest.ResponseWriter, req *rest.Request) {
-	requester, err := GetUserID(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	requester := GetRequesterID(req)
 	subscriptions, err := transactions.GetSubscriptions(requester, req.PathParam("userID"))
 	if err != nil {
 		log.Println(err)
@@ -25,15 +21,11 @@ func GetSubscriptions(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func AddSubscription(w rest.ResponseWriter, req *rest.Request) {
-	requester, err := GetUserID(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	requester := GetRequesterID(req)
 	body := struct {
 		Channelname string `json:"channelname"`
 	}{}
-	err = req.DecodeJsonPayload(&body)
+	err := req.DecodeJsonPayload(&body)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -50,12 +42,8 @@ func AddSubscription(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func RemoveSubscription(w rest.ResponseWriter, req *rest.Request) {
-	requester, err := GetUserID(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = transactions.RemoveSubscription(requester, req.PathParam("userID"), req.PathParam("channelname"))
+	requester := GetRequesterID(req)
+	err := transactions.RemoveSubscription(requester, req.PathParam("userID"), req.PathParam("channelname"))
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)

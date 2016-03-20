@@ -13,12 +13,8 @@ import (
 )
 
 func GetPosts(w rest.ResponseWriter, req *rest.Request) {
-	userID, err := GetUserID(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	posts, err := transactions.GetPosts(userID)
+	requester := GetRequesterID(req)
+	posts, err := transactions.GetPosts(requester)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -29,12 +25,8 @@ func GetPosts(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func GetPost(w rest.ResponseWriter, req *rest.Request) {
-	userID, err := GetUserID(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	post, err := transactions.GetPost(userID, req.PathParam("pid"))
+	requester := GetRequesterID(req)
+	post, err := transactions.GetPost(requester, req.PathParam("pid"))
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -45,13 +37,9 @@ func GetPost(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func AddPost(w rest.ResponseWriter, req *rest.Request) {
-	requester, err := GetUserID(req)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	requester := GetRequesterID(req)
 	var jsonBody json.RawMessage
-	err = req.DecodeJsonPayload(&jsonBody)
+	err := req.DecodeJsonPayload(&jsonBody)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -70,7 +58,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 
 	channel, err := transactions.GetChannel(requester, submissionChannel.Channel)
 	if err != nil {
-		log.Println("could not find channel ", submissionChannel.Channel)
+		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
