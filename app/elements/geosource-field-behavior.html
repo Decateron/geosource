@@ -71,6 +71,10 @@
 						for (var j=0; j<fields[i].value.length; j++) {
 							fields[i].pairs[j].value = fields[i].value[j];
 						}
+					} else {
+						for (var j=0; j<fields[i].form.length; j++) {
+							fields[i].pairs[j].value = false;
+						}
 					}
 				}
 			}
