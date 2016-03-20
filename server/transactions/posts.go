@@ -45,7 +45,7 @@ func AddPost(requester string, post *types.Post) error {
 func GetPosts(requester string) ([]*types.PersonalizedPostInfo, error) {
 	var posts []*types.PersonalizedPostInfo
 	err := db.Table("posts").
-		Joins("LEFT JOIN user_favorites ON (p_postid = uf_postid)").
+		Joins("LEFT JOIN user_favorites ON (p_postid = uf_postid AND uf_userid = ?)", requester).
 		Joins("LEFT JOIN users ON (u_userid = p_userid_creator)").
 		Select("*, (uf_postid IS NOT NULL) AS favorited").
 		Order("p_time desc").Find(&posts).Error
