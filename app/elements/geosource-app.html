@@ -267,7 +267,7 @@
 
 		/** Returns true if the user is logged in, false otherwise. */
 		isLoggedIn: function(userID) {
-			return userID != "";
+			return userID !== undefined && userID != null && userID != "";
 		},
 
 		/** Logs out the user. */
