@@ -142,14 +142,15 @@
 			outline-width: 1px;
 			outline-style: solid;
 		}
-		geosource-channel-creator {
-			margin: 20px;
-		}
 	</style>
 	<template>
-		<platinum-sw-register>
+		<platinum-sw-register auto-register>
 			<platinum-sw-cache></platinum-sw-cache>
 		</platinum-sw-register>
+		<geosource-object-store 
+			saved-posts="{{savedPosts}}" 
+			saved-channels="{{savedChannels}}">
+		</geosource-object-store>
 
 		<geosource-api-handler id="api"
 			posts="{{posts}}"
@@ -157,16 +158,8 @@
 		</geosource-api-handler>
 
 		<geosource-post id="post"></geosource-post>
-
-		<geosource-dialog id="create_channel" title="Create a Channel">
-			<geosource-channel-creator
-				on-submit="createChannel">
-			</geosource-channel-creator>
-		</geosource-dialog>
-
-		<geosource-dialog id="create_post" title="Create a Post">
-			<geosource-post-creator></geosource-post-creator>
-		</geosource-dialog>
+		<geosource-channel-creator id="channelCreator"></geosource-channel-creator>
+		<geosource-post-creator id="postCreator"></geosource-post-creator>
 
 		<paper-dialog id="login_dialog" with-backdrop>
 			<h2>Login</h2>
@@ -249,6 +242,14 @@
 				type: Array,
 				value: [],
 			},
+			savedPosts: {
+				type: Array,
+				value: [],
+			},
+			savedChannels: {
+				type: Array,
+				value: [],
+			},
 			drawerWidth: {
 				type: String,
 				value: "400px",
@@ -325,10 +326,10 @@
 			this.$.post.open(detail.postid);
 		},
 		openChannelCreatorDialog: function() {
-			this.$.create_channel.open();
+			this.$.channelCreator.open();
 		},
 		openPostCreatorDialog: function() {
-			this.$.create_post.open();
+			this.$.postCreator.open();
 		},
 	});
 </script>

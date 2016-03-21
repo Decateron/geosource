@@ -1,0 +1,247 @@
+<link rel="import" href="geosource-imports.html">
+
+<dom-module id="geosource-object-store">
+</dom-module>
+<script>
+	Polymer({
+		is: "geosource-object-store",
+
+		properties: {
+			db: Object,
+			DB_NAME: {
+				type: String,
+				value: "geosource-indexeddb",
+			},
+			DB_VERSION: {
+				type: Number,
+				value: 1,
+			},
+			DB_POST_STORE_NAME: {
+				type: String,
+				value: "posts",
+			},
+			DB_CHANNEL_STORE_NAME: {
+				type: String,
+				value: "channels",
+			},
+			savedPosts: {
+				type: Array,
+				value: [],
+			},
+			savedChannels: {
+				type: Array,
+				value: [],
+			},
+		},
+
+		ready: function() {
+			this.openDB();
+		},
+
+		openDB: function() {
+			console.log("openDB");
+			var request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
+			request.onsuccess = function(event) {
+				this.db = request.result;
+				console.log("openDB DONE");
+				this.loadPosts();
+				this.loadChannels();
+			}.bind(this);
+			request.onerror = function(event) {
+				console.error("openDB:", event.target.errorCode);
+			}.bind(this);
+			request.onupgradeneeded = function(event) {
+				console.log("openDB.onupgradeneeded");
+				event.currentTarget.result.createObjectStore(
+					this.DB_POST_STORE_NAME, {keyPath: 'id', autoIncrement: true});
+				event.currentTarget.result.createObjectStore(
+					this.DB_CHANNEL_STORE_NAME, {keyPath: 'name'});
+			}.bind(this);
+		},
+
+		getObjectStore: function(storeName, mode) {
+			var transaction = this.db.transaction(storeName, mode);
+			return transaction.objectStore(storeName);
+		},
+
+		addPost: function(post) {
+			console.log("Trying to insert post");
+			var store = this.getObjectStore(this.DB_POST_STORE_NAME, "readwrite");
+			var request;
+			try {
+				request = store.add(post);
+			} catch (e) {
+				throw e;
+			}
+			request.onsuccess = function(event) {
+				console.log("Successfully added post");
+			};
+			request.onerror = function() {
+				console.error("Error adding post", this.error);
+			};
+		},
+
+		removePost: function(id) {
+			var store = this.getObjectStore(this.DB_POST_STORE_NAME, "readwrite");
+			var request = store.get(id);
+			request.onsuccess = function(event) {
+				var record = event.target.result;
+				console.log("record:", record);
+				if (typeof record == "undefined") {
+					//displayActionFailure("No matching record found");
+					return;
+				}
+				request = store.delete(id);
+				request.onsuccess = function(event) {
+					console.log("Successfully deleted post");
+				};
+				request.onerror = function(event) {
+					console.error("Error deleting post:", event.target.errorCode);
+				};
+			};
+			request.onerror = function(event) {
+				console.error("Error deleting post:", event.target.errorCode);
+			};
+		},
+
+		clearPosts: function() {
+			var store = this.getObjectStore(this.DB_POST_STORE_NAME, "readwrite");
+			var request = store.clear();
+			request.onsuccess = function(event) {
+				console.log("store cleared");
+				// this.displayActionSuccess("Store cleared");
+				// this.displayPubList(store);
+			}.bind(this);
+			request.onerror = function(event) {
+				console.error("clearPosts", event.target.errorCode);
+				this.displayActionFailure(request.error);
+			}.bind(this);
+		},
+
+		loadPosts: function() {
+			console.log("loadPosts");
+
+			this.splice('savedPosts', 0, this.savedPosts.length);
+
+			var store = this.getObjectStore(this.DB_POST_STORE_NAME, "readonly");
+			var request = store.count();
+			request.onsuccess = function(event) {
+				console.log(event.target.result);
+			}.bind(this);
+			request.onerror = function(event) {
+				console.error("add error", request.error);
+				this.displayActionFailure(request.error);
+			}.bind(this);
+
+			var i = 0;
+			request = store.openCursor();
+			request.onsuccess = function(event) {
+				var cursor = event.target.result;
+				if (cursor) {
+					console.log("loadPosts cursor:", cursor);
+					request = store.get(cursor.key);
+					request.onsuccess = function(event) {
+						console.log(event.target.result);
+						this.push('savedPosts', event.target.result);
+						console.log(this.savedPosts);
+					}.bind(this);
+					cursor.continue();
+					i++;
+				} else {
+					console.log("No more entries");
+				}
+			}.bind(this);
+		},
+
+		addChannel: function(channel) {
+			console.log("Trying to insert channel");
+			var store = this.getObjectStore(this.DB_CHANNEL_STORE_NAME, "readwrite");
+			var request;
+			try {
+				request = store.add(channel);
+			} catch (e) {
+				throw e;
+			}
+			request.onsuccess = function(event) {
+				console.log("Successfully added channel");
+				this.loadChannels();
+			}.bind(this);
+			request.onerror = function() {
+				console.error("Error adding channel", this.error);
+			};
+		},
+
+		removeChannel: function(name) {
+			var store = this.getObjectStore(this.DB_CHANNEL_STORE_NAME, "readwrite");
+			var request = store.get(name);
+			request.onsuccess = function(event) {
+				var record = event.target.result;
+				console.log("record:", record);
+				if (typeof record == "undefined") {
+					//displayActionFailure("No matching record found");
+					return;
+				}
+				request = store.delete(name);
+				request.onsuccess = function(event) {
+					console.log("Successfully deleted post");
+				};
+				request.onerror = function(event) {
+					console.error("Error deleting post:", event.target.errorCode);
+				};
+			};
+			request.onerror = function(event) {
+				console.error("Error deleting post:", event.target.errorCode);
+			};
+		},
+
+		clearChannels: function() {
+			var store = this.getObjectStore(this.DB_CHANNEL_STORE_NAME, "readwrite");
+			var request = store.clear();
+			request.onsuccess = function(event) {
+				console.log("store cleared");
+				// this.displayActionSuccess("Store cleared");
+				// this.displayPubList(store);
+			}.bind(this);
+			request.onerror = function(event) {
+				console.error("clearPosts", event.target.errorCode);
+				this.displayActionFailure(request.error);
+			}.bind(this);
+		},
+
+		loadChannels: function() {
+			console.log("loadChannels");
+
+			this.splice('savedChannels', 0, this.savedChannels.length);
+
+			var store = this.getObjectStore(this.DB_CHANNEL_STORE_NAME, "readonly");
+			var request = store.count();
+			request.onsuccess = function(event) {
+				console.log(event.target.result);
+			}.bind(this);
+			request.onerror = function(event) {
+				console.error("add error", request.error);
+				this.displayActionFailure(request.error);
+			}.bind(this);
+
+			var i = 0;
+			request = store.openCursor();
+			request.onsuccess = function(event) {
+				var cursor = event.target.result;
+				if (cursor) {
+					console.log("loadChannels cursor:", cursor);
+					request = store.get(cursor.key);
+					request.onsuccess = function(event) {
+						console.log(event.target.result);
+						this.push('savedChannels', event.target.result);
+						console.log(this.savedChannels);
+					}.bind(this);
+					cursor.continue();
+					i++;
+				} else {
+					console.log("No more entries");
+				}
+			}.bind(this);
+		},
+
+	});
+</script>

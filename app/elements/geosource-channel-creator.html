@@ -22,7 +22,9 @@
 			width: 200px;
 		}
 		paper-menu-button {
-			padding-left: 0;
+			padding: 0;
+			top: 7px;
+			right: 7px;
 		}
 		paper-radio-button:first-child {
 			padding-left: 8px;
@@ -30,9 +32,6 @@
 		table {
 			width: 100%;
 			border-spacing: 0;
-			background-color: #eee;
-			padding: 10px;
-			margin-top: 10px;
 		}
 		th.table_header {
 			font-weight: bold;
@@ -64,6 +63,14 @@
 		td.subfield {
 			padding-left: 8px;
 		}
+		.form {
+			margin: 20px;
+		}
+		.contents {
+			background-color: #eee;
+			padding: 15px;
+			margin-bottom: 15px;
+		}
 		.error {
 			color: red;
 		}
@@ -71,88 +78,95 @@
 	<template>
 		<iron-ajax id="post_channel"
 			method="POST" content-type="application/json" url="/api/channels" handle-as="json"
-			on-response="close" on-error="submitError">
+			on-response="close" on-response="submitResponse" on-error="submitError">
 		</iron-ajax>
-
-		<h2>Name</h2>
-		<paper-input label="Enter a channel name..." value="{{name}}" no-label-float></paper-input>
-		<h2>Visibility</h2>
-		<paper-radio-group selected="{{visibility}}">
-			<paper-radio-button name="public">Public</paper-radio-button>
-			<paper-radio-button name="private">Private</paper-radio-button>
-		</paper-radio-group>
-		<h2>Fields</h2>
-		<table>
-			<tr class="table_header field">
-				<th class="field-type">Type</th>
-				<th class="field-label">Label</th>
-				<th class="field-required">Required</th>
-				<th class="field-remove"></th>
-			</tr>
-			<tr class="field">
-				<td><iron-icon icon="{{getTypeIcon(TYPE_TEXT)}}"></iron-icon><span>{{getTypeLabel(TYPE_TEXT)}}</span></td>
-				<td><paper-input value="Title" disabled no-label-float></paper-input></td>
-				<td><paper-checkbox checked disabled></paper-checkbox></td>
-				<td></td>
-			</tr>
-			<template is="dom-repeat" items="{{fields}}" as="field" id="fields" index-as="fieldIndex">
-				<tr class="field">
-					<td><iron-icon icon="{{getTypeIcon(field.type)}}"></iron-icon><span>{{getTypeLabel(field.type)}}</span></td>
-					<td><paper-input class="flex" value="{{field.label}}" label="Enter a label..." no-label-float></paper-input></td>
-					<td><paper-checkbox checked="{{field.required}}"></paper-checkbox></td>
-					<td><paper-icon-button icon="close" on-tap="onRemoveFieldTap"></paper-icon-button></td>
-				</tr>
-				<template is="dom-if" if="{{isCheckboxes(field.type)}}">
-					<template is="dom-repeat" items="{{field.pairs}}" as="subfield" index-as="subfieldIndex">
-						<tr class="subfield">
-							<!-- hack to make indexes referenceable in javascript -->
-							<div style="display:none;"><span>{{fieldIndex}}</span><span>{{subfieldIndex}}"></span></div>
-							<td class="subfield"><iron-icon icon="{{getTypeIcon(TYPE_CHECKBOXES)}}"></iron-icon><span>Check Box</span></td>
-							<td><paper-input class="flex" value="{{subfield.form}}" label="Enter a label..." no-label-float></td>
-							<td><paper-checkbox checked="{{field.required}}" disabled></paper-checkbox></td>
-							<td><paper-icon-button icon="close" on-tap="onRemoveCheckBoxTap"></paper-icon-button></td>
+		<geosource-dialog id="dialog" title="Create a Channel">
+			<div class="form">
+				<h2>Name</h2>
+				<div class="contents">
+					<paper-input label="Enter a channel name..." value="{{name}}" no-label-float>
+					</paper-input>
+				</div>
+				<h2>Visibility</h2>
+				<div class="contents">
+					<paper-radio-group selected="{{visibility}}">
+						<paper-radio-button name="public">Public</paper-radio-button>
+						<paper-radio-button name="private">Private</paper-radio-button>
+					</paper-radio-group>
+				</div>
+				<h2>Fields</h2>
+				<div class="contents">
+					<table>
+						<tr class="table_header field">
+							<th class="field-type">Type</th>
+							<th class="field-label">Label</th>
+							<th class="field-required">Required</th>
+							<th class="field-remove"></th>
 						</tr>
-					</template>
-					<tr class="subfield">
-						<td><paper-icon-button icon="add" on-tap="onAddCheckBoxTap"></paper-icon-button></td>
-						<td></td><td></td><td></td>
-					</tr>
-				</template>
-				<template is="dom-if" if="{{isRadiobuttons(field.type)}}">
-					<template is="dom-repeat" items="{{field.pairs}}" as="subfield" index-as="subfieldIndex">
-						<tr class="subfield">
-							<!-- hack to make indexes referenceable in javascript -->
-							<div style="display:none;"><span>{{fieldIndex}}</span><span>{{subfieldIndex}}"></span></div>
-							<td class="subfield"><iron-icon icon="{{getTypeIcon(TYPE_RADIOBUTTONS)}}"></iron-icon><span>Radio Button</span></td>
-							<td><paper-input class="flex" value="{{subfield.form}}" label="Enter a label..." no-label-float></td>
-							<td><paper-checkbox checked="{{field.required}}" disabled></paper-checkbox></td>
-							<td><paper-icon-button icon="close" on-tap="onRemoveRadioButtonTap"></paper-icon-button></td>
+						<tr class="field">
+							<td><iron-icon icon="{{getTypeIcon(TYPE_TEXT)}}"></iron-icon><span>{{getTypeLabel(TYPE_TEXT)}}</span></td>
+							<td><paper-input value="Title" disabled no-label-float></paper-input></td>
+							<td><paper-checkbox checked disabled></paper-checkbox></td>
+							<td></td>
 						</tr>
-					</template>
-					<tr class="subfield">
-						<td><paper-icon-button icon="add" on-tap="onAddRadioButtonTap"></paper-icon-button></td>
-						<td></td><td></td><td></td>
-					</tr>
-				</template>
-			</template>
-			<tr>
-		</table>
-		<paper-menu-button vertical-align="bottom">
-			<paper-icon-button icon="add" class="dropdown-trigger"></paper-icon-button><br>
-			<paper-menu class="dropdown-content">
-				</iron-icon><paper-item on-tap="addText" type="Text"><iron-icon icon="{{getTypeIcon(TYPE_TEXT)}}"></iron-icon>{{getTypeLabel(TYPE_TEXT)}}</paper-item>
-				</iron-icon><paper-item on-tap="addImages" type="Images"><iron-icon icon="{{getTypeIcon(TYPE_IMAGES)}}"></iron-icon>{{getTypeLabel(TYPE_IMAGES)}}</paper-item>
-				</iron-icon><paper-item on-tap="addCheckBoxes" type="CheckBoxes"><iron-icon icon="{{getTypeIcon(TYPE_CHECKBOXES)}}"></iron-icon>{{getTypeLabel(TYPE_CHECKBOXES)}}</paper-item>
-				</iron-icon><paper-item on-tap="addRadioButtons" type="RadioButtons"><iron-icon icon="{{getTypeIcon(TYPE_RADIOBUTTONS)}}"></iron-icon>{{getTypeLabel(TYPE_RADIOBUTTONS)}}</paper-item>
-			</paper-menu>
-		</paper-menu-button>
-		<template is="dom-if" if="{{error}}">
-			<div class="error">{{error}}</div>
-		</template>
-		<div class="horizontal layout flex">
-			<paper-button class="flex" on-tap="close">Cancel</paper-button>
-			<paper-button class="flex" on-tap="submit">Submit</paper-button>
-		</div>
+						<template is="dom-repeat" items="{{fields}}" as="field" id="fields" index-as="fieldIndex">
+							<tr class="field">
+								<td><iron-icon icon="{{getTypeIcon(field.type)}}"></iron-icon><span>{{getTypeLabel(field.type)}}</span></td>
+								<td><paper-input class="flex" value="{{field.label}}" label="Enter a label..." no-label-float></paper-input></td>
+								<td><paper-checkbox checked="{{field.required}}"></paper-checkbox></td>
+								<td><paper-icon-button icon="close" on-tap="onRemoveFieldTap"></paper-icon-button></td>
+							</tr>
+							<template is="dom-if" if="{{isCheckboxes(field.type)}}">
+								<template is="dom-repeat" items="{{field.pairs}}" as="subfield" index-as="subfieldIndex">
+									<tr class="subfield">
+										<!-- hack to make indexes referenceable in javascript -->
+										<div style="display:none;"><span>{{fieldIndex}}</span><span>{{subfieldIndex}}"></span></div>
+										<td class="subfield"><iron-icon icon="{{getTypeIcon(TYPE_CHECKBOXES)}}"></iron-icon><span>Check Box</span></td>
+										<td><paper-input class="flex" value="{{subfield.form}}" label="Enter a label..." no-label-float></paper-input></td>
+										<td><paper-checkbox checked="{{field.required}}" disabled></paper-checkbox></td>
+										<td><paper-icon-button icon="close" on-tap="onRemoveCheckBoxTap"></paper-icon-button></td>
+									</tr>
+								</template>
+								<tr class="subfield">
+									<td><paper-icon-button icon="add" on-tap="onAddCheckBoxTap"></paper-icon-button></td>
+									<td></td><td></td><td></td>
+								</tr>
+							</template>
+							<template is="dom-if" if="{{isRadiobuttons(field.type)}}">
+								<template is="dom-repeat" items="{{field.pairs}}" as="subfield" index-as="subfieldIndex">
+									<tr class="subfield">
+										<!-- hack to make indexes referenceable in javascript -->
+										<div style="display:none;"><span>{{fieldIndex}}</span><span>{{subfieldIndex}}"></span></div>
+										<td class="subfield"><iron-icon icon="{{getTypeIcon(TYPE_RADIOBUTTONS)}}"></iron-icon><span>Radio Button</span></td>
+										<td><paper-input class="flex" value="{{subfield.form}}" label="Enter a label..." no-label-float></paper-input></td>
+										<td><paper-checkbox checked="{{field.required}}" disabled></paper-checkbox></td>
+										<td><paper-icon-button icon="close" on-tap="onRemoveRadioButtonTap"></paper-icon-button></td>
+									</tr>
+								</template>
+								<tr class="subfield">
+									<td><paper-icon-button icon="add" on-tap="onAddRadioButtonTap"></paper-icon-button></td>
+									<td></td><td></td><td></td>
+								</tr>
+							</template>
+						</template>
+					</table>
+					<paper-menu-button vertical-align="bottom">
+						<paper-icon-button icon="add" class="dropdown-trigger"></paper-icon-button><br>
+						<paper-menu class="dropdown-content">
+							</iron-icon><paper-item on-tap="addText" type="Text"><iron-icon icon="{{getTypeIcon(TYPE_TEXT)}}"></iron-icon>{{getTypeLabel(TYPE_TEXT)}}</paper-item>
+							</iron-icon><paper-item on-tap="addImages" type="Images"><iron-icon icon="{{getTypeIcon(TYPE_IMAGES)}}"></iron-icon>{{getTypeLabel(TYPE_IMAGES)}}</paper-item>
+							</iron-icon><paper-item on-tap="addCheckBoxes" type="CheckBoxes"><iron-icon icon="{{getTypeIcon(TYPE_CHECKBOXES)}}"></iron-icon>{{getTypeLabel(TYPE_CHECKBOXES)}}</paper-item>
+							</iron-icon><paper-item on-tap="addRadioButtons" type="RadioButtons"><iron-icon icon="{{getTypeIcon(TYPE_RADIOBUTTONS)}}"></iron-icon>{{getTypeLabel(TYPE_RADIOBUTTONS)}}</paper-item>
+						</paper-menu>
+					</paper-menu-button>
+				</div>
+				<div class="error" hidden$="{{!error}}">{{error}}</div>
+				<div class="horizontal layout flex">
+					<paper-button class="flex" on-tap="close">Cancel</paper-button>
+					<paper-button class="flex" on-tap="submit">Submit</paper-button>
+				</div>
+			</div>
+		</geosource-dialog>
 	</template>
 </dom-module>
 
@@ -249,15 +263,22 @@
 			this.$.post_channel.body = channel;
 			this.$.post_channel.generateRequest();
 		},
+		submitResponse: function() {
+			this.close();
+		},
 		submitError: function(event, detail, sender) {
 			console.log(detail.request.xhr.response.error);
 			this.error = detail.request.xhr.response.error;
 		},
 
+		open: function() {
+			this.$.dialog.open();
+		},
 		close: function() {
 			this.clear();
 			this.fire('close');
-		}
+			this.$.dialog.close();
+		},
 
 	});
 </script>
