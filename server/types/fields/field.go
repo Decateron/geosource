@@ -47,7 +47,7 @@ func UnmarshalField(blob []byte) (*Field, error) {
 }
 
 func (field *Field) IsEmpty() bool {
-	return field.Value.IsEmpty()
+	return field.Value == nil || field.Value.IsEmpty()
 }
 
 func (field *Field) ValidateForm() error {
