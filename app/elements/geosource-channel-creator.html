@@ -80,7 +80,7 @@
 			method="POST" content-type="application/json" url="/api/channels" handle-as="json"
 			on-response="close" on-response="submitResponse" on-error="submitError">
 		</iron-ajax>
-		<geosource-dialog id="dialog" title="Create a Channel">
+		<geosource-dialog id="dialog" title="Create a Channel" fullscreen="[[fullscreen]]">
 			<div class="form">
 				<h2>Name</h2>
 				<div class="contents">
@@ -191,6 +191,9 @@
 			error: {
 				type: String,
 				value: null
+			},
+			fullscreen: {
+				type: Boolean,
 			},
 		},
 

@@ -80,7 +80,7 @@
 			on-response="getChannelResponse" on-error="getChannelError">
 		</iron-ajax>
 
-		<geosource-dialog id="dialog" title="Create a Post">
+		<geosource-dialog id="dialog" title="Create a Post" fullscreen="[[fullscreen]]">
 			<div class="form">
 				<template is="dom-if" if="{{!post}}">
 					<h2>Channel</h2>
@@ -205,6 +205,9 @@
 			error: {
 				type: String,
 				value: null,
+			},
+			fullscreen: {
+				type: Boolean
 			},
 		},
 

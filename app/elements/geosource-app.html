@@ -154,12 +154,13 @@
 
 		<geosource-api-handler id="api"
 			posts="{{posts}}"
+			channels="{{channels}}"
 			on-create-user="openCreateUserDialog">
 		</geosource-api-handler>
 
-		<geosource-post id="post"></geosource-post>
-		<geosource-channel-creator id="channelCreator"></geosource-channel-creator>
-		<geosource-post-creator id="postCreator"></geosource-post-creator>
+		<geosource-post id="post" fullscreen="[[drawerNarrow]]"></geosource-post>
+		<geosource-channel-creator id="channelCreator" fullscreen="[[drawerNarrow]]"></geosource-channel-creator>
+		<geosource-post-creator id="postCreator" fullscreen="[[drawerNarrow]]"></geosource-post-creator>
 
 		<paper-dialog id="login_dialog" with-backdrop>
 			<h2>Login</h2>
@@ -257,6 +258,10 @@
 			drawerShut: {
 				type: Boolean,
 			},
+		drawerNarrow: {
+				type: Boolean,
+				value: false
+			}
 		},
 
 		ready: function() {
@@ -292,8 +297,10 @@
 			var drawer = this.$.drawer;
 			if (drawer.narrow && !drawer.forceNarrow) {
 				this.drawerWidth = "90%";
+				this.drawerNarrow = true;
 			} else {
 				this.drawerWidth = "400px";
+				this.drawerNarrow = false;
 			}
 		},
 

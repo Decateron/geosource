@@ -64,7 +64,7 @@
 			on-response="postCommentResponse" on-error="postCommentError">
 		</iron-ajax>
 
-		<geosource-dialog id="dialog" title="{{post.title}}">
+		<geosource-dialog id="dialog" title="{{post.title}}" fullscreen="[[fullscreen]]">
 			<div main id="main">
 				<template is="dom-if" if="{{post}}">
 					<div>
@@ -132,7 +132,10 @@
 			comments: {
 				type: Object,
 				value: null
-			}
+			},
+			fullscreen: {
+				type: Boolean
+			},
 		},
 
 		open: function(postid) {
