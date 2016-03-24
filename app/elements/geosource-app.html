@@ -200,7 +200,7 @@
 					</paper-toolbar>
 					<paper-drawer-panel id="settings" drawer-width="100%" force-narrow>
 						<div main>
-							<geosource-posts posts="{{posts}}" user-id="[[userID]]" on-move-map="moveToPost" on-open-post="openPostDialog"></geosource-posts>
+							<geosource-posts posts="{{posts}}" user-id="[[userId]]" on-move-map="moveToPost" on-open-post="openPostDialog"></geosource-posts>
 						</div>
 						<div drawer>
 							<geosource-settings></geosource-settings>
@@ -216,8 +216,8 @@
 						<div class="drawer_title">GeoSource</div>
 					</div>
 				</paper-button>
-				<paper-button id="login" on-tap="openLoginDialog" hidden$="{{isLoggedIn(userID)}}">Login</paper-button>
-				<paper-button id="logout" on-tap="logout" hidden$="{{!isLoggedIn(userID)}}">Logout</paper-button>
+				<paper-button id="login" on-tap="openLoginDialog" hidden$="{{isLoggedIn(userId)}}">Login</paper-button>
+				<paper-button id="logout" on-tap="logout" hidden$="{{!isLoggedIn(userId)}}">Logout</paper-button>
 
 				<paper-fab icon="add" id="add" on-tap="openChannelCreatorDialog"></paper-fab>
 				<paper-fab icon="add" id="add2" on-tap="openPostCreatorDialog"></paper-fab>
@@ -235,7 +235,7 @@
 		is: "geosource-app",
 
 		properties: {
-			userID: {
+			userId: {
 				type: String,
 			},
 			posts: {
@@ -260,14 +260,14 @@
 		},
 
 		ready: function() {
-			console.log(this.userID);
+			console.log(this.userId);
 			this.moveToUser();
 			this.$.api.getPosts();
 		},
 
 		/** Returns true if the user is logged in, false otherwise. */
-		isLoggedIn: function(userID) {
-			return userID !== undefined && userID != null && userID != "";
+		isLoggedIn: function(userId) {
+			return userId != "";
 		},
 
 		/** Logs out the user. */
