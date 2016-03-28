@@ -21,7 +21,7 @@ type PostInfo struct {
 	Title     string    `json:"title" gorm:"column:p_title"`
 	Thumbnail string    `json:"thumbnail" gorm:"column:p_thumbnail"`
 	Time      time.Time `json:"time" gorm:"column:p_time"`
-	Location  Location  `json:"location" gorm:"column:p_location" sql:"type:POINT NOT NULL"`
+	Location  Location  `json:"location" gorm:"column:location"`
 }
 
 // Returns the name of the postInfo's corresponding table in the database.

@@ -1,9 +1,8 @@
 package types
 
 import (
-	"database/sql/driver"
 	"errors"
-	"fmt"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -27,14 +26,9 @@ func (location *Location) Validate() error {
 
 // Reads a POINT from the database.
 func (location *Location) Scan(value interface{}) error {
-	floatStrings := strings.Split(strings.Trim(string(value.([]byte)), "()"), ",")
-	location.Latitude, _ = strconv.ParseFloat(floatStrings[0], 64)
-	location.Longitude, _ = strconv.ParseFloat(floatStrings[1], 64)
+	log.Println(string(value.([]byte)))
+	floatStrings := strings.Split(strings.Trim(string(value.([]byte)), "POINT()"), " ")
+	location.Longitude, _ = strconv.ParseFloat(floatStrings[0], 64)
+	location.Latitude, _ = strconv.ParseFloat(floatStrings[1], 64)
 	return nil
-}
-
-// Converts the location into a POINT format which can be inserted into the
-// database.
-func (location Location) Value() (driver.Value, error) {
-	return fmt.Sprintf("%f,%f", location.Latitude, location.Longitude), nil
 }

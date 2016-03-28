@@ -31,6 +31,7 @@ CREATE TABLE channels (
 	ch_fields jsonb NOT NULL,
 	FOREIGN KEY (ch_userid_creator) REFERENCES users (u_userid)
 );
+CREATE UNIQUE INDEX channels_lower_channelname on channels (lower(ch_channelname));
 
 CREATE TABLE posts (
 	p_postid postid PRIMARY KEY,
@@ -39,7 +40,7 @@ CREATE TABLE posts (
 	p_title title NOT NULL,
 	p_thumbnail thumbnail NOT NULL,
 	p_time TIMESTAMP NOT NULL,
-	p_location POINT NOT NULL,
+	p_location geometry NOT NULL,
 	p_fields jsonb NOT NULL,
 	FOREIGN KEY (p_userid_creator) REFERENCES users (u_userid),
 	FOREIGN KEY (p_channelname) REFERENCES channels (ch_channelname)
