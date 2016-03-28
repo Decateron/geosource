@@ -5,10 +5,17 @@
 		:host {
 			display: block;
 		}
-	   	paper-icon-button {
+		div.channelname {
+			text-overflow: ellipsis;
+    		overflow-x: hidden;
+		}
+		paper-icon-button {
+	    	color: #555;
+	    }
+	   	paper-icon-button.subscribe {
 	    	color: #71CA41;
 	    }
-	    paper-icon-button[subscribed] {
+	    paper-icon-button.subscribe[subscribed] {
 	    	color: #FF4081;
 	    }
 	</style>
@@ -24,8 +31,9 @@
 		</iron-ajax>
 		<div>
 			<div class="horizontal layout center">
-				<div class="flex">{{channel.name}}</div> 
-				<paper-icon-button disabled="[[!canSubscribe]]" icon="{{subscribeIcon(channel.subscribed)}}" on-tap="subscribeTapped" subscribed$="[[channel.subscribed]]"></paper-icon-button>
+				<div class="channelname flex">{{channel.name}}</div> 
+				<paper-icon-button class="subscribe" disabled="[[!canSubscribe]]" icon="{{subscribeIcon(channel.subscribed)}}" on-tap="subscribeTapped" subscribed$="[[channel.subscribed]]"></paper-icon-button>
+				<paper-icon-button disabled icon="icons:settings" on-tap="settingsTapped"></paper-icon-button>
 			</div>
 		</div>
 	</template>
@@ -97,6 +105,10 @@
 		},
 		unsubscribeError: function() {
 			this.canSubscribe = true;
+		},
+
+		settingsTapped: function() {
+			this.fire('open-channel', {channelname: this.channel.name});
 		},
 	});
 </script>
