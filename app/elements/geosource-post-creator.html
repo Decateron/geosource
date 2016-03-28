@@ -84,7 +84,7 @@
 						<paper-dropdown-menu label="Select a channel..." no-label-float>
 							<paper-menu class="dropdown-content" selected="{{channelIndex}}" on-iron-select="onChannelSelect">
 								<template is="dom-repeat" items="{{channels}}">
-									<paper-item>{{item}}</paper-item>
+									<paper-item>{{item.name}}</paper-item>
 								</template>
 							</paper-menu>
 						</paper-dropdown-menu>
@@ -217,12 +217,8 @@
 			this.error = null;
 		},
 
-		getChannelsResponse: function(event) {
-			this.channels = event.detail.response;
-		},
-
 		onChannelSelect: function(event) {
-			this.$.get_channel.url = "/api/channels/" + encodeURI(this.channels[this.channelIndex]);
+			this.$.get_channel.url = "/api/channels/" + encodeURI(this.channels[this.channelIndex].name);
 			this.$.get_channel.generateRequest();
 		},
 

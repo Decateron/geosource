@@ -271,7 +271,7 @@
 		},
 		submitResponse: function(event) {
 			console.log("submit response", event.detail.response);
-			this.unshift('channels', event.detail.response.name);
+			this.unshift('channels', event.detail.response);
 			this.close();
 		},
 		submitError: function(event, detail, sender) {

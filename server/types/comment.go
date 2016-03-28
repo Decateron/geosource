@@ -35,3 +35,18 @@ func (comment *Comment) Validate() error {
 func (comment *Comment) TableName() string {
 	return "comments"
 }
+
+type PersonalizedChannelFields struct {
+	Subscribed  bool   `json:"subscribed" gorm:"column:subscribed"`
+	CreatorName string `json:"creatorName" gorm:"column:u_username"`
+}
+
+type PersonalizedChannelInfo struct {
+	ChannelInfo
+	PersonalizedChannelFields
+}
+
+type PersonalizedChannel struct {
+	Channel
+	PersonalizedChannelFields
+}
