@@ -8,18 +8,32 @@ import (
 	"time"
 
 	"github.com/ant0ine/go-json-rest/rest"
+	"github.com/gorilla/schema"
 	"github.com/joshheinrichs/geosource/server/transactions"
 	"github.com/pborman/uuid"
 )
 
 func GetPosts(w rest.ResponseWriter, req *rest.Request) {
 	requester := GetRequesterID(req)
-	posts, err := transactions.GetPosts(requester)
+	log.Println(req.URL.Query().Encode())
+
+	var postQueryParams transactions.PostQueryParams
+	decoder := schema.NewDecoder()
+	err := decoder.Decode(&postQueryParams, req.URL.Query())
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	log.Println(postQueryParams)
+
+	posts, err := transactions.GetPosts(requester, &postQueryParams)
+	if err != nil {
+		log.Println(err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteJson(posts)
 	w.WriteHeader(http.StatusOK)
 }
