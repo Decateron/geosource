@@ -1,0 +1,102 @@
+<link rel="import" href="geosource-imports.html">
+
+<dom-module id="geosource-channelinfo">
+	<style>
+		:host {
+			display: block;
+		}
+	   	paper-icon-button {
+	    	color: #71CA41;
+	    }
+	    paper-icon-button[subscribed] {
+	    	color: #FF4081;
+	    }
+	</style>
+
+	<template>
+		<iron-ajax id="postSubscription"
+			method="POST" content-type="application/json" handle-as="json"
+			on-response="subscribeResponse" on-error="subscribeError">
+		</iron-ajax>
+		<iron-ajax id="deleteSubscription"
+			method="DELETE" content-type="application/json" handle-as="json"
+			on-response="unsubscribeResponse" on-error="unsubscribeError">
+		</iron-ajax>
+		<div>
+			<div class="horizontal layout center">
+				<div class="flex">{{channel.name}}</div> 
+				<paper-icon-button disabled="[[!canSubscribe]]" icon="{{subscribeIcon(channel.subscribed)}}" on-tap="subscribeTapped" subscribed$="[[channel.subscribed]]"></paper-icon-button>
+			</div>
+		</div>
+	</template>
+</dom-module>
+
+<script>
+	Polymer({		
+		is: "geosource-channelinfo",
+
+		properties: {
+			channel: {
+				type: Object,
+				reflectToAttribute: true,
+			},
+			canSubscribe: {
+				type: Boolean,
+				value: true,
+			},
+			userId: {
+				type: String,
+			},
+		},
+
+		ready: function() {
+			this.$.postSubscription.url = "/api/users/" + this.userId + "/subscriptions";
+			this.$.postSubscription.body = {"channelname": this.channel.name};
+			this.$.deleteSubscription.url = "/api/users/" + this.userId + "/subscriptions/" + this.channel.name;
+		},
+
+		subscribeIcon: function(subscribed) {
+			if (subscribed) {
+				return "icons:clear";
+			} else {
+				return "icons:add";
+			}
+		},
+
+		subscribeTapped: function() {
+			if (this.channel.subscribed) {
+				this.unsubscribe();
+			} else {
+				this.subscribe();
+			}
+		},
+
+		subscribe: function() {
+			if (this.canSubscribe) {
+				this.canSubscribe = false;
+				this.$.postSubscription.generateRequest();
+			}
+		},
+		subscribeResponse: function() {
+			this.set('channel.subscribed', true);
+			this.canSubscribe = true;
+		},
+		subscribeError: function() {
+			this.canSubscribe = true;
+		},
+
+		unsubscribe: function() {
+			if (this.canSubscribe) {
+				this.canSubscribe = false;
+				this.$.deleteSubscription.generateRequest();
+			}
+		},
+		unsubscribeResponse: function() {
+			this.set('channel.subscribed', false);
+			this.canSubscribe = true;
+		},
+		unsubscribeError: function() {
+			this.canSubscribe = true;
+		},
+	});
+</script>

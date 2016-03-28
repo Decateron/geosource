@@ -5,6 +5,9 @@
 	</style>
 	<template>
 		<geosource-settings-card title="Channels" icon="icons:settings-remote">
+			<template is="dom-repeat" items="{{channels}}" as="channel">
+				<geosource-channelinfo channel="{{channel}}" user-id="[[userId]]"></geosource-channelinfo>
+			</template>
 		</geosource-settings-card>
 	</template>
 </dom-module>
@@ -12,5 +15,14 @@
 <script>
 	Polymer({
 		is: "geosource-settings-channels",
+
+		properties: {
+			channels: {
+				type: Array
+			},
+			userId: {
+				type: String,
+			},
+		},
 	});
 </script>
