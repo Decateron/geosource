@@ -65,6 +65,13 @@ func AddChannel(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	insertedChannel, err := transactions.GetChannel(requester, channel.Name)
+	if err != nil {
+		log.Println(err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteJson(insertedChannel)
 	w.WriteHeader(http.StatusOK)
 }
 

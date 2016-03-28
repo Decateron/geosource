@@ -93,6 +93,13 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	insertedPost, err := transactions.GetPost(requester, post.ID)
+	if err != nil {
+		log.Println(err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteJson(insertedPost)
 	w.WriteHeader(http.StatusOK)
 }
 

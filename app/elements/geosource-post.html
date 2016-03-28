@@ -181,6 +181,7 @@
 		},
 		postCommentResponse: function(event) {
 			this.$.comment_input.value = "";
+			this.unshift('comments', event.detail.response);
 		},
 		postCommentError: function(event) {
 			console.log(event);

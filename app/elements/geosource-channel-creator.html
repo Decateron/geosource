@@ -78,7 +78,7 @@
 	<template>
 		<iron-ajax id="post_channel"
 			method="POST" content-type="application/json" url="/api/channels" handle-as="json"
-			on-response="close" on-response="submitResponse" on-error="submitError">
+			on-response="submitResponse" on-error="submitError">
 		</iron-ajax>
 		<geosource-dialog id="dialog" title="Create a Channel" fullscreen="[[fullscreen]]">
 			<div class="form">
@@ -195,6 +195,9 @@
 			fullscreen: {
 				type: Boolean,
 			},
+			channels: {
+				type: Array,
+			},
 		},
 
 		addField: function(type, form) {
@@ -266,7 +269,9 @@
 			this.$.post_channel.body = channel;
 			this.$.post_channel.generateRequest();
 		},
-		submitResponse: function() {
+		submitResponse: function(event) {
+			console.log("submit response", event.detail.response);
+			this.unshift('channels', event.detail.response.name);
 			this.close();
 		},
 		submitError: function(event, detail, sender) {

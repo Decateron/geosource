@@ -71,10 +71,6 @@
 			method="POST" content-type="application/json" url="/api/posts" handle-as="json"
 			on-response="submitResponse" on-error="submitError">
 		</iron-ajax>
-		<iron-ajax id="get_channels"
-			method="GET" url="/api/channels" handle-as="json"
-			on-response="getChannelsResponse" on-error="getChannelsError">
-		</iron-ajax>
 		<iron-ajax id="get_channel"
 			method="GET" handle-as="json"
 			on-response="getChannelResponse" on-error="getChannelError">
@@ -178,6 +174,9 @@
 		behaviors: [GeosourceFieldBehavior],
 
 		properties: {
+			posts: {
+				type: Array,
+			},
 			channels: {
 				type: Array,
 				value: [],
@@ -209,10 +208,6 @@
 			fullscreen: {
 				type: Boolean
 			},
-		},
-
-		ready: function() {
-			this.$.get_channels.generateRequest();
 		},
 
 		clear: function() {
@@ -309,8 +304,9 @@
 			this.$.post_post.body = submission;
 			this.$.post_post.generateRequest();
 		},
-		submitResponse: function() {
-			console.log("upload response");
+		submitResponse: function(event) {
+			console.log("upload response", event.detail.response);
+			this.unshift('posts', event.detail.response);
 			this.close();
 		},
 		submitError: function(event, detail, sender) {

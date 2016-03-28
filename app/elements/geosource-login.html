@@ -1,12 +1,93 @@
 <link rel="import" href="geosource-imports.html">
 
 <dom-module id="geosource-login">
-	<style></style>
-	<template></template>
+	<style>
+		div.buttons {
+			width: 100%;
+			margin: 20px;
+		}
+		paper-button {
+			text-transform: none;
+			margin: 20px;
+		}
+		paper-button.signin {
+			width: 100%;
+			color: #fff;
+			margin: 0;
+			margin-bottom: 10px;
+			padding: 0;
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			border: 1px solid;
+			width: 250px;
+		}
+		paper-button.twitter {
+			background-color: #4099FF;
+			border-color: #3782D9;
+		}
+		paper-button.facebook {
+			background-color: #3B5998;
+			border-color: #334C81;
+		}
+		paper-button.google {
+			background-color: #DC4E41;
+			border-color: #BB4338;
+		}
+		social-media-icons {
+			width: 32px;
+			height: 32px;
+			border-color: rgba(0,0,0,0.15);
+			border-right-width: 1px;
+			border-right-style: solid;
+			padding: 8px;
+			outline-color: rgba(255, 255, 255, 0.15);
+			outline-width: 1px;
+			outline-style: solid;
+		}
+	</style>
+	<template>
+		<geosource-dialog id="dialog" title="Login" fullscreen="[[fullscreen]]">
+			<div class="vertical layout center flex">
+				<a href="/api/auth/gplus">
+				<paper-button class="signin google">
+					<div class="horizontal layout center flex">
+					<social-media-icons icon="googleplus" color="#fff"></social-media-icons>
+					<div class="flex">Sign in with Google</div>
+					</div>
+				</paper-button>
+				</a>
+				<paper-button class="signin facebook">
+					<div class="horizontal layout center">
+					<social-media-icons icon="facebook" color="#fff"></social-media-icons>
+					<div class="flex">Sign in with Facebook</div>
+					</div>
+				</paper-button>
+				<paper-button class="signin twitter">
+					<div class="horizontal layout center">
+					<social-media-icons icon="twitter" color="#fff"></social-media-icons>
+					<div class="flex">Sign in with Twitter</div>
+					</div>
+				</paper-button>
+			</div>
+		</geosource-dialog>
+	</template>
 </dom-module>
 
 <script>
 	Polymer({
 		is: "geosource-login",
+		
+		properties: {
+			fullscreen: {
+				type: Boolean
+			}
+		},
+		open: function() {
+			this.$.dialog.open();
+		},
+		close: function() {
+			this.$.dialog.close();
+		},
 	});
 </script>

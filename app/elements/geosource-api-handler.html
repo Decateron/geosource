@@ -28,6 +28,14 @@
 			on-response="getPostsResponse"
 			on-error="getPostsError">
 		</iron-ajax>
+
+		<iron-ajax id="getChannels"
+			url="/api/channels"
+			method="GET"
+			handle-as="json"
+			on-response="getChannelsResponse"
+			on-error="getChannelsError">
+		</iron-ajax>
 	</template>
 </dom-module>
 
@@ -40,6 +48,10 @@
 				type: String,
 			},
 			posts: {
+				type: Array,
+				notify: true,
+			},
+			channels: {
 				type: Array,
 				notify: true,
 			},
@@ -87,15 +99,24 @@
 			console.log("get posts");
 			this.$.getPosts.generateRequest();
 		},
-		getPostsResponse: function(event, detail, sender) {
-			console.log("get posts response");
-			console.log(this.posts);
-			this.set('posts', detail.response);
-			console.log(this.posts);
+		getPostsResponse: function(event) {
+			console.log("get posts response", event.detail.response);
+			this.posts = event.detail.response;
 		},
-		getPostsError: function(event, detail, sender) {
+		getPostsError: function(event) {
 			console.log("get posts error");
 		},
 
+		getChannels: function() {
+			console.log("get channels");
+			this.$.getChannels.generateRequest();
+		},
+		getChannelsResponse: function(event) {
+			console.log("get channels response", event.detail.response);
+			this.channels = event.detail.response;
+		},
+		getChannelsError: function(event) {
+			console.log("get channels error");
+		},
 	});
 </script>

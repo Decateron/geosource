@@ -51,6 +51,13 @@ func AddComment(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	insertedComment, err := transactions.GetComment(requester, comment.ID)
+	if err != nil {
+		log.Println(err)
+		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteJson(insertedComment)
 	w.WriteHeader(http.StatusOK)
 }
 

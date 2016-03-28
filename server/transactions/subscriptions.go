@@ -29,7 +29,9 @@ func GetSubscriptions(requester, userID string) ([]string, error) {
 	var subscriptions []struct {
 		PostID string `gorm:"column:us_channelname"`
 	}
-	err = db.Table("user_subscriptions").Where("us_userid = ?", userID).Find(&subscriptions).Error
+	err = db.Table("user_subscriptions").
+		Where("us_userid = ?", userID).
+		Find(&subscriptions).Error
 	if err != nil {
 		return nil, err
 	}

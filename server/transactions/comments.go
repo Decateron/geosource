@@ -20,6 +20,19 @@ func AddComment(requester string, comment *types.Comment) error {
 	return db.Create(comment).Error
 }
 
+// Returns a comment with the given ID, or nil if it does not exist.
+func GetComment(requester, commentID string) (*types.Comment, error) {
+	var comment types.Comment
+	err := db.Where("cmt_commentid = ?", commentID).First(&comment).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &comment, nil
+}
+
 func GetComments(requester, postID string) ([]*types.Comment, error) {
 	var comments []*types.Comment
 	err := db.Where("cmt_postid = ?", postID).Order("cmt_time").Find(&comments).Error

@@ -107,41 +107,6 @@
 			margin: 0;
 			box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
 		}
-		paper-button.signin {
-			width: 100%;
-			color: #fff;
-			margin: 0;
-			margin-bottom: 10px;
-			padding: 0;
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-			border: 1px solid;
-			width: 250px;
-		}
-		paper-button.twitter {
-			background-color: #4099FF;
-			border-color: #3782D9;
-		}
-		paper-button.facebook {
-			background-color: #3B5998;
-			border-color: #334C81;
-		}
-		paper-button.google {
-			background-color: #DC4E41;
-			border-color: #BB4338;
-		}
-		social-media-icons {
-			width: 32px;
-			height: 32px;
-			border-color: rgba(0,0,0,0.15);
-			border-right-width: 1px;
-			border-right-style: solid;
-			padding: 8px;
-			outline-color: rgba(255, 255, 255, 0.15);
-			outline-width: 1px;
-			outline-style: solid;
-		}
 	</style>
 	<template>
 		<platinum-sw-register auto-register>
@@ -151,7 +116,6 @@
 			saved-posts="{{savedPosts}}" 
 			saved-channels="{{savedChannels}}">
 		</geosource-object-store>
-
 		<geosource-api-handler id="api"
 			posts="{{posts}}"
 			channels="{{channels}}"
@@ -159,36 +123,9 @@
 		</geosource-api-handler>
 
 		<geosource-post id="post" fullscreen="[[drawerNarrow]]"></geosource-post>
-		<geosource-channel-creator id="channelCreator" fullscreen="[[drawerNarrow]]"></geosource-channel-creator>
-		<geosource-post-creator id="postCreator" fullscreen="[[drawerNarrow]]"></geosource-post-creator>
-
-		<paper-dialog id="login_dialog" with-backdrop>
-			<h2>Login</h2>
-			<paper-dialog-scrollable>
-				<div class="vertical layout">
-					<a href="/api/auth/gplus">
-					<paper-button class="signin google">
-						<div class="horizontal layout center">
-						<social-media-icons icon="googleplus" color="#fff"></social-media-icons>
-						<div class="flex">Sign in with Google</div>
-						</div>
-					</paper-button>
-					</a>
-					<paper-button class="signin facebook">
-						<div class="horizontal layout center">
-						<social-media-icons icon="facebook" color="#fff"></social-media-icons>
-						<div class="flex">Sign in with Facebook</div>
-						</div>
-					</paper-button>
-					<paper-button class="signin twitter">
-						<div class="horizontal layout center">
-						<social-media-icons icon="twitter" color="#fff"></social-media-icons>
-						<div class="flex">Sign in with Twitter</div>
-						</div>
-					</paper-button>
-				</div>
-			</paper-dialog-scrollable>
-		</paper-dialog>
+		<geosource-channel-creator id="channelCreator" fullscreen="[[drawerNarrow]]" channels="{{channels}}"></geosource-channel-creator>
+		<geosource-post-creator id="postCreator" fullscreen="[[drawerNarrow]]" channels="[[channels]]" posts="{{posts}}"></geosource-post-creator>
+		<geosource-login id="loginDialog" fullscreen="[[drawerNarrow]]"></geosource-login>
 
 		<paper-drawer-panel id="drawer" drawer-width="{{drawerWidth}}" narrow="{{drawerShut}}"
 			on-paper-responsive-change="resizeDrawer">
@@ -243,6 +180,10 @@
 				type: Array,
 				value: [],
 			},
+			channels: {
+				type: Array,
+				value: [],
+			},
 			savedPosts: {
 				type: Array,
 				value: [],
@@ -268,6 +209,7 @@
 			console.log(this.userId);
 			this.moveToUser();
 			this.$.api.getPosts();
+			this.$.api.getChannels();
 		},
 
 		/** Returns true if the user is logged in, false otherwise. */
@@ -326,7 +268,7 @@
 		},
 
 		openLoginDialog: function() {
-			this.$.login_dialog.open();
+			this.$.loginDialog.open();
 		},
 		openPostDialog: function(event, detail, sender) {
 			console.log(detail);
