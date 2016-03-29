@@ -12,6 +12,8 @@ type PostQueryParams struct {
 	Flags         *Flags         `url:"flags"`
 	TimeRange     *TimeRange     `url:"timeRange"`
 	LocationRange *LocationRange `url:"locationRange"`
+	Limit         *int           `url:"limit"`
+	Offset        *int           `url:"offset"`
 }
 
 type Flags struct {
@@ -60,7 +62,8 @@ func GetPosts(requester string, postQueryParams *PostQueryParams) ([]*types.Pers
 		Joins("LEFT JOIN user_favorites ON (p_postid = uf_postid AND uf_userid = ?)", requester).
 		Joins("LEFT JOIN user_subscriptions ON (p_channelname = us_channelname AND us_userid = ?)", requester).
 		Joins("LEFT JOIN users ON (u_userid = p_userid_creator)").
-		Select("*, (uf_postid IS NOT NULL) AS favorited, ST_AsText(p_location) AS location, (us_channelname IS NOT NULL) AS subscribed")
+		Select("*, (uf_postid IS NOT NULL) AS favorited, ST_AsText(p_location) AS location, (us_channelname IS NOT NULL) AS subscribed").
+		Order("p_time desc")
 
 	if postQueryParams.Flags != nil {
 		if postQueryParams.Flags.Mine {
@@ -85,8 +88,14 @@ func GetPosts(requester string, postQueryParams *PostQueryParams) ([]*types.Pers
 			postQueryParams.TimeRange.Min,
 			postQueryParams.TimeRange.Max)
 	}
+	if postQueryParams.Limit != nil {
+		query = query.Limit(*postQueryParams.Limit)
+	}
+	if postQueryParams.Offset != nil {
+		query = query.Offset(*postQueryParams.Offset)
+	}
 
-	err := query.Order("p_time desc").Find(&posts).Error
+	err := query.Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}
