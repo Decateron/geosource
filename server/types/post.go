@@ -21,7 +21,7 @@ type PostInfo struct {
 	Title     string    `json:"title" gorm:"column:p_title"`
 	Thumbnail string    `json:"thumbnail" gorm:"column:p_thumbnail"`
 	Time      time.Time `json:"time" gorm:"column:p_time"`
-	Location  Location  `json:"location" gorm:"column:location"`
+	Location  *Location `json:"location" gorm:"column:location"`
 }
 
 // Returns the name of the postInfo's corresponding table in the database.
@@ -34,9 +34,11 @@ func (postInfo *PostInfo) TableName() string {
 func (postInfo *PostInfo) Validate() error {
 	postInfo.Title = strings.TrimSpace(postInfo.Title)
 	if len(postInfo.Title) == 0 {
-		return errors.New("Post title cannot be empty.")
+		return errors.New("Post title cannot be empty")
 	} else if len(postInfo.Title) > MAX_POSTTITLE_LEN {
 		return errors.New(fmt.Sprintf("Length of post title cannot exceed %i characters", MAX_POSTTITLE_LEN))
+	} else if postInfo.Location == nil {
+		return errors.New("A location must be provided")
 	}
 	err := postInfo.Location.Validate()
 	if err != nil {

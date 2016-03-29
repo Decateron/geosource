@@ -8,6 +8,6 @@ import (
 type Submission struct {
 	Title    string         `json:"title"`
 	Channel  string         `json:"channel"`
-	Location Location       `json:"location"`
+	Location *Location      `json:"location"`
 	Values   []fields.Value `json:"values"`
 }
