@@ -2,7 +2,6 @@ package types
 
 import (
 	"errors"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -26,7 +25,6 @@ func (location *Location) Validate() error {
 
 // Reads a POINT from the database.
 func (location *Location) Scan(value interface{}) error {
-	log.Println(string(value.([]byte)))
 	floatStrings := strings.Split(strings.Trim(string(value.([]byte)), "POINT()"), " ")
 	location.Longitude, _ = strconv.ParseFloat(floatStrings[0], 64)
 	location.Latitude, _ = strconv.ParseFloat(floatStrings[1], 64)
