@@ -55,6 +55,17 @@
 				type: Array,
 				notify: true,
 			},
+			postQueryParams: {
+				type: Object,
+			},
+		},
+
+		observers: [
+			'postQueryParamsChanged(postQueryParams.*)'
+		],
+
+		postQueryParamsChanged: function() {
+			this.getPosts();
 		},
 
 		login: function(event, detail, sender) {
@@ -97,6 +108,14 @@
 
 		getPosts: function() {
 			console.log("get posts");
+			// flattening the parameters since iron-ajax does not supported nested structures in params
+			// TODO: Is there a library for this?
+			this.$.getPosts.params = {
+				["locationRange.min.latitude"]: this.postQueryParams.locationRange.min.latitude,
+				["locationRange.min.longitude"]: this.postQueryParams.locationRange.min.longitude,
+				["locationRange.max.latitude"]: this.postQueryParams.locationRange.max.latitude,
+				["locationRange.max.longitude"]: this.postQueryParams.locationRange.max.longitude
+			};
 			this.$.getPosts.generateRequest();
 		},
 		getPostsResponse: function(event) {
