@@ -67,11 +67,11 @@
 		}
 	</style>
 	<template>
-		<iron-ajax id="post_post" 
+		<iron-ajax id="addPost" 
 			method="POST" content-type="application/json" url="/api/posts" handle-as="json"
 			on-response="submitResponse" on-error="submitError">
 		</iron-ajax>
-		<iron-ajax id="get_channel"
+		<iron-ajax id="getChannel"
 			method="GET" handle-as="json"
 			on-response="getChannelResponse" on-error="getChannelError">
 		</iron-ajax>
@@ -119,42 +119,52 @@
 					<div class="contents">
 						<paper-input label="Enter a title..." no-label-float value="{{post.title}}"></paper-input>
 					</div>
-				</template>
-				<template is="dom-repeat" items="{{post.fields}}" as="field" index-as="fieldIndex">
-					<h2>{{field.label}}<span hidden$="[[!field.required]]">*</span></h2>
+					<h2>Location*</h2>
 					<div class="contents">
-						<template is="dom-if" restamp if="{{isText(field.type)}}">
-							<paper-input label="Enter text..." no-label-float value="{{field.value}}"></paper-input>
-						</template>
-						<template is="dom-if" restamp if="{{isImages(field.type)}}">
-							<input class="hidden" id="file" name="field-2" type="file" capture="camera" accept="image/*" multiple on-change="displayFiles">
-							<paper-button class="field" on-tap="openFiles">
-								<iron-icon icon="image:camera-alt"></iron-icon>
-								<span>Add Pictures</span>
-							</paper-button>
-							<template is="dom-repeat" items="{{field.value}}" as="value">
-								<img src="{{value}}">
-							</template>
-							<!-- hack to force fieldIndex into model -->
-							<span style="display:none;">{{fieldIndex}}</span>
-						</template>
-						<template is="dom-if" restamp if="{{isCheckboxes(field.type)}}">
-							<paper-radio-group>
-								<template is="dom-repeat" items="{{field.pairs}}" as="checkbox">
-									<paper-checkbox checked="{{checkbox.value}}">{{checkbox.form}}</paper-checkbox><br>
-								</template>
-							</paper-radio-group>
-						</template>
-						<template is="dom-if" restamp if="{{isRadiobuttons(field.type)}}">
-							<paper-radio-group selected="{{field.value}}" allow-empty-selection="[[!field.required]]">
-								<template is="dom-repeat" items="{{field.form}}" as="subfield">
-									<paper-radio-button name="{{subfield}}">{{subfield}}</paper-radio-button><br>
-								</template>
-							</paper-radio-group>
-						</template>
+						<paper-button class="field" on-tap="recordLocation">
+							<iron-icon icon="device:gps-fixed"></iron-icon>
+							<span>Record Location</span>
+						</paper-button>
+						<div hidden$="[[!post.location]]">
+							<div>Latitude: <span>{{post.location.latitude}}</span></div>
+							<div>Longitude: <span>{{post.location.longitude}}</span></div>
+						</div>
 					</div>
-				</template>
-				<template is="dom-if" if="{{post}}">
+
+					<template is="dom-repeat" items="{{post.fields}}" as="field" index-as="fieldIndex">
+						<h2>{{field.label}}<span hidden$="[[!field.required]]">*</span></h2>
+						<div class="contents">
+							<template is="dom-if" restamp if="{{isText(field.type)}}">
+								<paper-input label="Enter text..." no-label-float value="{{field.value}}"></paper-input>
+							</template>
+							<template is="dom-if" restamp if="{{isImages(field.type)}}">
+								<input class="hidden" id="file" name="field-2" type="file" capture="camera" accept="image/*" multiple on-change="displayFiles">
+								<paper-button class="field" on-tap="openFiles">
+									<iron-icon icon="image:camera-alt"></iron-icon>
+									<span>Add Pictures</span>
+								</paper-button>
+								<template is="dom-repeat" items="{{field.value}}" as="value">
+									<img src="{{value}}">
+								</template>
+								<!-- hack to force fieldIndex into model -->
+								<span style="display:none;">{{fieldIndex}}</span>
+							</template>
+							<template is="dom-if" restamp if="{{isCheckboxes(field.type)}}">
+								<paper-radio-group>
+									<template is="dom-repeat" items="{{field.pairs}}" as="checkbox">
+										<paper-checkbox checked="{{checkbox.value}}">{{checkbox.form}}</paper-checkbox><br>
+									</template>
+								</paper-radio-group>
+							</template>
+							<template is="dom-if" restamp if="{{isRadiobuttons(field.type)}}">
+								<paper-radio-group selected="{{field.value}}" allow-empty-selection="[[!field.required]]">
+									<template is="dom-repeat" items="{{field.form}}" as="subfield">
+										<paper-radio-button name="{{subfield}}">{{subfield}}</paper-radio-button><br>
+									</template>
+								</paper-radio-group>
+							</template>
+						</div>
+					</template>
 					<div class="error" hidden$="{{!error}}">{{error}}</div>
 					<div class="horizontal layout flex">
 						<paper-button class="flex" on-tap="close">Cancel</paper-button>
@@ -218,8 +228,8 @@
 		},
 
 		onChannelSelect: function(event) {
-			this.$.get_channel.url = "/api/channels/" + encodeURI(this.channels[this.channelIndex].name);
-			this.$.get_channel.generateRequest();
+			this.$.getChannel.url = "/api/channels/" + encodeURI(this.channels[this.channelIndex].name);
+			this.$.getChannel.generateRequest();
 		},
 
 		getChannelResponse: function(event) {
@@ -236,11 +246,18 @@
 				fields: this.pairFields(channel.fields)
 			};
 			console.log(this.post);
+			this.recordLocation();
+		},
+
+		recordLocation: function() {
 			navigator.geolocation.getCurrentPosition(function(position){
-				this.post.location = {
-					latitude: position.coords.latitude,
-					longitude: position.coords.longitude
-				};
+				if (position != null) {
+					this.set('post.location', {
+						latitude: position.coords.latitude,
+						longitude: position.coords.longitude
+					});
+				}
+				console.log("recorded post location", this.post.location);
 			}.bind(this));
 		},
 
@@ -297,8 +314,8 @@
 				values: values
 			};
 			console.log(submission);
-			this.$.post_post.body = submission;
-			this.$.post_post.generateRequest();
+			this.$.addPost.body = submission;
+			this.$.addPost.generateRequest();
 		},
 		submitResponse: function(event) {
 			console.log("upload response", event.detail.response);
