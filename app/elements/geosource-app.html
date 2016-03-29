@@ -103,9 +103,16 @@
 		}
 	</style>
 	<template>
-		<platinum-sw-register auto-register>
-			<platinum-sw-cache></platinum-sw-cache>
+		<platinum-sw-register auto-register clients-claim skip-waiting 
+			on-service-worker-installed="displayInstalledToast"
+			on-service-worker-error="displayErrorToast">
+			<platinum-sw-cache default-cache-strategy="networkFirst">
+			</platinum-sw-cache>
 		</platinum-sw-register>
+		<paper-toast id="installedToast" 
+			text="This site is now available offline.">
+		</paper-toast>
+		<paper-toast id="errorToast"></paper-toast>
 		<geosource-object-store 
 			saved-posts="{{savedPosts}}" 
 			saved-channels="{{savedChannels}}">
@@ -305,5 +312,13 @@
 		openPostCreatorDialog: function() {
 			this.$.postCreator.open();
 		},
+
+		displayInstalledToast: function() {
+			this.$.installedToast.open();
+		},
+		displayErrorToast: function(event) {
+			this.$.errorToast.text = event.detail;
+			this.$.errorToast.open();
+		}
 	});
 </script>
