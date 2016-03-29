@@ -15,15 +15,15 @@ type PostQueryParams struct {
 }
 
 type Flags struct {
-	// If true, all posts will be searched, regardless of the channels and
-	// other flags that were set in the query.
-	All bool `url:"all"`
 	// If true, posts that were created by the user will be included in
 	// the search results.
 	Mine bool `url:"mine"`
 	// If true, posts that were favorited by the user will be included in
 	// the search results.
 	Favorites bool `url:"favorites"`
+	// If true, posts that are in the user's subscribed channels will be
+	// included in the search results.
+	Subscriptions bool `url:"subscriptions"`
 }
 
 type TimeRange struct {
@@ -58,10 +58,20 @@ func GetPosts(requester string, postQueryParams *PostQueryParams) ([]*types.Pers
 	var posts []*types.PersonalizedPostInfo
 	query := db.Table("posts").
 		Joins("LEFT JOIN user_favorites ON (p_postid = uf_postid AND uf_userid = ?)", requester).
-		Joins("LEFT JOIN users ON (u_userid = p_userid_creator)")
+		Joins("LEFT JOIN user_subscriptions ON (p_channelname = us_channelname AND us_userid = ?)", requester).
+		Joins("LEFT JOIN users ON (u_userid = p_userid_creator)").
+		Select("*, (uf_postid IS NOT NULL) AS favorited, ST_AsText(p_location) AS location, (us_channelname IS NOT NULL) AS subscribed")
 
 	if postQueryParams.Flags != nil {
-		// TODO
+		if postQueryParams.Flags.Mine {
+			query = query.Where("p_userid_creator = ?", requester)
+		}
+		if postQueryParams.Flags.Favorites {
+			query = query.Where("uf_postid IS NOT NULL")
+		}
+		if postQueryParams.Flags.Subscriptions {
+			query = query.Where("us_channelname IS NOT NULL")
+		}
 	}
 	if postQueryParams.LocationRange != nil {
 		query = query.Where("p_location && ST_MakeEnvelope (?,?,?,?)",
@@ -76,8 +86,7 @@ func GetPosts(requester string, postQueryParams *PostQueryParams) ([]*types.Pers
 			postQueryParams.TimeRange.Max)
 	}
 
-	err := query.Select("*, (uf_postid IS NOT NULL) AS favorited, ST_AsText(p_location) AS location").
-		Order("p_time desc").Find(&posts).Error
+	err := query.Order("p_time desc").Find(&posts).Error
 	if err != nil {
 		return nil, err
 	}

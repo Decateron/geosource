@@ -133,10 +133,19 @@
 					</paper-toolbar>
 					<paper-drawer-panel id="settings" drawer-width="100%" force-narrow>
 						<div main>
-							<geosource-posts posts="{{posts}}" user-id="[[userId]]" on-move-map="moveToPost" on-open-post="openPostDialog"></geosource-posts>
+							<geosource-posts 
+								posts="{{posts}}" 
+								user-id="[[userId]]" 
+								on-move-map="moveToPost" 
+								on-open-post="openPostDialog">
+							</geosource-posts>
 						</div>
 						<div drawer>
-							<geosource-settings channels="{{channels}}" user-id="{{userId}}"></geosource-settings>
+							<geosource-settings 
+								channels="{{channels}}" 
+								user-id="{{userId}}" 
+								post-query-params="{{postQueryParams}}">
+							</geosource-settings>
 						</div>
 					</paper-drawer-panel>
 				</paper-header-panel>
@@ -188,11 +197,15 @@
 			postQueryParams: {
 				type: Object,
 				value: {
-					locationRange: {
-						min: {latitude: -90, longitude: -180},
-						max: {latitude: 90, longitude: 180},
+					locationRange: null,
+					flags: {
+						visible: true,
+						all: true,
+						mine: true,
+						favorites: true,
+						subscriptions: true,
 					},
-				}
+				},
 			},
 
 			savedPosts: {

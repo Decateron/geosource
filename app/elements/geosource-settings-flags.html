@@ -19,20 +19,24 @@
 	<template>
 		<geosource-settings-card title="Flags" icon="icons:flag">
 			<div class="item">
+				<div class="label flex">Visible</div>
+				<paper-toggle-button checked="{{postQueryParams.flags.visible}}"></paper-toggle-button>
+			</div>
+			<div class="item">
 				<div class="label flex">All</div>
-				<paper-toggle-button checked="{{allChecked}}"></paper-toggle-button>
+				<paper-toggle-button checked="{{postQueryParams.flags.all}}"></paper-toggle-button>
 			</div>
 			<div class="item">
 				<div class="label flex">Mine</div>
-				<paper-toggle-button checked="{{mineChecked}}" disabled="{{allChecked}}"></paper-toggle-button>
+				<paper-toggle-button checked="{{postQueryParams.flags.mine}}" disabled="{{postQueryParams.flags.all}}"></paper-toggle-button>
 			</div>
 			<div class="item">
 				<div class="label flex">Favorites</div>
-				<paper-toggle-button checked="{{favoritesChecked}}" disabled="{{allChecked}}"></paper-toggle-button>
+				<paper-toggle-button checked="{{postQueryParams.flags.favorites}}" disabled="{{postQueryParams.flags.all}}"></paper-toggle-button>
 			</div>
 			<div class="item">
-				<div class="label flex">Questions</div>
-				<paper-toggle-button checked="{{questionsChecked}}" disabled="{{allChecked}}"></paper-toggle-button>
+				<div class="label flex">Subscriptions</div>
+				<paper-toggle-button checked="{{postQueryParams.flags.subscriptions}}" disabled="{{postQueryParams.flags.all}}"></paper-toggle-button>
 			</div>
 		</geosource-settings-card>
 	</template>
@@ -43,6 +47,10 @@
 		is: "geosource-settings-flags",
 
 		properties: {
+			visibleChecked: {
+				type: Boolean,
+				value: true
+			},
 			allChecked: {
 				type: Boolean,
 				value: true
@@ -55,9 +63,12 @@
 				type: Boolean,
 				value: true
 			},
-			questionsChecked: {
+			subscriptionsChecked: {
 				type: Boolean,
 				value: true
+			},
+			postQueryParams: {
+				type: Object,
 			}
 		}
 	});

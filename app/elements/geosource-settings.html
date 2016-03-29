@@ -4,7 +4,7 @@
 	<style>
 	</style>
 	<template>
-		<geosource-settings-flags></geosource-settings-flags>
+		<geosource-settings-flags post-query-params="{{postQueryParams}}"></geosource-settings-flags>
 		<geosource-settings-channels channels="{{channels}}" user-id="{{userId}}"></geosource-settings-channels>
 		<geosource-settings-time></geosource-settings-time>
 	</template>
@@ -16,10 +16,13 @@
 
 		properties: {
 			channels: {
-				type: Array
+				type: Array,
 			},
 			userId: {
 				type: String,
+			},
+			postQueryParams: {
+				type: Object,
 			},
 		},
 	});
