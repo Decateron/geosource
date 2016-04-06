@@ -21,6 +21,7 @@ func GetChannel(requester, channelname string) (*types.PersonalizedChannel, erro
 		Joins("LEFT JOIN user_subscriptions ON (ch_channelname = us_channelname AND us_userid = ?)", requester).
 		Joins("LEFT JOIN users ON (u_userid = ch_userid_creator)").
 		Select("*, (us_channelname IS NOT NULL) AS subscribed").
+		Where("ch_channelname = ?", channelname).
 		First(&channel).Error
 	return &channel, err
 }
