@@ -17,7 +17,7 @@ func TestCommentValidate(t *testing.T) {
 
 	// Testing maximum string length
 	maxString := ""
-	for i := 0; i < MAX_COMMENT_LENGTH; i++ {
+	for i := 0; i < MaxCommentLength; i++ {
 		maxString += "a"
 	}
 	comment.Comment = maxString

@@ -14,7 +14,7 @@ import (
 var mainConfig *config.Config
 
 func redirectHandler(w http.ResponseWriter, r *http.Request) {
-	url := fmt.Sprintf("https://%s%s%s", mainConfig.Website.Url, mainConfig.Website.HttpsPort, r.RequestURI)
+	url := fmt.Sprintf("https://%s%s%s", mainConfig.Website.URL, mainConfig.Website.HTTPSPort, r.RequestURI)
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
@@ -42,14 +42,14 @@ func main() {
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("../app/")))
 	http.Handle("/", r)
 	go func() {
-		log.Printf("Serving HTTP on %s\n", mainConfig.Website.HttpPort)
-		err := http.ListenAndServe(mainConfig.Website.HttpPort, http.HandlerFunc(redirectHandler))
+		log.Printf("Serving HTTP on %s\n", mainConfig.Website.HTTPPort)
+		err := http.ListenAndServe(mainConfig.Website.HTTPPort, http.HandlerFunc(redirectHandler))
 		if err != nil {
 			log.Fatal(err)
 		}
 	}()
-	log.Printf("Serving HTTPS on %s\n", mainConfig.Website.HttpsPort)
-	err = http.ListenAndServeTLS(mainConfig.Website.HttpsPort, mainConfig.Website.Cert, mainConfig.Website.Key, nil)
+	log.Printf("Serving HTTPS on %s\n", mainConfig.Website.HTTPSPort)
+	err = http.ListenAndServeTLS(mainConfig.Website.HTTPSPort, mainConfig.Website.Cert, mainConfig.Website.Key, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	MAX_COMMENT_LENGTH = 500
+	MaxCommentLength = 500
 )
 
 type Comment struct {
@@ -20,19 +20,21 @@ type Comment struct {
 	Time      time.Time `json:"time" gorm:"column:cmt_time"`
 }
 
-// Returns an error if any fields in the comment are invalid, or nil otherwise.
+// Validate returns an error if any fields in the comment are invalid, or nil
+// otherwise.
 func (comment *Comment) Validate() error {
 	comment.Comment = strings.TrimSpace(comment.Comment)
 	if len(comment.Comment) == 0 {
 		return errors.New("Comment cannot be empty.")
-	} else if len(comment.Comment) > MAX_COMMENT_LENGTH {
-		return errors.New(fmt.Sprintf("Length of comment cannot exceed %i characters.", MAX_COMMENT_LENGTH))
+	} else if len(comment.Comment) > MaxCommentLength {
+		return errors.New(fmt.Sprintf("Length of comment cannot exceed %i characters.", MaxCommentLength))
 	}
 	return nil
 }
 
-// Returns the name of the comment's corresponding table in the database.
-func (comment *Comment) TableName() string {
+// TableName returns the name of Comment's corresponding table in the
+// database.
+func (Comment) TableName() string {
 	return "comments"
 }
 

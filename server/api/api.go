@@ -22,9 +22,9 @@ func Init(config *config.Config) {
 	apiConfig = config
 	rest.ErrorFieldName = "error"
 	goth.UseProviders(
-		gplus.New(config.Google.ClientID, config.Google.ClientSecret, config.Google.CallbackUrl),
-		// facebook.New(config.Facebook.ClientID, config.Facebook.ClientSecret, config.Facebook.Callback),
-		// twitter.New(config.Twitter.ClientID, config.Twitter.ClientSecret, config.Twitter.Callback),
+		gplus.New(config.Google.ClientID, config.Google.ClientSecret, config.Google.CallbackURL),
+		// facebook.New(config.Facebook.ClientID, config.Facebook.ClientSecret, config.Facebook.CallbackURL),
+		// twitter.New(config.Twitter.ClientID, config.Twitter.ClientSecret, config.Twitter.CallbackURL),
 	)
 }
 

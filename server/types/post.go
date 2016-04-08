@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	MAX_POSTTITLE_LEN = 140
+	maxTitleLength = 140
 )
 
-// General meta information about a post.
+// PostInfo contains general meta information about a post.
 type PostInfo struct {
 	ID        string    `json:"id" gorm:"column:p_postid"`
 	CreatorID string    `json:"creatorID" gorm:"column:p_userid_creator"`
@@ -24,19 +24,19 @@ type PostInfo struct {
 	Location  *Location `json:"location" gorm:"column:location"`
 }
 
-// Returns the name of the postInfo's corresponding table in the database.
-func (postInfo *PostInfo) TableName() string {
+// TableName returns the name of PostInfo's corresponding table in the database.
+func (PostInfo) TableName() string {
 	return "posts"
 }
 
-// Validates the post info. Returns an error if any fields are invalid, nil
+// Validate validates postInfo. Returns an error if any fields are invalid, nil
 // otherwise.
 func (postInfo *PostInfo) Validate() error {
 	postInfo.Title = strings.TrimSpace(postInfo.Title)
 	if len(postInfo.Title) == 0 {
 		return errors.New("Post title cannot be empty")
-	} else if len(postInfo.Title) > MAX_POSTTITLE_LEN {
-		return errors.New(fmt.Sprintf("Length of post title cannot exceed %i characters", MAX_POSTTITLE_LEN))
+	} else if len(postInfo.Title) > maxTitleLength {
+		return errors.New(fmt.Sprintf("Length of post title cannot exceed %i characters", maxTitleLength))
 	} else if postInfo.Location == nil {
 		return errors.New("A location must be provided")
 	}
@@ -52,7 +52,7 @@ type Post struct {
 	Fields fields.Fields `json:"fields" gorm:"column:p_fields" sql:"type:JSONB NOT NULL"`
 }
 
-// Validates the post. Returns an error if any fields are invalid, nil
+// Validate validates post. Returns an error if any fields are invalid, nil
 // otherwise.
 func (post *Post) Validate() error {
 	err := post.PostInfo.Validate()
@@ -66,11 +66,10 @@ func (post *Post) Validate() error {
 	return nil
 }
 
-// Generates a thumbnail for the post, attempting to use an image within the
-// post if one exists. This function assumes that the images from the post have
-// been validated and written to storage.
+// GenerateThumbnail generates a thumbnail for the post, attempting to use an
+// image within the post if one exists. This function assumes that the images
+// from the post have been validated and written to storage.
 func (post *Post) GenerateThumbnail() error {
-	// TODO: Assign default thumbnail
 	for _, field := range post.Fields {
 		imagesValue, ok := field.Value.(*fields.ImagesValue)
 		if ok && imagesValue.IsComplete() {
@@ -82,12 +81,12 @@ func (post *Post) GenerateThumbnail() error {
 			return nil
 		}
 	}
-	post.Thumbnail = fields.MediaDir + fields.ThumbnailDir + "default.svg"
+	post.Thumbnail = fields.MediaDir + fields.ThumbnailDir + "default.svg" // TODO: Move to constant
 	return nil
 }
 
-// Returns the name of the post's corresponding table in the database.
-func (post *Post) TableName() string {
+// TableName returns the name of Post's corresponding table in the database.
+func (Post) TableName() string {
 	return "posts"
 }
 

@@ -10,26 +10,26 @@ import (
 	"gopkg.in/gographics/imagick.v1/imagick"
 )
 
-// These variables are not set to constant so that they could be modified
-// programatically at some point if needed
+// These variables are not set to constant so that they can be modified
+// programatically if needed, such as in the case of testing.
 
 var ImageMaxWidth uint = 2000
 var ImageMaxHeight uint = 2000
 var ImageQuality uint = 70
-var ImageType string = ".jpg"
+var ImageType = ".jpg"
 
 var ThumbnailMaxWidth uint = 70
 var ThumbnailMaxHeight uint = 70
 var ThumbnailQuality uint = 70
-var ThumbnailType string = ".jpg"
+var ThumbnailType = ".jpg"
 
-var AppDir string = "app/"
-var MediaDir string = "media/"
-var ImageDir string = "images/"
-var ThumbnailDir string = "thumbnails/"
+var AppDir = "app/"
+var MediaDir = "media/"
+var ImageDir = "images/"
+var ThumbnailDir = "thumbnails/"
 
-// No form is needed for images as there is no restrictions that may be set
-// by the user.
+// ImagesForm is simply an empty struct since no form needed for images as
+// there is no restrictions that may be set by the user.
 type ImagesForm struct{}
 
 func (imagesForm *ImagesForm) ValidateForm() error {
@@ -67,7 +67,7 @@ func (imagesForm *ImagesForm) UnmarshalValue(blob []byte) (Value, error) {
 	return &value, nil
 }
 
-// An images value is an array of strings. These strings are expected to be
+// ImagesValue is an array of strings. These strings are expected to be
 // submitted by the user as base64 encoded images. After saving and conversion,
 // the URL of the images are stored inside instead.
 type ImagesValue []string
@@ -80,7 +80,10 @@ func (imagesValue *ImagesValue) IsComplete() bool {
 	return imagesValue != nil && len(*imagesValue) > 0
 }
 
-// This function assumes that the images have already been saved to files.
+// GenerateThumbnail assumes that the images have already been saved to storage,
+// and that one or more image is contained within imagesValue. Returns the
+// resulting filename of the generated thumbnail if successful, or an error
+// otherwise.
 func (imagesValue *ImagesValue) GenerateThumbnail() (string, error) {
 	if !imagesValue.IsComplete() {
 		return "", errors.New("No images to generate thumbnail for.")
@@ -111,8 +114,9 @@ func (imagesValue *ImagesValue) GenerateThumbnail() (string, error) {
 	return filename, nil
 }
 
-// Converts the base64 string into an image, saves it to the file system, and
-// returns its filename. If it is unsuccessful, an error is returned.
+// SaveImage converts the given base64 string into an image, saves it to the
+// file system, and returns its filename. If it is unsuccessful, an error is
+// returned.
 func SaveImage(base64str string) (string, error) {
 	// removes header information
 	strs := strings.Split(base64str, ",")

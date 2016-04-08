@@ -4,7 +4,7 @@ import (
 	"github.com/joshheinrichs/geosource/server/types/fields"
 )
 
-// A submission contains the necessary information to construct a Post.
+// Submission contains the necessary information to construct a Post.
 type Submission struct {
 	Title    string         `json:"title"`
 	Channel  string         `json:"channel"`

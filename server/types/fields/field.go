@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	TYPE_TEXT         = "text"
-	TYPE_CHECKBOXES   = "checkboxes"
-	TYPE_RADIOBUTTONS = "radiobuttons"
-	TYPE_IMAGES       = "images"
+	TypeText         = "text"
+	TypeCheckboxes   = "checkboxes"
+	TypeRadiobuttons = "radiobuttons"
+	TypeImages       = "images"
 )
 
 type Field struct {
@@ -21,23 +21,23 @@ type Field struct {
 	Value    Value  `json:"value,omitempty"`
 }
 
-// Attempts to unmarshal the given JSON into a field. Returns an error if
-// unsuccessful.
+// UnmarshalField attempts to unmarshal the given JSON into a field. Returns an
+// error if unsuccessful.
 func UnmarshalField(blob []byte) (*Field, error) {
 	unmarshalField := struct {
 		Field
-		JsonForm  json.RawMessage `json:"form"`
-		JsonValue json.RawMessage `json:"value"`
+		JSONForm  json.RawMessage `json:"form"`
+		JSONValue json.RawMessage `json:"value"`
 	}{}
 	err := json.Unmarshal(blob, &unmarshalField)
 	if err != nil {
 		return nil, err
 	}
-	form, err := UnmarshalForm(unmarshalField.Type, unmarshalField.JsonForm)
+	form, err := UnmarshalForm(unmarshalField.Type, unmarshalField.JSONForm)
 	if err != nil {
 		return nil, err
 	}
-	value, err := form.UnmarshalValue(unmarshalField.JsonValue)
+	value, err := form.UnmarshalValue(unmarshalField.JSONValue)
 	if err != nil {
 		return nil, err
 	}
@@ -74,14 +74,14 @@ type Form interface {
 	UnmarshalValue([]byte) (Value, error)
 }
 
-// Attempts to unmarshal the given JSON into a form of the type specified by the
-// given string. Returns an error if an invalid type is given, or the JSON
-// cannot be unmarshaled into the corresponding form type.
+// UnmarshalForm attempts to unmarshal the given JSON into a form of the type
+// specified by the given string. Returns an error if an invalid type is given,
+// or the JSON cannot be unmarshaled into the corresponding form type.
 func UnmarshalForm(fieldType string, blob []byte) (Form, error) {
 	switch fieldType {
-	case TYPE_TEXT:
+	case TypeText:
 		return &TextForm{}, nil
-	case TYPE_CHECKBOXES:
+	case TypeCheckboxes:
 		if len(blob) <= 0 {
 			return nil, errors.New("No form provided for checkboxes field.")
 		}
@@ -91,7 +91,7 @@ func UnmarshalForm(fieldType string, blob []byte) (Form, error) {
 			return nil, err
 		}
 		return &checkboxesForm, nil
-	case TYPE_RADIOBUTTONS:
+	case TypeRadiobuttons:
 		if len(blob) <= 0 {
 			return nil, errors.New("No form provided for radiobuttons field.")
 		}
@@ -101,7 +101,7 @@ func UnmarshalForm(fieldType string, blob []byte) (Form, error) {
 			return nil, err
 		}
 		return &radiobuttonsForm, nil
-	case TYPE_IMAGES:
+	case TypeImages:
 		return &ImagesForm{}, nil
 	default:
 		return nil, errors.New("Invalid type.")
@@ -113,8 +113,8 @@ type Value interface {
 	IsComplete() bool
 }
 
-// An array of fields. This allows concise validation and easy insertion and
-// retrieval from the database given its current structure.
+// Fields is an array of Field. This allows concise validation and easy
+// insertion and retrieval from the database given its current structure.
 type Fields []*Field
 
 func (fields *Fields) ValidateForms() error {

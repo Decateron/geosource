@@ -20,7 +20,8 @@ func AddComment(requester string, comment *types.Comment) error {
 	return db.Create(comment).Error
 }
 
-// Returns a comment with the given ID, or nil if it does not exist.
+// GetComment returns a comment with the given ID, or nil if it does not exist.
+// An error is returned if some issue occurred with the database.
 func GetComment(requester, commentID string) (*types.Comment, error) {
 	var comment types.Comment
 	err := db.Where("cmt_commentid = ?", commentID).First(&comment).Error

@@ -13,12 +13,12 @@ type Config struct {
 }
 
 type Website struct {
-	// Url from which the site can be accessed.
-	Url string
+	// URL from which the site can be accessed.
+	URL string
 	// Port over which HTTP is served
-	HttpPort string
+	HTTPPort string
 	// Port over which HTTPS is served
-	HttpsPort string
+	HTTPSPort string
 	// Path to the TLS certificate
 	Cert string
 	// Path to the TLS key
@@ -30,7 +30,7 @@ type Website struct {
 type Credentials struct {
 	ClientID     string
 	ClientSecret string
-	CallbackUrl  string
+	CallbackURL  string
 }
 
 // Database contains information related to the location of the database.
@@ -45,9 +45,9 @@ type Database struct {
 func New() *Config {
 	return &Config{
 		Website: Website{
-			Url:       "localhost",
-			HttpPort:  ":80",
-			HttpsPort: ":443",
+			URL:       "localhost",
+			HTTPPort:  ":80",
+			HTTPSPort: ":443",
 			Cert:      "cert.pem",
 			Key:       "key.pem",
 		},

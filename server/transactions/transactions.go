@@ -8,12 +8,14 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/joshheinrichs/geosource/server/config"
+
+	// This is not imported in main to keep all logic about the database inside the transactions package
 	_ "github.com/lib/pq"
 )
 
 var db *gorm.DB
 
-var ErrInsufficientPermission error = errors.New("Insufficient permission.")
+var ErrInsufficientPermission = errors.New("Insufficient permission.")
 
 // Init opens a connection to the database based on the information in the
 // given config. Returns an error if the connection  could not be established.

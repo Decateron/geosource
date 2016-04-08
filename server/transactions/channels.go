@@ -7,7 +7,7 @@ import (
 )
 
 func IsChannelCreator(userID, channelname string) (bool, error) {
-	return false, errors.New("function has not yet been implemented.")
+	return false, errors.New("function has not yet been implemented")
 }
 
 func AddChannel(channel *types.Channel) error {
@@ -40,5 +40,5 @@ func GetChannels(requester string) ([]*types.PersonalizedChannelInfo, error) {
 }
 
 func RemoveChannel(requester, channelname string) error {
-	return errors.New("function has not yet been implemented.")
+	return errors.New("function has not yet been implemented")
 }

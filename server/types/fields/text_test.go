@@ -52,7 +52,7 @@ func TestTextValidateValue(t *testing.T) {
 
 func TestTextIsComplete(t *testing.T) {
 	var value TextValue = "hello"
-	var ptr *TextValue = &value
+	var ptr = &value
 	assert.True(t, ptr.IsComplete())
 	value = ""
 	assert.False(t, ptr.IsComplete())

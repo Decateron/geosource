@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	MAX_CHANNELNAME_LEN = 20
+	maxChannelnameLength = 20
 )
 
 var channelNameRegexp = regexp.MustCompile("^\\w+$")
@@ -22,7 +22,8 @@ type ChannelInfo struct {
 	Visibility string `json:"visibility" gorm:"column:ch_visibility"`
 }
 
-// Returns the name of the channel's corresponding table in the database.
+// TableName returns the name of ChannelInfo's corresponding table in the
+// database.
 func (ChannelInfo) TableName() string {
 	return "channels"
 }
@@ -32,17 +33,18 @@ type Channel struct {
 	Fields fields.Fields `json:"fields" gorm:"column:ch_fields" sql:"type:JSONB NOT NULL"`
 }
 
-// Unmarshals the given JSON blob, returning a Channel on success, or an error
-// if unsuccessful. All fields must be valid and empty for parsing to succeed.
+// UnmarshalChannel unmarshals the given JSON blob, returning a Channel on
+// success, or an error if unsuccessful. All fields must be valid and empty for
+// parsing to succeed.
 func UnmarshalChannel(blob []byte) (*Channel, error) {
 	unmarshalChannel := struct {
 		Channel
-		JsonFields []json.RawMessage `json:"fields"`
+		JSONFields []json.RawMessage `json:"fields"`
 	}{}
 	json.Unmarshal(blob, &unmarshalChannel)
 
-	channelFields := make([]*fields.Field, len(unmarshalChannel.JsonFields))
-	for i, jsonField := range unmarshalChannel.JsonFields {
+	channelFields := make([]*fields.Field, len(unmarshalChannel.JSONFields))
+	for i, jsonField := range unmarshalChannel.JSONFields {
 		field, err := fields.UnmarshalField(jsonField)
 		if err != nil {
 			return nil, err
@@ -57,14 +59,14 @@ func UnmarshalChannel(blob []byte) (*Channel, error) {
 	return &unmarshalChannel.Channel, nil
 }
 
-// Validates the channel. Returns an error if any fields are invalid, or nil
-// otherwise.
+// Validate validates the channel. Returns an error if any fields are invalid,
+// or nil otherwise.
 func (channel *Channel) Validate() error {
 	channel.Name = strings.TrimSpace(channel.Name)
 	if len(channel.Name) == 0 {
 		return errors.New("Channel name cannot be empty.")
-	} else if len(channel.Name) > MAX_CHANNELNAME_LEN {
-		return errors.New(fmt.Sprintf("Length of channel name cannot exceed %i characters.", MAX_CHANNELNAME_LEN))
+	} else if len(channel.Name) > maxChannelnameLength {
+		return errors.New(fmt.Sprintf("Length of channel name cannot exceed %i characters.", maxChannelnameLength))
 	} else if !channelNameRegexp.MatchString(channel.Name) {
 		return errors.New("Channel names may only contain alpha numeric characters, hyphens or underscores.")
 	}
@@ -75,17 +77,17 @@ func (channel *Channel) Validate() error {
 	return nil
 }
 
-// Unmarshals the given submission in JSON format into a post. If the submission
-// is invalid due to either an unmarshalling error or a form mismatch, an error
-// is returned.
+// UnmarshalSubmissionToPost unmarshals the given submission in JSON format into
+// a post. If the submission is invalid due to either an unmarshalling error or
+// a form mismatch, an error is returned.
 func (channel *Channel) UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
 	unmarshalSubmission := struct {
 		Submission
-		JsonValues []json.RawMessage `json:"values"`
+		JSONValues []json.RawMessage `json:"values"`
 	}{}
 
 	json.Unmarshal(blob, &unmarshalSubmission)
-	if len(unmarshalSubmission.JsonValues) != len(channel.Fields) {
+	if len(unmarshalSubmission.JSONValues) != len(channel.Fields) {
 		return nil, errors.New("An invalid number of values were provided.")
 	}
 
@@ -99,7 +101,7 @@ func (channel *Channel) UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
 	}
 
 	for i, field := range channel.Fields {
-		value, err := field.Form.UnmarshalValue(unmarshalSubmission.JsonValues[i])
+		value, err := field.Form.UnmarshalValue(unmarshalSubmission.JSONValues[i])
 		if err != nil {
 			return nil, err
 		}
@@ -114,7 +116,7 @@ func (channel *Channel) UnmarshalSubmissionToPost(blob []byte) (*Post, error) {
 	return &post, nil
 }
 
-// Returns the name of the channel's corresponding table in the database.
+// TableName returns the name of Channel's corresponding table in the database.
 func (Channel) TableName() string {
 	return "channels"
 }

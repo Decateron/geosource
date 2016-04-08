@@ -4,8 +4,8 @@ import (
 	"errors"
 )
 
-// Returns true if the user with the given ID has permission to view bans for
-// the given channel, false otherwise.
+// CanViewBans returns true if the user with the given ID has permission to view
+// bans for the given channel, false otherwise.
 func CanViewBans(userID, channelname string) (bool, error) {
 	permission, err := IsAdmin(userID)
 	if err != nil {
@@ -28,22 +28,22 @@ func CanViewBans(userID, channelname string) (bool, error) {
 	return false, nil
 }
 
-// Returns true if the user with the given ID has permission to modify bans
-// for the given channel, false otherwise.
+// CanModifyBans returns true if the user with the given ID has permission to
+// modify bans for the given channel, false otherwise.
 func CanModifyBans(userID, channelname string) (bool, error) {
-	return false, errors.New("function has not yet been implemented.")
+	return false, errors.New("function has not yet been implemented")
 }
 
-// Returns true if the user with the given ID is banned from the given channel,
-// false otherwise.
+// IsBanned returns true if the user with the given ID is banned from the given
+// channel, false otherwise.
 func IsBanned(userID, channelname string) (bool, error) {
-	return false, errors.New("function has not yet been implemented.")
+	return false, errors.New("function has not yet been implemented")
 }
 
-// Adds the user with ID userID to the ban list for the given channel. This
-// transaction is executed under the permission level of the given requester.
-// Returns an error if the requester does not have sufficient permission, or
-// if some other error occurs within the database.
+// AddBan adds the user with ID userID to the ban list for the given channel.
+// This transaction is executed under the permission level of the given
+// requester. Returns an error if the requester does not have sufficient
+// permission, or if some other error occurs within the database.
 func AddBan(requester, userID, channelname string) error {
 	permission, err := CanModifyBans(requester, channelname)
 	if err != nil {
@@ -54,10 +54,10 @@ func AddBan(requester, userID, channelname string) error {
 	return db.Exec("INSERT INTO channel_bans (chb_userid, chb_channelname) VALUES (?, ?);", userID, channelname).Error
 }
 
-// Returns the list of users which are banned from the given channel. This
-// transaction is executed under the permission level of the given requester.
-// Returns an error if the requester does not have sufficient permission, or
-// if some other error occurs within the database.
+// GetBans returns the list of users which are banned from the given channel.
+// This transaction is executed under the permission level of the given
+// requester. Returns an error if the requester does not have sufficient
+// permission, or if some other error occurs within the database.
 func GetBans(requester, channelname string) ([]string, error) {
 	permission, err := CanViewBans(requester, channelname)
 	if err != nil {
@@ -73,10 +73,10 @@ func GetBans(requester, channelname string) ([]string, error) {
 	return bans, nil
 }
 
-// Removes the user with ID userID from the ban list for the given channel. This
-// transaction is executed under the permission level of the given requester.
-// Returns an error if the requester does not have sufficient permission, or
-// if some other error occurs within the database.
+// RemoveBan removes the user with ID userID from the ban list for the given
+// channel. This transaction is executed under the permission level of the given
+// requester. Returns an error if the requester does not have sufficient
+// permission, or if some other error occurs within the database.
 func RemoveBan(requester, userID, channelname string) error {
 	permission, err := CanModifyBans(requester, channelname)
 	if err != nil {

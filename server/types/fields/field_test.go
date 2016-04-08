@@ -7,8 +7,8 @@ import (
 )
 
 func TestUnmarshalField(t *testing.T) {
-	textJson := `{"label": "foo", "type": "text", "required": true, "value": "bar"}`
-	text, err := UnmarshalField([]byte(textJson))
+	textJSON := `{"label": "foo", "type": "text", "required": true, "value": "bar"}`
+	text, err := UnmarshalField([]byte(textJSON))
 	assert.NoError(t, err)
 	assert.Equal(t, "foo", text.Label)
 	assert.Equal(t, "text", text.Type)
@@ -16,8 +16,8 @@ func TestUnmarshalField(t *testing.T) {
 	assert.Equal(t, TextForm{}, *text.Form.(*TextForm))
 	assert.Equal(t, "bar", string(*text.Value.(*TextValue)))
 
-	checkboxesJson := `{"label": "foo", "type": "checkboxes", "required": true, "form": ["foo", "bar"], "value": [true, false]}`
-	checkboxes, err := UnmarshalField([]byte(checkboxesJson))
+	checkboxesJSON := `{"label": "foo", "type": "checkboxes", "required": true, "form": ["foo", "bar"], "value": [true, false]}`
+	checkboxes, err := UnmarshalField([]byte(checkboxesJSON))
 	assert.NoError(t, err)
 	assert.Equal(t, "foo", checkboxes.Label)
 	assert.Equal(t, "checkboxes", checkboxes.Type)
@@ -25,8 +25,8 @@ func TestUnmarshalField(t *testing.T) {
 	assert.Equal(t, CheckboxesForm{"foo", "bar"}, *checkboxes.Form.(*CheckboxesForm))
 	assert.Equal(t, CheckboxesValue{true, false}, *checkboxes.Value.(*CheckboxesValue))
 
-	radiobuttonsJson := `{"label": "foo", "type": "radiobuttons", "required": true, "form": ["foo", "bar"], "value": "foo"}`
-	radiobuttons, err := UnmarshalField([]byte(radiobuttonsJson))
+	radiobuttonsJSON := `{"label": "foo", "type": "radiobuttons", "required": true, "form": ["foo", "bar"], "value": "foo"}`
+	radiobuttons, err := UnmarshalField([]byte(radiobuttonsJSON))
 	assert.NoError(t, err)
 	assert.Equal(t, "foo", radiobuttons.Label)
 	assert.Equal(t, "radiobuttons", radiobuttons.Type)
@@ -34,8 +34,8 @@ func TestUnmarshalField(t *testing.T) {
 	assert.Equal(t, RadiobuttonsForm{"foo", "bar"}, *radiobuttons.Form.(*RadiobuttonsForm))
 	assert.Equal(t, "foo", string(*radiobuttons.Value.(*RadiobuttonsValue)))
 
-	imagesJson := `{"label": "foo", "type": "images", "required": false, "value": ["foo", "bar"]}`
-	images, err := UnmarshalField([]byte(imagesJson))
+	imagesJSON := `{"label": "foo", "type": "images", "required": false, "value": ["foo", "bar"]}`
+	images, err := UnmarshalField([]byte(imagesJSON))
 	assert.NoError(t, err)
 	assert.Equal(t, "foo", images.Label)
 	assert.Equal(t, "images", images.Type)
@@ -43,7 +43,7 @@ func TestUnmarshalField(t *testing.T) {
 	assert.Equal(t, ImagesForm{}, *images.Form.(*ImagesForm))
 	assert.Equal(t, ImagesValue{"foo", "bar"}, *images.Value.(*ImagesValue))
 
-	errJson := `{"type": "error"}`
-	_, err = UnmarshalField([]byte(errJson))
+	errJSON := `{"type": "error"}`
+	_, err = UnmarshalField([]byte(errJSON))
 	assert.Error(t, err)
 }

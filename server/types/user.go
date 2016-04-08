@@ -7,7 +7,7 @@ type User struct {
 	Email  string `json:"email" gorm:"column:u_email"`
 }
 
-// Returns the name of the user's corresponding table in the database.
-func (user User) TableName() string {
+// TableName returns the name of User's corresponding table in the database.
+func (User) TableName() string {
 	return "users"
 }

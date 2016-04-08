@@ -11,8 +11,8 @@ type Location struct {
 	Longitude float64 `json:"longitude"`
 }
 
-// Validates the location, ensuring that its latitude and longitude fall within
-// valid bounds.
+// Validate validates the location, ensuring that its latitude and longitude
+// fall within valid bounds.
 func (location *Location) Validate() error {
 	if location.Latitude > 90 || location.Latitude < -90 {
 		return errors.New("Latitude must be between -90 and 90")
@@ -23,7 +23,7 @@ func (location *Location) Validate() error {
 	return nil
 }
 
-// Reads a POINT from the database.
+// Scan reads a string in form POINT(lng,lat) from the database into a Location.
 func (location *Location) Scan(value interface{}) error {
 	floatStrings := strings.Split(strings.Trim(string(value.([]byte)), "POINT()"), " ")
 	location.Longitude, _ = strconv.ParseFloat(floatStrings[0], 64)

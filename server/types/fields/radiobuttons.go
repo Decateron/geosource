@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// A radiobuttons form is an array of labels for the radiobuttons.
+// RadiobuttonsForm is an array of labels for the radiobuttons.
 type RadiobuttonsForm []string
 
 func (radiobuttonsForm *RadiobuttonsForm) ValidateForm() error {
@@ -59,8 +59,8 @@ func (radiobuttonsForm *RadiobuttonsForm) UnmarshalValue(blob []byte) (Value, er
 	return &value, nil
 }
 
-// A radiobuttons value is a string which corresponds to one of the labels in
-// inside the form.
+// RadiobuttonsValue is a string which corresponds to one of the labels inside
+// the form.
 type RadiobuttonsValue string
 
 func (radiobuttonsValue *RadiobuttonsValue) IsEmpty() bool {

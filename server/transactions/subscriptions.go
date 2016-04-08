@@ -1,6 +1,7 @@
 package transactions
 
-// Returns true if the requester can view subscriptions.
+// CanViewSubscriptions returns true if the requester can view the user with
+// ID userID's subscriptions, false otherwise.
 func CanViewSubscriptions(requester, userID string) (bool, error) {
 	return requester == userID, nil
 }

@@ -41,7 +41,7 @@ type LocationRange struct {
 }
 
 func IsPostCreator(requester, userID, postID string) (bool, error) {
-	return false, errors.New("function has not yet been implemented.")
+	return false, errors.New("function has not yet been implemented")
 }
 
 func AddPost(requester string, post *types.Post) error {
@@ -117,5 +117,5 @@ func GetPost(requester, postID string) (*types.PersonalizedPost, error) {
 }
 
 func RemovePost(requester, postID string) error {
-	return errors.New("function has not yet been implemented.")
+	return errors.New("function has not yet been implemented")
 }
