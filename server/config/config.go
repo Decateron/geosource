@@ -23,6 +23,8 @@ type Website struct {
 	Cert string
 	// Path to the TLS key
 	Key string
+	// Path to the website directory
+	Directory string
 }
 
 // Credentials is a generalized OAuth token structure which is shared by various
@@ -50,17 +52,20 @@ func New() *Config {
 			HTTPSPort: ":443",
 			Cert:      "cert.pem",
 			Key:       "key.pem",
+			Directory: "app/public/",
 		},
 	}
 }
 
 // ReadFile reads in config information from the file with the given name,
-// assumed to be in gcfg format, overwriting any existing values. Returns an
-// error if the file cannot be read, nil otherwise.
-func (config *Config) ReadFile(filename string) error {
+// assumed to be in gcfg format. Values which are not given in the file are set
+// to defaults where applicable. Returns an error if the file cannot be read,
+// nil otherwise.
+func ReadFile(filename string) (*Config, error) {
+	config := New()
 	err := gcfg.ReadFileInto(config, filename)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return config, nil
 }

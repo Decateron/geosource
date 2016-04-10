@@ -13,13 +13,13 @@ import (
 )
 
 var apiConfig *config.Config
-
-var indexTemplate = template.Must(template.ParseFiles("../app/index.html"))
+var indexTemplate *template.Template
 
 // Init initializes the API, setting up the OAuth providers whose required
 // information is contained within the given config.
 func Init(config *config.Config) {
 	apiConfig = config
+	indexTemplate = template.Must(template.ParseFiles(apiConfig.Website.Directory + "index.html"))
 	rest.ErrorFieldName = "error"
 	goth.UseProviders(
 		gplus.New(config.Google.ClientID, config.Google.ClientSecret, config.Google.CallbackURL),

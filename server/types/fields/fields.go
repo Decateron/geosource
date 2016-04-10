@@ -4,6 +4,8 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
+
+	"github.com/joshheinrichs/geosource/server/config"
 )
 
 const (
@@ -12,6 +14,12 @@ const (
 	TypeRadiobuttons = "radiobuttons"
 	TypeImages       = "images"
 )
+
+var fieldsConfig *config.Config
+
+func Init(config *config.Config) {
+	fieldsConfig = config
+}
 
 type Field struct {
 	Label    string `json:"label"`

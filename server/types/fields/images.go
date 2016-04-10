@@ -23,7 +23,6 @@ var ThumbnailMaxHeight uint = 70
 var ThumbnailQuality uint = 70
 var ThumbnailType = ".jpg"
 
-var AppDir = "app/"
 var MediaDir = "media/"
 var ImageDir = "images/"
 var ThumbnailDir = "thumbnails/"
@@ -91,7 +90,7 @@ func (imagesValue *ImagesValue) GenerateThumbnail() (string, error) {
 	filename := MediaDir + ThumbnailDir + uuid.NewUUID().String() + ThumbnailType
 	mw := imagick.NewMagickWand()
 	defer mw.Destroy()
-	err := mw.ReadImage(AppDir + (*imagesValue)[0])
+	err := mw.ReadImage(fieldsConfig.Website.Directory + (*imagesValue)[0])
 	if err != nil {
 		return "", err
 	}
@@ -106,7 +105,7 @@ func (imagesValue *ImagesValue) GenerateThumbnail() (string, error) {
 		return "", err
 	}
 
-	err = mw.WriteImage(AppDir + filename)
+	err = mw.WriteImage(fieldsConfig.Website.Directory + filename)
 	if err != nil {
 		return "", err
 	}
@@ -161,7 +160,7 @@ func SaveImage(base64str string) (string, error) {
 		return "", err
 	}
 
-	err = mw.WriteImage(AppDir + filename)
+	err = mw.WriteImage(fieldsConfig.Website.Directory + filename)
 	if err != nil {
 		return "", err
 	}

@@ -9,6 +9,7 @@ import (
 	"github.com/joshheinrichs/geosource/server/api"
 	"github.com/joshheinrichs/geosource/server/config"
 	"github.com/joshheinrichs/geosource/server/transactions"
+	"github.com/joshheinrichs/geosource/server/types"
 )
 
 var mainConfig *config.Config
@@ -21,12 +22,13 @@ func redirectHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	log.SetFlags(log.LstdFlags | log.Llongfile)
 
-	mainConfig = config.New()
-	err := mainConfig.ReadFile("config.gcfg")
+	var err error
+	mainConfig, err = config.ReadFile("config.gcfg")
 	if err != nil {
 		log.Fatal(err)
 	}
 	api.Init(mainConfig)
+	types.Init(mainConfig)
 	err = transactions.Init(mainConfig)
 	if err != nil {
 		log.Fatal(err)
@@ -39,7 +41,7 @@ func main() {
 	}
 	r.HandleFunc("/", api.IndexHandler)
 	r.PathPrefix("/api").Handler(http.StripPrefix("/api", apiHandler))
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("app/public/")))
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir(mainConfig.Website.Directory)))
 	http.Handle("/", r)
 	go func() {
 		log.Printf("Serving HTTP on %s\n", mainConfig.Website.HTTPPort)
