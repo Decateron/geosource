@@ -39,7 +39,7 @@ func main() {
 	}
 	r.HandleFunc("/", api.IndexHandler)
 	r.PathPrefix("/api").Handler(http.StripPrefix("/api", apiHandler))
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("../app/")))
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("app/public/")))
 	http.Handle("/", r)
 	go func() {
 		log.Printf("Serving HTTP on %s\n", mainConfig.Website.HTTPPort)
