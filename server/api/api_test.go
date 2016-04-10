@@ -12,6 +12,7 @@ import (
 func TestMain(m *testing.M) {
 	log.SetFlags(log.LstdFlags | log.Llongfile)
 	testConfig, err := config.ReadFile("../config_test.gcfg")
+	testConfig.Website.Directory = "../" + testConfig.Website.Directory
 	if err != nil {
 		log.Println(err)
 		os.Exit(1)
