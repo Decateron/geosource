@@ -36,7 +36,7 @@ func (postInfo *PostInfo) Validate() error {
 	if len(postInfo.Title) == 0 {
 		return errors.New("Post title cannot be empty")
 	} else if len(postInfo.Title) > maxTitleLength {
-		return errors.New(fmt.Sprintf("Length of post title cannot exceed %i characters", maxTitleLength))
+		return errors.New(fmt.Sprintf("Length of post title cannot exceed %d characters", maxTitleLength))
 	} else if postInfo.Location == nil {
 		return errors.New("A location must be provided")
 	}

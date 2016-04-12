@@ -27,7 +27,7 @@ func (comment *Comment) Validate() error {
 	if len(comment.Comment) == 0 {
 		return errors.New("Comment cannot be empty.")
 	} else if len(comment.Comment) > MaxCommentLength {
-		return errors.New(fmt.Sprintf("Length of comment cannot exceed %i characters.", MaxCommentLength))
+		return errors.New(fmt.Sprintf("Length of comment cannot exceed %d characters.", MaxCommentLength))
 	}
 	return nil
 }

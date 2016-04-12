@@ -66,7 +66,7 @@ func (channel *Channel) Validate() error {
 	if len(channel.Name) == 0 {
 		return errors.New("Channel name cannot be empty.")
 	} else if len(channel.Name) > maxChannelnameLength {
-		return errors.New(fmt.Sprintf("Length of channel name cannot exceed %i characters.", maxChannelnameLength))
+		return errors.New(fmt.Sprintf("Length of channel name cannot exceed %d characters.", maxChannelnameLength))
 	} else if !channelNameRegexp.MatchString(channel.Name) {
 		return errors.New("Channel names may only contain alpha numeric characters, hyphens or underscores.")
 	}
