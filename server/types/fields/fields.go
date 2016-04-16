@@ -117,7 +117,11 @@ func UnmarshalForm(fieldType string, blob []byte) (Form, error) {
 }
 
 type Value interface {
+	// IsEmpty returns true if the value is empty, false otherwise.
 	IsEmpty() bool
+	// IsComplete returns true if the value is complete, false otherwise. A
+	// value could be both non-empty and incomplete making both of these methods
+	// necessary.
 	IsComplete() bool
 }
 
@@ -125,6 +129,8 @@ type Value interface {
 // insertion and retrieval from the database given its current structure.
 type Fields []*Field
 
+// ValidateForms returns an error if any of the fields' forms are invalid, nil
+// otherwise.
 func (fields *Fields) ValidateForms() error {
 	for _, field := range *fields {
 		err := field.ValidateForm()
@@ -135,6 +141,8 @@ func (fields *Fields) ValidateForms() error {
 	return nil
 }
 
+// ValidateValues returns an error if any of the fields' values are invalid,
+// nil otherwise.
 func (fields *Fields) ValidateValues() error {
 	for _, field := range *fields {
 		err := field.ValidateValue()
@@ -145,6 +153,8 @@ func (fields *Fields) ValidateValues() error {
 	return nil
 }
 
+// Scan converts a set of fields from their database representation (JSON) into
+// the fields structure. This allows for automatic unparsing in transactions.
 func (fields *Fields) Scan(value interface{}) error {
 	blob, ok := value.([]byte)
 	if !ok {
@@ -166,6 +176,8 @@ func (fields *Fields) Scan(value interface{}) error {
 	return nil
 }
 
+// Value converts a set of fields into their corresponding database
+// representation (JSON). This allows for automatic parsing in transactions.
 func (fields Fields) Value() (driver.Value, error) {
 	blob, err := json.Marshal(fields)
 	return string(blob), err

@@ -23,7 +23,9 @@ func (location *Location) Validate() error {
 	return nil
 }
 
-// Scan reads a string in form POINT(lng,lat) from the database into a Location.
+// Scan converts a location from its database representation (POINT(lng,lat))
+// into the location structure. This allows for automatic unparsing in
+// transactions.
 func (location *Location) Scan(value interface{}) error {
 	floatStrings := strings.Split(strings.Trim(string(value.([]byte)), "POINT()"), " ")
 	location.Longitude, _ = strconv.ParseFloat(floatStrings[0], 64)

@@ -77,7 +77,6 @@ func MakeHandler() (http.Handler, error) {
 		// Users
 		rest.Get("/users", GetUsers),
 		rest.Get("/users/#userID", GetUser),
-		// rest.Put("/users/#userID", SetUser),
 		rest.Post("/users/#userID", AddUser),
 		rest.Delete("/users/#userID", RemoveUser),
 
