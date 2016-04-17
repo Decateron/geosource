@@ -28,10 +28,10 @@ To create a channel, click on the bottom of the two buttons in the bottom left o
 
 ##### Types
 
-* Text - Some textual input can be provided by the user
-* Images - Any number of images can be submitted by the user
-* Checkboxes - Any options from a set can be set to true by the user
-* Radiobuttons - A single option from a set can be set to true by the user
+* **Text** - Some textual input can be provided by the user
+* **Images** - Any number of images can be submitted by the user
+* **Checkboxes** - Any options from a set can be set to true by the user
+* **Radiobuttons** - A single option from a set can be set to true by the user
 
 ### Creating a Post
 
