@@ -1,4 +1,4 @@
-# api
+# API
 
 This document outlines the various requests that can be made to the API. To see an example response body for a given request, you can usually just append the associated path to the end of the website's URL. In the event of an error, a response will be returned with a HTTP code other than 200 (usually internal server error), and JSON will be returned describing the error. All POST requests respond with the content that was created by the request. 
 
