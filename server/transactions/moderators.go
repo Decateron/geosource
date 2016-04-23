@@ -24,8 +24,8 @@ func IsModerator(userID, channelname string) (bool, error) {
 // channel. This transaction is executed under the permission level of the given
 // requester. Returns an error if the requester does not have sufficient
 // permission, or if some other error occurs within the database.
-func AddModerator(requester, userID, channelname string) error {
-	permission, err := CanModifyModerators(requester, channelname)
+func AddModerator(requesterID, userID, channelname string) error {
+	permission, err := CanModifyModerators(requesterID, channelname)
 	if err != nil {
 		return err
 	} else if !permission {
@@ -38,8 +38,8 @@ func AddModerator(requester, userID, channelname string) error {
 // channel. This transaction is executed under the permission level of the given
 // requester. Returns an error if the requester does not have sufficient
 // permission, or if some other error occurs within the database.
-func GetModerators(requester, channelname string) ([]string, error) {
-	permission, err := CanViewModerators(requester, channelname)
+func GetModerators(requesterID, channelname string) ([]string, error) {
+	permission, err := CanViewModerators(requesterID, channelname)
 	if err != nil {
 		return nil, err
 	} else if !permission {
@@ -57,8 +57,8 @@ func GetModerators(requester, channelname string) ([]string, error) {
 // the given channel. This transaction is executed under the permission level of
 // the given requester. Returns an error if the requester does not have
 // sufficient permission, or if some other error occurs within the database.
-func RemoveModerator(requester, userID, channelname string) error {
-	permission, err := CanModifyModerators(requester, channelname)
+func RemoveModerator(requesterID, userID, channelname string) error {
+	permission, err := CanModifyModerators(requesterID, channelname)
 	if err != nil {
 		return err
 	} else if !permission {

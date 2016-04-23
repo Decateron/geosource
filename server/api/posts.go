@@ -14,7 +14,7 @@ import (
 )
 
 func GetPosts(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
+	requesterID := GetRequesterID(req)
 	log.Println(req.URL.Query().Encode())
 
 	var postQueryParams transactions.PostQueryParams
@@ -27,7 +27,7 @@ func GetPosts(w rest.ResponseWriter, req *rest.Request) {
 	}
 	log.Println(postQueryParams)
 
-	posts, err := transactions.GetPosts(requester, &postQueryParams)
+	posts, err := transactions.GetPosts(requesterID, &postQueryParams)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -39,8 +39,8 @@ func GetPosts(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func GetPost(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
-	post, err := transactions.GetPost(requester, req.PathParam("pid"))
+	requesterID := GetRequesterID(req)
+	post, err := transactions.GetPost(requesterID, req.PathParam("pid"))
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -51,7 +51,7 @@ func GetPost(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func AddPost(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
+	requesterID := GetRequesterID(req)
 	var jsonBody json.RawMessage
 	err := req.DecodeJsonPayload(&jsonBody)
 	if err != nil {
@@ -70,7 +70,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
-	channel, err := transactions.GetChannel(requester, submissionChannel.Channel)
+	channel, err := transactions.GetChannel(requesterID, submissionChannel.Channel)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -91,7 +91,7 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
-	post.CreatorID = requester
+	post.CreatorID = requesterID
 	post.ID = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
 	post.Time = time.Now().UTC()
 	err = post.GenerateThumbnail()
@@ -101,13 +101,13 @@ func AddPost(w rest.ResponseWriter, req *rest.Request) {
 		return
 	}
 
-	err = transactions.AddPost(requester, post)
+	err = transactions.AddPost(requesterID, post)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	insertedPost, err := transactions.GetPost(requester, post.ID)
+	insertedPost, err := transactions.GetPost(requesterID, post.ID)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)

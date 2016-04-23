@@ -5,7 +5,7 @@ import (
 	"github.com/joshheinrichs/geosource/server/types"
 )
 
-func IsCommentCreator(requester, userID, commentID string) (bool, error) {
+func IsCommentCreator(requesterID, userID, commentID string) (bool, error) {
 	var comment types.Comment
 	err := db.Where("cmt_commentid = ?", commentID).First(&comment).Error
 	if err == gorm.ErrRecordNotFound {
@@ -16,13 +16,13 @@ func IsCommentCreator(requester, userID, commentID string) (bool, error) {
 	return true, nil
 }
 
-func AddComment(requester string, comment *types.Comment) error {
+func AddComment(requesterID string, comment *types.Comment) error {
 	return db.Create(comment).Error
 }
 
 // GetComment returns a comment with the given ID, or nil if it does not exist.
 // An error is returned if some issue occurred with the database.
-func GetComment(requester, commentID string) (*types.Comment, error) {
+func GetComment(requesterID, commentID string) (*types.Comment, error) {
 	var comment types.Comment
 	err := db.Where("cmt_commentid = ?", commentID).First(&comment).Error
 	if err != nil {
@@ -34,7 +34,7 @@ func GetComment(requester, commentID string) (*types.Comment, error) {
 	return &comment, nil
 }
 
-func GetComments(requester, postID string) ([]*types.Comment, error) {
+func GetComments(requesterID, postID string) ([]*types.Comment, error) {
 	var comments []*types.Comment
 	err := db.Where("cmt_postid = ?", postID).Order("cmt_time").Find(&comments).Error
 	if err != nil {
@@ -43,6 +43,6 @@ func GetComments(requester, postID string) ([]*types.Comment, error) {
 	return comments, nil
 }
 
-func RemoveComment(requester, commentID string) error {
+func RemoveComment(requesterID, commentID string) error {
 	return db.Where("cmd_commentid = ?", commentID).Delete(&types.Comment{}).Error
 }

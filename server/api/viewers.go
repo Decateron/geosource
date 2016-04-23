@@ -8,9 +8,9 @@ import (
 )
 
 func GetViewers(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
+	requesterID := GetRequesterID(req)
 	channelname := req.PathParam("channelname")
-	moderators, err := transactions.GetViewers(requester, channelname)
+	moderators, err := transactions.GetViewers(requesterID, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -20,7 +20,7 @@ func GetViewers(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func AddViewer(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
+	requesterID := GetRequesterID(req)
 	channelname := req.PathParam("channelname")
 	var body struct {
 		UserID string `json:"userID"`
@@ -30,7 +30,7 @@ func AddViewer(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = transactions.AddViewer(requester, body.UserID, channelname)
+	err = transactions.AddViewer(requesterID, body.UserID, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -39,10 +39,10 @@ func AddViewer(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func RemoveViewer(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
+	requesterID := GetRequesterID(req)
 	userID := req.PathParam("userID")
 	channelname := req.PathParam("channelname")
-	err := transactions.RemoveViewer(requester, userID, channelname)
+	err := transactions.RemoveViewer(requesterID, userID, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return

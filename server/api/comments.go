@@ -13,8 +13,8 @@ import (
 )
 
 func GetComments(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
-	comments, err := transactions.GetComments(requester, req.PathParam("pid"))
+	requesterID := GetRequesterID(req)
+	comments, err := transactions.GetComments(requesterID, req.PathParam("pid"))
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -27,7 +27,7 @@ func GetComments(w rest.ResponseWriter, req *rest.Request) {
 // func SetComment(w rest.ResponseWriter, req *rest.Request) {}
 
 func AddComment(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
+	requesterID := GetRequesterID(req)
 	var comment types.Comment
 	err := req.DecodeJsonPayload(&comment)
 	if err != nil {
@@ -37,7 +37,7 @@ func AddComment(w rest.ResponseWriter, req *rest.Request) {
 	}
 	comment.Time = time.Now().UTC()
 	comment.PostID = req.PathParam("pid")
-	comment.CreatorID = requester
+	comment.CreatorID = requesterID
 	comment.ID = base64.RawURLEncoding.EncodeToString(uuid.NewRandom())
 	err = comment.Validate()
 	if err != nil {
@@ -45,13 +45,13 @@ func AddComment(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = transactions.AddComment(requester, &comment)
+	err = transactions.AddComment(requesterID, &comment)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	insertedComment, err := transactions.GetComment(requester, comment.ID)
+	insertedComment, err := transactions.GetComment(requesterID, comment.ID)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)

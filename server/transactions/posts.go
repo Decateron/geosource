@@ -40,11 +40,11 @@ type LocationRange struct {
 	Max types.Location `url:"max"`
 }
 
-func IsPostCreator(requester, userID, postID string) (bool, error) {
+func IsPostCreator(requesterID, userID, postID string) (bool, error) {
 	return false, errors.New("function has not yet been implemented")
 }
 
-func AddPost(requester string, post *types.Post) error {
+func AddPost(requesterID string, post *types.Post) error {
 	jsonFields, err := json.Marshal(post.Fields)
 	if err != nil {
 		return err
@@ -56,18 +56,18 @@ func AddPost(requester string, post *types.Post) error {
 		post.Location.Longitude, post.Location.Latitude, jsonFields).Error
 }
 
-func GetPosts(requester string, postQueryParams *PostQueryParams) ([]*types.PersonalizedPostInfo, error) {
+func GetPosts(requesterID string, postQueryParams *PostQueryParams) ([]*types.PersonalizedPostInfo, error) {
 	var posts []*types.PersonalizedPostInfo
 	query := db.Table("posts").
-		Joins("LEFT JOIN user_favorites ON (p_postid = uf_postid AND uf_userid = ?)", requester).
-		Joins("LEFT JOIN user_subscriptions ON (p_channelname = us_channelname AND us_userid = ?)", requester).
+		Joins("LEFT JOIN user_favorites ON (p_postid = uf_postid AND uf_userid = ?)", requesterID).
+		Joins("LEFT JOIN user_subscriptions ON (p_channelname = us_channelname AND us_userid = ?)", requesterID).
 		Joins("LEFT JOIN users ON (u_userid = p_userid_creator)").
 		Select("*, (uf_postid IS NOT NULL) AS favorited, ST_AsText(p_location) AS location, (us_channelname IS NOT NULL) AS subscribed").
 		Order("p_time desc")
 
 	if postQueryParams.Flags != nil {
 		if postQueryParams.Flags.Mine {
-			query = query.Where("p_userid_creator = ?", requester)
+			query = query.Where("p_userid_creator = ?", requesterID)
 		}
 		if postQueryParams.Flags.Favorites {
 			query = query.Where("uf_postid IS NOT NULL")
@@ -102,11 +102,11 @@ func GetPosts(requester string, postQueryParams *PostQueryParams) ([]*types.Pers
 	return posts, nil
 }
 
-func GetPost(requester, postID string) (*types.PersonalizedPost, error) {
+func GetPost(requesterID, postID string) (*types.PersonalizedPost, error) {
 	var post types.PersonalizedPost
 	err := db.Table("posts").
 		Where("p_postid = ?", postID).
-		Joins("LEFT JOIN user_favorites ON (p_postid = uf_postid AND uf_userid = ?)", requester).
+		Joins("LEFT JOIN user_favorites ON (p_postid = uf_postid AND uf_userid = ?)", requesterID).
 		Joins("LEFT JOIN users ON (u_userid = p_userid_creator)").
 		Select("*, (uf_postid IS NOT NULL) AS favorited, ST_AsText(p_location) AS location").
 		First(&post).Error
@@ -116,6 +116,6 @@ func GetPost(requester, postID string) (*types.PersonalizedPost, error) {
 	return &post, nil
 }
 
-func RemovePost(requester, postID string) error {
+func RemovePost(requesterID, postID string) error {
 	return errors.New("function has not yet been implemented")
 }

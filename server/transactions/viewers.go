@@ -24,8 +24,8 @@ func IsViewer(userID, channelname string) (bool, error) {
 // channel. This transaction is executed under the permission level of the given
 // requester. Returns an error if the requester does not have sufficient
 // permission, or if some other error occurs within the database.
-func AddViewer(requester, userID, channelname string) error {
-	permission, err := CanModifyViewers(requester, channelname)
+func AddViewer(requesterID, userID, channelname string) error {
+	permission, err := CanModifyViewers(requesterID, channelname)
 	if err != nil {
 		return err
 	} else if !permission {
@@ -38,8 +38,8 @@ func AddViewer(requester, userID, channelname string) error {
 // This transaction is executed under the permission level of the given
 // requester. Returns an error if the requester does not have sufficient
 // permission, or if some other error occurs within the database.
-func GetViewers(requester, channelname string) ([]string, error) {
-	permission, err := CanViewViewers(requester, channelname)
+func GetViewers(requesterID, channelname string) ([]string, error) {
+	permission, err := CanViewViewers(requesterID, channelname)
 	if err != nil {
 		return nil, err
 	} else if !permission {
@@ -57,8 +57,8 @@ func GetViewers(requester, channelname string) ([]string, error) {
 // given channel. This transaction is executed under the permission level of
 // the given requester. Returns an error if the requester does not have
 // sufficient permission, or if some other error occurs within the database.
-func RemoveViewer(requester, userID, channelname string) error {
-	permission, err := CanModifyViewers(requester, channelname)
+func RemoveViewer(requesterID, userID, channelname string) error {
+	permission, err := CanModifyViewers(requesterID, channelname)
 	if err != nil {
 		return err
 	} else if !permission {

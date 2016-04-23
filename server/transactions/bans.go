@@ -44,8 +44,8 @@ func IsBanned(userID, channelname string) (bool, error) {
 // This transaction is executed under the permission level of the given
 // requester. Returns an error if the requester does not have sufficient
 // permission, or if some other error occurs within the database.
-func AddBan(requester, userID, channelname string) error {
-	permission, err := CanModifyBans(requester, channelname)
+func AddBan(requesterID, userID, channelname string) error {
+	permission, err := CanModifyBans(requesterID, channelname)
 	if err != nil {
 		return err
 	} else if !permission {
@@ -58,8 +58,8 @@ func AddBan(requester, userID, channelname string) error {
 // This transaction is executed under the permission level of the given
 // requester. Returns an error if the requester does not have sufficient
 // permission, or if some other error occurs within the database.
-func GetBans(requester, channelname string) ([]string, error) {
-	permission, err := CanViewBans(requester, channelname)
+func GetBans(requesterID, channelname string) ([]string, error) {
+	permission, err := CanViewBans(requesterID, channelname)
 	if err != nil {
 		return nil, err
 	} else if !permission {
@@ -77,8 +77,8 @@ func GetBans(requester, channelname string) ([]string, error) {
 // channel. This transaction is executed under the permission level of the given
 // requester. Returns an error if the requester does not have sufficient
 // permission, or if some other error occurs within the database.
-func RemoveBan(requester, userID, channelname string) error {
-	permission, err := CanModifyBans(requester, channelname)
+func RemoveBan(requesterID, userID, channelname string) error {
+	permission, err := CanModifyBans(requesterID, channelname)
 	if err != nil {
 		return err
 	} else if !permission {

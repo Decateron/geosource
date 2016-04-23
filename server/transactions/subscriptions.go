@@ -2,26 +2,26 @@ package transactions
 
 // CanViewSubscriptions returns true if the requester can view the user with
 // ID userID's subscriptions, false otherwise.
-func CanViewSubscriptions(requester, userID string) (bool, error) {
-	return requester == userID, nil
+func CanViewSubscriptions(requesterID, userID string) (bool, error) {
+	return requesterID == userID, nil
 }
 
-func CanModifySubscriptions(requester, userID string) (bool, error) {
-	return requester == userID, nil
+func CanModifySubscriptions(requesterID, userID string) (bool, error) {
+	return requesterID == userID, nil
 }
 
-func AddSubscription(requester, userID, channelname string) error {
-	permission, err := CanModifySubscriptions(requester, userID)
+func AddSubscription(requesterID, userID, channelname string) error {
+	permission, err := CanModifySubscriptions(requesterID, userID)
 	if err != nil {
 		return err
 	} else if !permission {
 		return ErrInsufficientPermission
 	}
-	return db.Exec("INSERT INTO user_subscriptions (us_userid, us_channelname) VALUES (?, ?)", requester, channelname).Error
+	return db.Exec("INSERT INTO user_subscriptions (us_userid, us_channelname) VALUES (?, ?)", requesterID, channelname).Error
 }
 
-func GetSubscriptions(requester, userID string) ([]string, error) {
-	permission, err := CanViewSubscriptions(requester, userID)
+func GetSubscriptions(requesterID, userID string) ([]string, error) {
+	permission, err := CanViewSubscriptions(requesterID, userID)
 	if err != nil {
 		return nil, err
 	} else if !permission {
@@ -43,12 +43,12 @@ func GetSubscriptions(requester, userID string) ([]string, error) {
 	return channelnames, nil
 }
 
-func RemoveSubscription(requester, userID, channelname string) error {
-	permission, err := CanModifySubscriptions(requester, userID)
+func RemoveSubscription(requesterID, userID, channelname string) error {
+	permission, err := CanModifySubscriptions(requesterID, userID)
 	if err != nil {
 		return err
 	} else if !permission {
 		return ErrInsufficientPermission
 	}
-	return db.Exec("DELETE FROM user_subscriptions WHERE us_userid = ? AND us_channelname = ?", requester, channelname).Error
+	return db.Exec("DELETE FROM user_subscriptions WHERE us_userid = ? AND us_channelname = ?", requesterID, channelname).Error
 }

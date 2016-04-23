@@ -8,9 +8,9 @@ import (
 )
 
 func GetModerators(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
+	requesterID := GetRequesterID(req)
 	channelname := req.PathParam("channelname")
-	moderators, err := transactions.GetModerators(requester, channelname)
+	moderators, err := transactions.GetModerators(requesterID, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -20,7 +20,7 @@ func GetModerators(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func AddModerator(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
+	requesterID := GetRequesterID(req)
 	channelname := req.PathParam("channelname")
 	var body struct {
 		UserID string `json:"userID"`
@@ -30,7 +30,7 @@ func AddModerator(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = transactions.AddModerator(requester, body.UserID, channelname)
+	err = transactions.AddModerator(requesterID, body.UserID, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -39,10 +39,10 @@ func AddModerator(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func RemoveModerator(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
+	requesterID := GetRequesterID(req)
 	userID := req.PathParam("userID")
 	channelname := req.PathParam("channelname")
-	err := transactions.RemoveModerator(requester, userID, channelname)
+	err := transactions.RemoveModerator(requesterID, userID, channelname)
 	if err != nil {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return

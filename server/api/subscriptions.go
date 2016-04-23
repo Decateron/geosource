@@ -9,8 +9,8 @@ import (
 )
 
 func GetSubscriptions(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
-	subscriptions, err := transactions.GetSubscriptions(requester, req.PathParam("userID"))
+	requesterID := GetRequesterID(req)
+	subscriptions, err := transactions.GetSubscriptions(requesterID, req.PathParam("userID"))
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -21,7 +21,7 @@ func GetSubscriptions(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func AddSubscription(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
+	requesterID := GetRequesterID(req)
 	body := struct {
 		Channelname string `json:"channelname"`
 	}{}
@@ -31,8 +31,8 @@ func AddSubscription(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	log.Println(requester, req.PathParam("userID"), body.Channelname)
-	err = transactions.AddSubscription(requester, req.PathParam("userID"), body.Channelname)
+	log.Println(requesterID, req.PathParam("userID"), body.Channelname)
+	err = transactions.AddSubscription(requesterID, req.PathParam("userID"), body.Channelname)
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
@@ -42,8 +42,8 @@ func AddSubscription(w rest.ResponseWriter, req *rest.Request) {
 }
 
 func RemoveSubscription(w rest.ResponseWriter, req *rest.Request) {
-	requester := GetRequesterID(req)
-	err := transactions.RemoveSubscription(requester, req.PathParam("userID"), req.PathParam("channelname"))
+	requesterID := GetRequesterID(req)
+	err := transactions.RemoveSubscription(requesterID, req.PathParam("userID"), req.PathParam("channelname"))
 	if err != nil {
 		log.Println(err)
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
