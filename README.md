@@ -11,3 +11,5 @@ Requires:
  * [ImageMagick](http://www.imagemagick.org/script/index.php)
  * [Bower](http://bower.io/)
  * A TLS key and cert for HTTPS (I recommend using [Let's Encrypt](https://letsencrypt.org/))
+
+[A more detailed setup procedure can be found here.](docs/setup.md)
