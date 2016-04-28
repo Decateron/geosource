@@ -36,6 +36,8 @@ I feel like I gained a good amount of insight into the various technologies I us
 - complex queries prove difficult to optimize
 - basically linear scaling which is about as bad as it gets
 
+![](https://joshheinrichs.github.io/geosource/database-benchmark.png)
+
 ##### User Interaction
 - doesn't feel very simple or intuitive
 	- no good examples of spatiotemporal browsing to go off of
@@ -47,64 +49,62 @@ One thing I noticed was that information was stored with various amounts of deta
 
 - custom forms
 - storing away files
+- HTML5 forms and validation not used due to `iron-form` not supporting image inputs at the time: https://github.com/PolymerElements/iron-form/issues/54
+	- some support has been added and so this could be 'fixed', but this would require redesign of channel and post creation to handle the change in how data is delivered and as such has not been added
+	- as well, the value of a form file input cannot be modified programatically, so loading a saved file off of a user's harddrive or out of the website's storage is not possible
+	- html5 forms also limited in terms of types
+		- could not support geolocation as a field type
+	- less flexible than my structure
 
 ### Future Work
 
-- public and private channels
-
-- moderation tools
-- permission levels
-	- banned, viewers, moderators, owner and admin permission checked for various transactions
-	- make single permission table for channels rather than 3
-		- doesn't make sense for someone to be a moderator and banned
-		- just make an enum or something for permission types
-		- channelname, username, permission
-
-- investigate more HTML5 standard form submissions and validation
-	- these are a bit of a pain due to limited naming conventions
-	- have to have a standard string naming convention thats understood
-	- have to deal with files differently than standard
-
-- general improvements to error handling
-	- better HTTP error codes and messages on server side
-	- better display of errors on website
-
-- try NoSQL solution for spatiotemporal querying
-	- O(1) access time can be achieved for 20 most recent posts within area with support for lazy loading!!!
-		- will require some work to implement, limitations on querying, and a good amount of data redundancy
-		- based on screen region, approximate to a bunch of squares
-			- try to keep the number of squares somewhat small
-			- the larger the screen size, the larger squares can be used
-			- each square contains a list of posts ordered by recency
-			- to get the first 20 posts from a set of lists, need to grab the first 20 posts from each list, merge until 20 most recent are found
-				- this is the main performance bottleneck of the algorithm, but can technically be constant
-				- keep track of how deep you've gotten into each list, and the size of each list and send that info over to the user
-					- this will provide sufficient information to know where to start for each of these squares when attempting to load the next 20 posts
-
-- optimizing website with minification and stuff
-	- honestly I'd rather it was rebuilt from ground up in something other than polymer
-		- google uses it in a few of their sites but i'm not convinced personally
-
-- routing - allow for linking of posts
+- Public and private channels
+- Moderation tools
+- Add permissions
+	- Banned, viewers, moderators, owner and admin permission checked for various transactions
+	- Make single permission table for channels rather than 3
+		- Doesn't make sense for someone to be a moderator and banned
+		- Just make an enum or something for permission types
+		- Channelname, username, permission
+- General improvements to error handling
+	- Better HTTP error codes and messages on server side
+	- Better display of errors on website
+- Try NoSQL solution for spatiotemporal querying 
+	- O(1) access time can be achieved with Redis for 20 most recent posts within area with support for lazy loading
+		- Will require some work to implement, severly limits types of queries, and requries a good amount of data redundancy
+		- Based on screen region, approximate to a bunch of squares
+			- Try to keep the number of squares somewhat small
+			- Each square contains a list of posts ordered by recency
+			- To get the first 20 posts from a set of lists, need to grab the first 20 posts from each list, merge until 20 most recent are found
+				- This is the main performance bottleneck of the algorithm, but is technically be constant
+				- Keep track of how deep you've gotten into each list, and the size of each list and send that info over to the user
+					- This will provide sufficient information to know where to start for each of these squares when attempting to load the next 20 posts
+- Optimizing website with minification and stuff
+	- Honestly I'd rather it was rebuilt from ground up in something other than Polymer
+		- I'd suggest looking into React and Redux 
+		- Google uses Polymer it in a few of their sites but personally I'm not convinced
+- Routing - allow for direct links to posts
 	- i.e. geosource.com/posts/#postID opens that post on the website
 
-- audio and video support
-	- not sure what the library support is like in Go, ffpmpeg bindings available but no simple libraries at this time
-	- check Go-Awesome, may have some up to date suggestions
+- Audio and video support
+	- Not sure what the library support is like in Go, ffpmpeg bindings available but no simple libraries at this time
+	- Check Go-Awesome, may have some up to date suggestions
+	- Will also have to worry about how that information is saved away on the website while offline
 
-- general usability investigation
-	- not much thought was put into usability of interface
-	- how best to support spatial-temporal browsing?
-		- doesn't feel very natural at the moment
+- General usability improvements
+	- Not much thought was put into usability of interface
+	- How best to support spatial-temporal browsing?
+		- Doesn't feel very natural at the moment
 
-- better testing and documentation
-- automated deployment
-	- preferably with coverage, syntax, documentation requirements
+- More thorough testing and documentation
+- Automated deployment
+	- Preferably with coverage, style, and documentation requirements
+	- How to handle changes to the database specification?
+- Investigate into nginx as a proxy for go server
+	- Remove need for root access to run on port 80 and 443
 
-- investigate into nginx as a proxy for go server
-	- remove need for root access to run on port 80 and 443
+- Live updates using websockets
+	- Lots of great concurrency primitives in Go to support this
 
-- live updates using websockets
-	- lots of great concurrency primitives in Go to support this
-
-- take advantage of EXIF data when converting images
+- Take advantage of EXIF data when converting images
+	- Automatically rotate image based on oritentation data etc.
