@@ -10,7 +10,7 @@ To adjust what posts are displayed and shown in the sidenav, you can click on th
 
 ##### Flags
 
-Generally the flags limit posts which are shown, and are ANDed together rather than ORed. So if "Visible" and "Favorites" are checked, only posts which are both visible AND favorited will be shown.
+Generally the flags limit posts which are shown, and are and'd together rather than or'd. So if "Visible" and "Favorites" are checked, only posts which are both visible AND favorited will be shown.
 
 * **Visible** - If checked, only posts which are visible within the current map area are shown in the feed.
 * **All** - If checked, all posts types of posts will be shown
