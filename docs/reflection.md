@@ -34,7 +34,7 @@ I think that prototyping was very helpful for figuring out what technologies wor
 
 While Polymer is apparently pretty good and has been used in websites at Google including Google Play Music, I personally found it frustrating to deal with, largely due to its infancy. First, its documentation of limitiations is rather sparse, so I often found myself running into issues where I would have to search through several GitHub issues and StackOverflow pages before I found it was some limitation due to how Polymer was implemented. Many of the official libraries also contained undocumented limitaitons which could only be noticed by either filing an issue on GitHub, or digging through the source code, both of which are not ideal. Due to these limitations as well as some bugs which I encountered, I found myself somewhat frequently having to build around Polymer rather than with it.
 
-##### PostgreSQL at a larger scale
+##### PostgreSQL at a Large scale
 
 Although PostgreSQL with JSON made it decently simple to model a functioning database, it doesn't scale very well to large amounts of data, even with the spatial indexing provided by PostGIS. Ideally when browsing you'd probably want to load the first 20 or so posts from the user's current screen region, and then lazy load additional posts as they scroll through the list on the size. The problem with this approach which is pretty standard in social networks such as Twitter and Facebook is that because data has to be filtered both by its location and by its recency, there aren't any good indexing methods out there that can provide this type of query efficiently. From the simple benchmarks I ran, trying to find the 20 most recent posts within a region from a set of posts at random locations, it seems like the query time scales pretty much linearlly, which is about as bad as one could expect.
 
@@ -45,6 +45,13 @@ There are definetly ways to improve this by limiting the flexibility of queries.
 ##### User Interaction
 
 User interaction with spatio-temporal browsing is still somewhat of a grey-area to me. While I can personally navigate through the system pretty well, I don't think it would feel very natural to most people. I think a lot of work could still be done in this area, as I feel it's one of the largest weaknesses of the current system.
+
+##### Go Dependancy Management
+
+- would push a commit related to website code, travis ci would detect failure server tests
+- server largely developed in Go 1.4, as of Go 1.6 vendoring has been added
+	- adds support for depending upon specific versions of repositories
+	- haven't had time to investigate myself but might be valuable
 
 ### Problems and Solutions
 
