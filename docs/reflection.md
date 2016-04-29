@@ -6,7 +6,7 @@ Overall, I think I gained a decent amount of inisght into the strengths and weak
 
 ##### Go
 
-Overall, I found that Go worked very well for developing a robust server. The type system was nice for providing sanity checks and ensuring that no invalid information gets into the database without really getting in the way. The way error checking is generally handled also makes handling errors within requests very clear and explicit. There are also lots of great packages for building RESTful APIs and SQL queries, converting images, interacting with OAuth APIs, and more. Go also has built in support for testing, benchmarking and generating code coverage reports.
+Overall, I found that Go worked very well for developing a robust server. The type system was nice for providing sanity checks and ensuring that no invalid information gets into the database without really getting in the way. The way error checking is generally handled also makes handling errors within requests very clear and explicit, as whenever you call a function where an error could potentially occur, you just check if an error occured and handle it explicity. There are also lots of great packages for building RESTful APIs and SQL queries, converting images, interacting with OAuth APIs, and more. Go also has built in support for testing, benchmarking and generating code coverage reports.
 
 ##### Travis CI
 
