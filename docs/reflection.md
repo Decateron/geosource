@@ -90,28 +90,23 @@ I think there's a lot of ways in which this project could be continued:
 - Optimizing the website with minification and stuff
 	- Honestly I'd rather it was rebuilt from ground up in something other than Polymer
 		- I'd suggest looking into React and Redux 
-- Routing - allow for direct links to posts
-	- i.e. geosource.com/posts/#postID opens that post on the website
-
+- Routing to allow for direct links to posts
+	- i.e. geosource.usask.ca/posts/#postID would open directly to the post with ID #postID on the website
 - Audio and video support
 	- Not sure what the library support is like in Go, ffpmpeg bindings available but no simple libraries at this time
 	- Check Go-Awesome, may have some up to date suggestions
 	- Will also have to worry about how that information is saved away on the website while offline
-
 - General usability improvements
-	- Not much thought was put into usability of interface
+	- Not much thought was put into usability of the interface
 	- How best to support spatial-temporal browsing?
 		- Doesn't feel very natural at the moment
-
 - More thorough testing and documentation
 - Automated deployment
 	- Preferably with coverage, style, and documentation requirements
 	- How to handle changes to the database specification?
 - Investigate into nginx as a proxy for go server
 	- Remove need for root access to run on port 80 and 443
-
 - Live updates using websockets
 	- Lots of great concurrency primitives in Go to support this
-
 - Take advantage of EXIF data when converting images
 	- Automatically rotate image based on oritentation data etc.
