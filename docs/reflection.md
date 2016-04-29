@@ -1,47 +1,50 @@
 # Reflection
 
-I feel like I gained a good amount of insight into the various technologies I used
+Overall, I think I gained a decent amount of inisght into the strengths and weaknesses of the various technologies I used.
 
 ### What Worked
 
 ##### Go
-- Lots of libraries for RESTful APIs, SQL transactions, etc.
-- Type system is nice for validation
-	- Very certain about what does and doesn't make it into database
-	- Makes refactoring less scary
-- Great support for testing
+
+Overall, I found that Go worked very well for developing a robust server. The type system was nice for providing sanity checks and ensuring that no invalid information gets into the database without really getting in the way. The way error checking is generally handled also makes handling errors within requests very clear and explicit. There are also lots of great packages for building RESTful APIs and SQL queries, converting images, interacting with OAuth APIs, and more. Go also has built in support for testing, benchmarking and generating code coverage reports.
 
 ##### Travis CI
-- minimal work to support wide array of tests
-	- image conversion
-	- database transactions
-	- standard unit tests
+
+I thought Travis CI worked very well for continuous integration. It removed most of the headache associated with setting up a Jenkins server since it sets up a clean VM each time it runs the set of tests, and comes with many of the dependencies that I needed already installed such as Go, PostgreSQL and ImageMagick. The documentation isn't perfect however, and it was sometimes difficult to figure out what versions of programs came with different Linux distrubtions that were available.
 
 ##### PostgreSQL
-- NoSQL features such as JSON type made for nice combination of static and dynamic content
 
+Desipite its name, PostgreSQL has support for a wide array of NoSQL features. Although there were many NoSQL features which I didn't use (such as PostgreSQL's key value store capabilities), the one feature that I did use, JSON, was invaluable for consisely modeling the database since dynamic content doesn't map well to relational modeling. Overall, I thought this made for a nice mix of the two paradigms when working with small amounts of data.
+
+PostgreSQL also has support for spatial querying via PostGIS, although this didn't end up being very useful at least in the case of query performance, as is documented below. However, PostGIS can enable much more complex spatial querying than what I ended up using it for, so it might be interesting utilizing it more heavily in the future to say find all the posts within Saskatoon, rather than just the user's screen region.
 
 ##### Prototyping
-- Verified technologies individually, easy to hook them togethor
 
+I think that prototyping was very helpful for figuring out what technologies worked and didn't work, and helped to reduce the number of risks in building this project. It would've been painful learn that some browser features on which this application relied didn't work as expected, and prevented the completion of the project. Thankfully this wasn't the case, but it was still useful for identifying major issues earlier into development, such as: 
+
+- HTML5 Geolocation functionality while offline
+	- Works fine for devices with built in GPS, but not devices such as laptops which rely on the user's IP to estimate their location
+-  File storage limitations
+	- Local Storage is extremely limited, so I ended up having to use IndexedDB instead
+	- IndexedDB does not allow for binary blob storage, so I had to convert to the data to base64 to save it
 
 ### What Didn't Work
 
 ##### Polymer
-- might be fine, I found it frustrating
-	- poor documentation in general for supported and unsupported features
-	- difficult to work with large datastructures
+
+While Polymer is apparently pretty good and has been used in websites at Google including Google Play Music, I personally found it frustrating to deal with, largely due to its infancy. First, its documentation of limitiations is rather sparse, so I often found myself running into issues where I would have to search through several GitHub issues and StackOverflow pages before I found it was some limitation due to how Polymer was implemented. Many of the official libraries also contained undocumented limitaitons which could only be noticed by either filing an issue on GitHub, or digging through the source code, both of which are not ideal. Due to these limitations as well as some bugs which I encountered, I found myself somewhat frequently having to build around Polymer rather than with it.
 
 ##### PostgreSQL at a larger scale
-- complex queries prove difficult to optimize
-- basically linear scaling which is about as bad as it gets
+
+Although PostgreSQL with JSON made it decently simple to model a functioning database, it doesn't scale very well to large amounts of data, even with the spatial indexing provided by PostGIS. Ideally when browsing you'd probably want to load the first 20 or so posts from the user's current screen region, and then lazy load additional posts as they scroll through the list on the size. The problem with this approach which is pretty standard in social networks such as Twitter and Facebook is that because data has to be filtered both by its location and by its recency, there aren't any good indexing methods out there that can provide this type of query efficiently. From the simple benchmarks I ran, trying to find the 20 most recent posts within a region from a set of posts at random locations, it seems like the query time scales pretty much linearlly, which is about as bad as one could expect.
 
 ![](https://joshheinrichs.github.io/geosource/database-benchmark.png)
 
+There are definetly ways to improve this by limiting the flexibility of queries. I think this tradeoff should be decided upon after understanding this application a bit better from a usability perpsective since ultimately that's more important than if the application will work smoothly with millions of posts.
+
 ##### User Interaction
-- doesn't feel very simple or intuitive
-	- no good examples of spatiotemporal browsing to go off of
-	- could be an interesting project for someone
+
+User interaction with spatio-temporal browsing is still somewhat of a grey-area to me. While I can personally navigate through the system pretty well, I don't think it would feel very natural to most people. I think a lot of work could still be done in this area, as I feel it's one of the largest weaknesses of the current system.
 
 ### Problems and Solutions
 
@@ -58,6 +61,11 @@ One thing I noticed was that information was stored with various amounts of deta
 
 ### Future Work
 
+I think there's a lot of ways in which this project could be continued:
+
+- Additional filtering/searching options
+	- Textual search
+	- Filtering by channel
 - Public and private channels
 - Moderation tools
 - Add permissions
@@ -79,10 +87,9 @@ One thing I noticed was that information was stored with various amounts of deta
 				- This is the main performance bottleneck of the algorithm, but is technically be constant
 				- Keep track of how deep you've gotten into each list, and the size of each list and send that info over to the user
 					- This will provide sufficient information to know where to start for each of these squares when attempting to load the next 20 posts
-- Optimizing website with minification and stuff
+- Optimizing the website with minification and stuff
 	- Honestly I'd rather it was rebuilt from ground up in something other than Polymer
 		- I'd suggest looking into React and Redux 
-		- Google uses Polymer it in a few of their sites but personally I'm not convinced
 - Routing - allow for direct links to posts
 	- i.e. geosource.com/posts/#postID opens that post on the website
 
