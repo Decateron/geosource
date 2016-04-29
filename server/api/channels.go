@@ -12,10 +12,10 @@ import (
 
 func GetChannels(w rest.ResponseWriter, req *rest.Request) {
 	requesterID := GetRequesterID(req)
-	channels, err := transactions.GetChannels(requesterID)
-	if err != nil {
-		log.Println(err)
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
+	channels, httpErr := transactions.GetChannels(requesterID)
+	if httpErr != nil {
+		log.Println(httpErr)
+		rest.Error(w, httpErr.Error(), httpErr.Code())
 		return
 	}
 	w.WriteJson(channels)
@@ -25,10 +25,10 @@ func GetChannels(w rest.ResponseWriter, req *rest.Request) {
 func GetChannel(w rest.ResponseWriter, req *rest.Request) {
 	requesterID := GetRequesterID(req)
 	channelname := req.PathParam("channelname")
-	channel, err := transactions.GetChannel(requesterID, channelname)
-	if err != nil {
-		log.Println(err)
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
+	channel, httpErr := transactions.GetChannel(requesterID, channelname)
+	if httpErr != nil {
+		log.Println(httpErr)
+		rest.Error(w, httpErr.Error(), httpErr.Code())
 		return
 	}
 	w.WriteJson(channel)
@@ -43,32 +43,32 @@ func AddChannel(w rest.ResponseWriter, req *rest.Request) {
 	err := req.DecodeJsonPayload(&jsonBody)
 	if err != nil {
 		log.Println("invalid json body")
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	channel, err := types.UnmarshalChannel(jsonBody)
 	if err != nil {
 		log.Println("invalid channel structure", err)
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	channel.CreatorID = requesterID
 	err = channel.Validate()
 	if err != nil {
 		log.Println(err)
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
+		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = transactions.AddChannel(channel)
-	if err != nil {
-		log.Println(err)
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
+	httpErr := transactions.AddChannel(channel)
+	if httpErr != nil {
+		log.Println(httpErr)
+		rest.Error(w, httpErr.Error(), httpErr.Code())
 		return
 	}
-	insertedChannel, err := transactions.GetChannel(requesterID, channel.Name)
-	if err != nil {
-		log.Println(err)
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
+	insertedChannel, httpErr := transactions.GetChannel(requesterID, channel.Name)
+	if httpErr != nil {
+		log.Println(httpErr)
+		rest.Error(w, httpErr.Error(), httpErr.Code())
 		return
 	}
 	w.WriteJson(insertedChannel)

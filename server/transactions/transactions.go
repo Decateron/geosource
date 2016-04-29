@@ -3,11 +3,12 @@
 package transactions
 
 import (
-	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/jinzhu/gorm"
 	"github.com/joshheinrichs/geosource/server/config"
+	"github.com/joshheinrichs/httperr"
 
 	// This is not imported in main to keep all logic about the database inside the transactions package
 	_ "github.com/lib/pq"
@@ -15,7 +16,8 @@ import (
 
 var db *gorm.DB
 
-var ErrInsufficientPermission = errors.New("Insufficient permission.")
+var ErrInsufficientPermission = httperr.New("Insufficient permission.", http.StatusForbidden)
+var ErrNotImplemented = httperr.New("function has not yet been implemented", http.StatusInternalServerError)
 
 // Init opens a connection to the database based on the information in the
 // given config. Returns an error if the connection  could not be established.

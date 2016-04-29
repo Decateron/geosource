@@ -31,9 +31,9 @@ func CallbackAuth(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	user, err := transactions.GetUserByEmail(gothUser.Email)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusInternalServerError)
+	user, httpErr := transactions.GetUserByEmail(gothUser.Email)
+	if httpErr != nil {
+		rest.Error(w, httpErr.Error(), httpErr.Code())
 		return
 	}
 	if user == nil {
@@ -43,9 +43,9 @@ func CallbackAuth(w rest.ResponseWriter, req *rest.Request) {
 			Email:  gothUser.Email,
 			ID:     base64.RawURLEncoding.EncodeToString(uuid.NewRandom()),
 		}
-		err = transactions.AddUser(user)
-		if err != nil {
-			rest.Error(w, err.Error(), http.StatusInternalServerError)
+		httpErr = transactions.AddUser(user)
+		if httpErr != nil {
+			rest.Error(w, httpErr.Error(), httpErr.Code())
 			return
 		}
 	}

@@ -1,17 +1,15 @@
 package transactions
 
-import (
-	"errors"
-)
+import "github.com/joshheinrichs/httperr"
 
-func AddAdmin(requesterID, userID string) error {
-	return errors.New("function has not yet been implemented")
+func AddAdmin(requesterID, userID string) httperr.Error {
+	return ErrNotImplemented
 }
 
-func IsAdmin(userID string) (bool, error) {
-	return false, errors.New("function has not yet been implemented")
+func IsAdmin(userID string) (bool, httperr.Error) {
+	return false, ErrNotImplemented
 }
 
-func RemoveAdmin(requesterID, userID string) error {
-	return errors.New("function has not yet been implemented")
+func RemoveAdmin(requesterID, userID string) httperr.Error {
+	return ErrNotImplemented
 }

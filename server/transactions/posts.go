@@ -2,10 +2,11 @@ package transactions
 
 import (
 	"encoding/json"
-	"errors"
+	"net/http"
 	"time"
 
 	"github.com/joshheinrichs/geosource/server/types"
+	"github.com/joshheinrichs/httperr"
 )
 
 type PostQueryParams struct {
@@ -40,23 +41,27 @@ type LocationRange struct {
 	Max types.Location `url:"max"`
 }
 
-func IsPostCreator(requesterID, userID, postID string) (bool, error) {
-	return false, errors.New("function has not yet been implemented")
+func IsPostCreator(requesterID, userID, postID string) (bool, httperr.Error) {
+	return false, ErrNotImplemented
 }
 
-func AddPost(requesterID string, post *types.Post) error {
+func AddPost(requesterID string, post *types.Post) httperr.Error {
 	jsonFields, err := json.Marshal(post.Fields)
 	if err != nil {
-		return err
+		return httperr.New(err.Error(), http.StatusInternalServerError)
 	}
-	return db.Exec("INSERT INTO posts "+
+	err = db.Exec("INSERT INTO posts "+
 		"(p_postid, p_userid_creator, p_channelname, p_title, p_thumbnail, p_time, p_location, p_fields) "+
 		"VALUES (?, ?, ?, ?, ?, ?, ST_MakePoint(?,?), ?)",
 		post.ID, post.CreatorID, post.Channel, post.Title, post.Thumbnail, post.Time,
 		post.Location.Longitude, post.Location.Latitude, jsonFields).Error
+	if err != nil {
+		return httperr.New(err.Error(), http.StatusInternalServerError)
+	}
+	return nil
 }
 
-func GetPosts(requesterID string, postQueryParams *PostQueryParams) ([]*types.PersonalizedPostInfo, error) {
+func GetPosts(requesterID string, postQueryParams *PostQueryParams) ([]*types.PersonalizedPostInfo, httperr.Error) {
 	var posts []*types.PersonalizedPostInfo
 	query := db.Table("posts").
 		Joins("LEFT JOIN user_favorites ON (p_postid = uf_postid AND uf_userid = ?)", requesterID).
@@ -97,12 +102,12 @@ func GetPosts(requesterID string, postQueryParams *PostQueryParams) ([]*types.Pe
 
 	err := query.Find(&posts).Error
 	if err != nil {
-		return nil, err
+		return nil, httperr.New(err.Error(), http.StatusInternalServerError)
 	}
 	return posts, nil
 }
 
-func GetPost(requesterID, postID string) (*types.PersonalizedPost, error) {
+func GetPost(requesterID, postID string) (*types.PersonalizedPost, httperr.Error) {
 	var post types.PersonalizedPost
 	err := db.Table("posts").
 		Where("p_postid = ?", postID).
@@ -111,11 +116,11 @@ func GetPost(requesterID, postID string) (*types.PersonalizedPost, error) {
 		Select("*, (uf_postid IS NOT NULL) AS favorited, ST_AsText(p_location) AS location").
 		First(&post).Error
 	if err != nil {
-		return nil, err
+		return nil, httperr.New(err.Error(), http.StatusInternalServerError)
 	}
 	return &post, nil
 }
 
-func RemovePost(requesterID, postID string) error {
-	return errors.New("function has not yet been implemented")
+func RemovePost(requesterID, postID string) httperr.Error {
+	return ErrNotImplemented
 }

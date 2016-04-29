@@ -30,9 +30,9 @@ func AddBan(w rest.ResponseWriter, req *rest.Request) {
 		rest.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = transactions.AddBan(requesterID, body.UserID, channelname)
-	if err != nil {
-		rest.Error(w, err.Error(), http.StatusBadRequest)
+	httpErr := transactions.AddBan(requesterID, body.UserID, channelname)
+	if httpErr != nil {
+		rest.Error(w, httpErr.Error(), httpErr.Code())
 		return
 	}
 	w.WriteHeader(http.StatusOK)
