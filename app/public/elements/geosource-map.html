@@ -84,12 +84,12 @@
 					var oldLocationRange = this.postQueryParams.locationRange
 					var newLocationRange = {
 						min: {
-							latitude: mapBounds.R.R,
-							longitude: mapBounds.j.j
+							latitude: mapBounds.getSouthWest().lat(),
+							longitude: mapBounds.getNorthEast().lng()
 						},
 						max: {
-							latitude: mapBounds.R.j,
-							longitude: mapBounds.j.R
+							latitude: mapBounds.getNorthEast().lat(),
+							longitude: mapBounds.getSouthWest().lng()
 						}
 					};
 					// deep comparison of location ranges to check for updates
