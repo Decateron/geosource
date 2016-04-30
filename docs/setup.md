@@ -1,5 +1,7 @@
 # Setup
 
+This guide assumes you are setting up GeoSource on a Ubuntu 16.04 machine. External references have been included for most steps which document the setup process for different operating systems, and often go into greater detail than I have here.
+
 ## Install Git
 
 ```
@@ -9,6 +11,8 @@ sudo apt-get install git
 ## Install Go
 
 [Reference](https://golang.org/doc/install)
+
+Go 1.5+ should work, although 1.6+ is reccomended for its support of HTTP/2.
 
 ```
 sudo apt-get install golang
@@ -41,6 +45,8 @@ ln -s $GOPATH/src/github.com/joshheinrichs/geosource ~/geosource
 [Reference - PostgreSQL](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-14-04)
 
 [Reference - PostGIS](http://postgis.net/install/)
+
+PostgreSQL 9.4+ is required for support of JSONB. PostGIS 2.1 was used, although older versions may work as well.
 
 From inside the `geosource/database` folder, install PostgreSQL and PostGIS, create a database, and then populate it with tables via the `dbinit.sql` script:
 
