@@ -54,7 +54,7 @@ From inside the `geosource/database` folder, install PostgreSQL and PostGIS, cre
 5. `create extension postgis;`
 6. `\i dbinit.sql`
 
-## Install Website
+## Retreive Website Dependancies
 
 [Reference](http://bower.io/)
 
