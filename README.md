@@ -2,7 +2,7 @@
 
 GeoSource is web application for posting and browsing spatio-temporal data.
 
-### Setup
+## Setup
 
 Requires:
  * [Go 1.5+](https://golang.org/)
