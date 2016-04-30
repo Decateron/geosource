@@ -80,5 +80,5 @@ The `fullchain.pem` and `privkey.pem` files should be located inside `/etc/letse
 
 Inside the `geosource/server` folder:
 
-1. set up a `config.gcfg` file
+1. Set up a `config.gcfg` file
 2. Run the server via `sudo -E go run main.go`
