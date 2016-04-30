@@ -1,6 +1,6 @@
 # Reflection
 
-Overall, I think I gained a decent amount of inisght into the strengths and weaknesses of the various technologies I used.
+Overall, I think I gained a good amount of inisght into the strengths and weaknesses of the various technologies I used.
 
 ## What Worked
 
@@ -34,7 +34,7 @@ I think that prototyping was very helpful for figuring out what technologies wor
 
 While Polymer is apparently pretty good and has been used in websites at Google including Google Play Music, I personally found it frustrating to deal with, largely due to its infancy. First, its documentation of limitiations is rather sparse, so I often found myself running into issues where I would have to search through several GitHub issues and StackOverflow pages before I found it was some limitation due to how Polymer was implemented. Many of the official libraries also contained undocumented limitaitons which could only be noticed by either filing an issue on GitHub, or digging through the source code, both of which are not ideal. Due to these limitations as well as some bugs which I encountered, I found myself somewhat frequently having to build around Polymer rather than with it.
 
-### PostgreSQL at a Large scale
+### PostgreSQL at a Large Scale
 
 Although PostgreSQL with JSON made it decently simple to model a functioning database, it doesn't scale very well to large amounts of data, even with the spatial indexing provided by PostGIS. Ideally when browsing you'd probably want to load the first 20 or so posts from the user's current screen region, and then lazy load additional posts as they scroll through the list on the size. The problem with this approach which is pretty standard in social networks such as Twitter and Facebook is that because data has to be filtered both by its location and by its recency, there aren't any good indexing methods out there that can provide this type of query efficiently. From the simple benchmarks I ran, trying to find the 20 most recent posts within a region from a set of posts at random locations, it seems like the query time scales pretty much linearlly, which is about as bad as one could expect.
 
@@ -48,10 +48,7 @@ User interaction with spatio-temporal browsing is still somewhat of a grey-area 
 
 ### Go Dependancy Management
 
-- would push a commit related to website code, travis ci would detect failure server tests
-- server largely developed in Go 1.4, as of Go 1.6 vendoring has been added
-	- adds support for depending upon specific versions of repositories
-	- haven't had time to investigate myself but might be valuable
+Up until Go 1.6 which was released relatively recently, Go did not have an agreed upon method for keeping track of the version of a package on which your code depenended. I ran into a few cases during development where my tests on Travis CI would break due to updates to some external packages which I used. Since there was no way to specify that I was using an older version of the package, I'd have to spend a few hours updating my server. In Go 1.6, support for vendoring was added which addresses this issue, although I haven't had time to investigate adding it to the project.
 
 ## Problems and Solutions
 
@@ -65,6 +62,38 @@ One thing I noticed was that information was stored with various amounts of deta
 	- html5 forms also limited in terms of types
 		- could not support geolocation as a field type
 	- less flexible than my structure
+
+### Saving Posts
+
+Saving away posts in a website has some challenges associated with it. The most notable problem is that websites don't have direct access to the filesystem for security reasons. As such, if you want to keep a photo that the user's taken associated with a post so that they don't have to reselect all the files before uploading, you have to save it along with the rest of the post inside of IndexedDB, which means converting the image into base64 when storing it (since binary blobs are not supported by all browsers). While this is a bit hacky, it works alright in practice, at least for images and audio files. That said, it wouldn't really work for videos, which can be multiple gigabytes in size. Storing videos in base64 would be both computationally expensive and take up a lot of extra storage space on the user's device which is pretty desirable.
+
+### Dynamic Forms
+
+I went through a lot of iterations on the server trying to support dynamic forms cleanly. Initially I was attempting to do a single pass of static JSON unmarshaling, which ended up not being very clean, as a field would have to cotain all of the potential types within the struct, which minimzied code reuse i.e.:
+
+```go
+type Field struct {
+   Label        string       `json:"label"`
+   Text         *string      `json:"text"`
+   Radiobuttons Radiobuttons `json:"radiobuttons"`
+   Checkboxes   Checkboxes   `json:"checkboxes"`
+   Images       Images       `json:"images"`
+   ...
+}
+```
+
+Ultimately I decided on creating two seperate interfaces which a given type would have to implement, a `Form` and a `Value`, and giving all fields the same structure i.e.:
+
+```go
+type Field struct {
+   Type  string `json:"type"`
+   Label string `json:"label"`
+   Form  Form   `json:"form"`
+   Value Value  `json:"value"`
+}
+```
+
+So the images type has associated `ImagesForm` and `ImagesValue` structs which implement the `Form` and `Value` interfaces. This actually makes the JSON unmarshaling pretty clean since it is still mostly automatic, although you have to switch over the type string to properly unmarshal the Form. It also makes it pretty easy to logically seperate channel forms from posts, since channel forms shouldn't have an associated value. Splitting up the form and value also makes it easier to deal with user submissions, as they only have to pass in an array of values which need to be validated against the form which is stored in the database, which means that less information has to be sent by the user and validated by the server.
 
 ## Future Work
 
