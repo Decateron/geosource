@@ -35,7 +35,7 @@ To create a channel, click on the bottom of the two buttons in the bottom left o
 
 ## Creating a Post
 
-To create a post, click on the upper of the two buttons in the bottom left of the screen. This will open a post creation dialog, where you can select a channel and then fill out its associated form. Currently the save button and drafts do not do anything.
+To create a post, click on the upper of the two buttons in the bottom right of the screen. This will open a post creation dialog, where you can select a channel and then fill out its associated form, or pick from a list of existing drafts to edit or submit. If you are not online, you can click the save button to store away the post's contents for later submission. It can be reaccessed later via the "Drafts" section. In order to fill out forms while offline, you have to have opened the submission form for the channel so that it can be cached away.
 
 ## Adding a Comment
 
