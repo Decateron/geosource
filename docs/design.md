@@ -62,7 +62,7 @@ This will recursively tests all of the folders within the `server/` folder. A `t
 
 ### Database
 
-The database for this project was built in [PostgreSQL 9.4](http://www.postgresql.org/docs/9.4/static/release-9-4.html), as it has support for some NoSQL features such as JSON, which were used within this project to store dynamic content. While this could've been modeled relationally, it would ultimately be significantly more complex and less efficient.
+The database for this project was built in [PostgreSQL 9.4](http://www.postgresql.org/docs/9.4/static/release-9-4.html), as it has support for some NoSQL features such as JSON, which was used within this project to store dynamic content. While this could've been modeled relationally, it would ultimately be significantly more complex and less efficient.
 
 - general design
 	- static content stored traditionally
