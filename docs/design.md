@@ -64,24 +64,31 @@ This will recursively tests all of the folders within the `server/` folder. A `t
 
 The database for this project was built in [PostgreSQL 9.4](http://www.postgresql.org/docs/9.4/static/release-9-4.html), as it has support for some NoSQL features such as JSON, which was used within this project to store dynamic content. While this could've been modeled relationally, it would ultimately be significantly more complex and less efficient.
 
-- general design
-	- static content stored traditionally
-	- dynamic content such as channel forms, post contents stored dynamically as JSON
-	- PostGIS used for spatial indexing and queries
+![](https://joshheinrichs.github.io/geosource/er-diagram.png)
+
+An ER diagram of the database has been included above. I think the structure is generally self-explanitory, so I won't go into much detail about it. The one thing I will mention is that I think the three permission tables, `channel_viewers`, `channel_bans`, and `channel_moderators` could be combined into a single `channel_permissions` table, but these tables aren't currently being used, so I haven't revised the structure.
 
 ### Users
 
-- username currently just set to whatever name given by OAuth providers
-	- couldn't find limit on length (at least for google), so right now is just set to TEXT, ideally this would be changed at some point though, as realistically a limit should be set
-	- avatar is the URL of the user's avatar from the provider
-	- userID is base64 encoded UUID
-		- somewhat random user ID, mainly an attempt to avoid using serial identifiers
+- **p_userid** - Users are given a base64 encoded UUID when they are created. These are somewhat random, although I mainly wanted to avoid using serial identifiers.
+- **p_email** - From my research, it appears that emails cannot be longer than 254 characters, so I limit it to strings of that length.
+- **p_username** - Currently the username is just set to whatever is given by the OAuth providers. Google doesn't seem to have any limit. on length, so I just set it to TEXT. A limit should probably be set at some point in the future.
+- **p_avatar** - The maximum length of a URL is apparently 2083 characters, so I set the type to TEXT for simplicity's sake.
 
 ### Channels
 
-- channelnames currently limited to alphanumeric characters, no spaces
-	- could easily add support for them
-	- either give chanenls base64uuid ID or URL encode channelname which is currently used as identifier within rest api
-		- former probably better since spaces should not be used in rest API
-	- visibility not currently in use
-	- field values should be empty
+- **ch_channelname** - The name of the channel is currently limited to 20 characters, and must be unique. The length is somewhat arbitrary, and really could be extended if needed. Currently, channels can only consist of alphanumeric characters, but support for other characters could be added by either URL encoding the name when referencing it via API urls, or giving each channel an associated UUID identifier, similar to posts and users.
+- **ch_userid_creator** - The user which created the channel.
+- **ch_visibility** - Can be set to `'public'` or `'private'`. Currently recorded but not taken into account when using the site.
+- **ch_fields** - The channel's associated form structure, encoded in JSON.
+
+### Posts
+
+- **p_postid** - Posts are given a base64 encoded UUID when they are created. These are somewhat random. I mainly wanted to prevent people from being able to linearlly access every post through API requests and know how many private posts are in the database if support for private channels is added.
+- **p_userid_creator** - Creator of the post.
+- **p_channelname** - The channel to which this post was posted.
+- **p_title** - The title of the post, currently limited to 140 characters. This is somewhat arbitrary and could be changed. 
+- **p_thumbnail** - This field stores the URL of the post's associated thumbnail. The URLs are relative to the website, so only `/media/images/uuid.jpg` is stored. In retrospect, it may be good to change this to TEXT and allow for any URL, so that moving static. content to a CDN or something would be possible without restructuring the database. 
+- **p_time** - The time at which the post was submitted.
+- **p_location** - The location of the post. This makes use of PostGIS's geometry library to allow for spatial indexing.
+- **p_fields** - The post's associated form and value, encoded in JSON. Both the form and values are stored for each post  so that the channel's form could change in the future without breaking posts which have already been submitted to the channel.
