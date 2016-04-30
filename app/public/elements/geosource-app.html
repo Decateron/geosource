@@ -113,7 +113,7 @@
 			text="This site is now available offline.">
 		</paper-toast>
 		<paper-toast id="errorToast"></paper-toast>
-		<geosource-object-store 
+		<geosource-object-store  id="objectStore"
 			saved-posts="{{savedPosts}}" 
 			saved-channels="{{savedChannels}}">
 		</geosource-object-store>
@@ -124,10 +124,20 @@
 			on-create-user="openCreateUserDialog">
 		</geosource-api-handler>
 
-		<geosource-post id="post" fullscreen="[[drawerNarrow]]"></geosource-post>
-		<geosource-channel-creator id="channelCreator" fullscreen="[[drawerNarrow]]" channels="{{channels}}"></geosource-channel-creator>
-		<geosource-post-creator id="postCreator" fullscreen="[[drawerNarrow]]" channels="[[channels]]" posts="{{posts}}"></geosource-post-creator>
-		<geosource-login id="loginDialog" fullscreen="[[drawerNarrow]]"></geosource-login>
+		<geosource-post id="post" fullscreen="[[drawerNarrow]]">
+		</geosource-post>
+		<geosource-channel-creator id="channelCreator" fullscreen="[[drawerNarrow]]" 
+			channels="{{channels}}">
+		</geosource-channel-creator>
+		<geosource-post-creator id="postCreator" fullscreen="[[drawerNarrow]]" 
+			channels="[[channels]]" posts="{{posts}}"
+			saved-posts="[[savedPosts]]"
+			saved-channels="[[savedChannels]]" saved-posts="[[savedPosts]]"
+			on-save-post="savePost"
+			on-delete-saved-post="deleteSavedPost">
+		</geosource-post-creator>
+		<geosource-login id="loginDialog" fullscreen="[[drawerNarrow]]">
+		</geosource-login>
 
 		<paper-drawer-panel id="drawer" drawer-width="{{drawerWidth}}" narrow="{{drawerShut}}"
 			on-paper-responsive-change="resizeDrawer">
@@ -302,15 +312,21 @@
 		openLoginDialog: function() {
 			this.$.loginDialog.open();
 		},
-		openPostDialog: function(event, detail, sender) {
-			console.log(detail);
-			this.$.post.open(detail.postid);
+		openPostDialog: function(event) {
+			console.log(event.detail);
+			this.$.post.open(event.detail.postid);
 		},
 		openChannelCreatorDialog: function() {
 			this.$.channelCreator.open();
 		},
 		openPostCreatorDialog: function() {
 			this.$.postCreator.open();
+		},
+		savePost: function(event) {
+			this.$.objectStore.addPost(event.detail.post);
+		},
+		deleteSavedPost: function(event) {
+			this.$.objectStore.removePost(event.detail.post.id);
 		},
 
 		displayInstalledToast: function() {

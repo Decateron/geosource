@@ -75,10 +75,11 @@
 			}
 			request.onsuccess = function(event) {
 				console.log("Successfully added post");
-			};
+				this.push('savedPosts', post);
+			}.bind(this);
 			request.onerror = function() {
 				console.error("Error adding post", this.error);
-			};
+			}.bind(this);
 		},
 
 		removePost: function(id) {
@@ -94,14 +95,19 @@
 				request = store.delete(id);
 				request.onsuccess = function(event) {
 					console.log("Successfully deleted post");
-				};
+					for (var i=0; i<this.savedPosts.length; i++) {
+						if (id == this.savedPosts[i].id) {
+							this.splice('savedPosts', i, 1);
+						}
+					}
+				}.bind(this);
 				request.onerror = function(event) {
 					console.error("Error deleting post:", event.target.errorCode);
-				};
-			};
+				}.bind(this);
+			}.bind(this);
 			request.onerror = function(event) {
 				console.error("Error deleting post:", event.target.errorCode);
-			};
+			}.bind(this);
 		},
 
 		clearPosts: function() {
@@ -143,7 +149,7 @@
 					request.onsuccess = function(event) {
 						console.log(event.target.result);
 						this.push('savedPosts', event.target.result);
-						console.log(this.savedPosts);
+						console.log("loaded post", event.target.result);
 					}.bind(this);
 					cursor.continue();
 					i++;

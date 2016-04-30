@@ -49,7 +49,6 @@
 
 		pollBoundUpdates: function() {
 			this.async(function() {
-				console.log("polling bounds");
 				this.updateBounds();
 				this.pollBoundUpdates();
 			}.bind(this), 500);
@@ -59,11 +58,11 @@
 			event.target.info.open(event.target.map, event.target.marker);
 		},
 
-		markerMouseout: function(event, detail, sender) {
+		markerMouseout: function(event) {
 			event.target.info.close(event.target.map, event.target.marker);
 		},
 
-		markerClick: function(event, detail, sender) {
+		markerClick: function(event) {
 			console.log("click")
 			this.fire('open-post', {postid: event.model.post.id});
 		},

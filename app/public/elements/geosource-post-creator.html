@@ -65,6 +65,18 @@
 		.error {
 			color: red;
 		}
+		tr.header {
+			font-weight: bold;
+		}
+		td.delete {
+			width: 40px;
+		}
+		table {
+			width: 100%;
+		}
+		tr.item:hover {
+			background-color: #ddd;
+		}
 	</style>
 	<template>
 		<iron-ajax id="addPost" 
@@ -91,21 +103,19 @@
 					</div>
 					<h2>Drafts</h2>
 					<div class="contents">
-						<table>
+						<table cellspacing="0" cellpadding="0">
 							<tr class="header">
 								<td>Title</td>
 								<td>Channel</td>
 								<td>Time</td>
-								<td>Location</td>
 								<td class="delete"></td>
 							</tr>
-							<template is="dom-repeat" items="{{drafts}}" as="draft" index="index">
+							<template is="dom-repeat" items="{{savedPosts}}" as="savedPost" index="index">
 								<tr class="item">
-									<td on-tap="openDraft">{{draft.title}}</td>
-									<td on-tap="openDraft">{{draft.channelname}}</td>
-									<td on-tap="openDraft">{{draft.time}}</td>
-									<td on-tap="openDraft">{{draft.location}}</td>
-									<td><paper-icon-button icon="close" on-tap="deleteDraft"></paper-icon-button></td>
+									<td on-tap="openSavedPost">{{savedPost.title}}</td>
+									<td on-tap="openSavedPost">{{savedPost.channel}}</td>
+									<td on-tap="openSavedPost">{{savedPost.time}}</td>
+									<td><paper-icon-button icon="close" on-tap="deleteSavedPost"></paper-icon-button></td>
 								</tr>
 								<!-- Force index into model -->
 								<span style="display:none;">{{index}}</span>
@@ -168,7 +178,7 @@
 					<div class="error" hidden$="{{!error}}">{{error}}</div>
 					<div class="horizontal layout flex">
 						<paper-button class="flex" on-tap="close">Cancel</paper-button>
-						<paper-button class="flex" on-tap="save">Save</paper-button>
+						<paper-button class="flex" on-tap="savePost">Save</paper-button>
 						<paper-button class="flex" on-tap="submit">Submit</paper-button>
 					</div>
 				</template>
@@ -195,11 +205,11 @@
 				type: Number,
 				value: null,
 			},
-			drafts: {
+			savedPosts: {
 				type: Array,
 				value: [],
 			},
-			draftIndex: {
+			savedPostIndex: {
 				type: Number,
 				value: null,
 			},
@@ -241,7 +251,7 @@
 		newPost: function(channel) {
 			this.post = {
 				title: "", 
-				time: moment().toString(), 
+				time: moment().format("MMM DD YYYY, H:mm").toString(), 
 				channel: channel.name, 
 				fields: this.pairFields(channel.fields)
 			};
@@ -261,8 +271,8 @@
 			}.bind(this));
 		},
 
-		loadPost: function(post) {
-			this.post = post;
+		openSavedPost: function(event) {
+			this.post = event.model.savedPost;
 		},
 
 		openFiles: function(event) {
@@ -295,8 +305,12 @@
 			}
 		},
 
-		save: function() {
-			this.fire('save', {post: this.post});
+		savePost: function() {
+			this.fire('save-post', {post: this.post});
+		},
+
+		deleteSavedPost: function(event) {
+			this.fire('delete-saved-post', {post: event.model.savedPost});
 		},
 
 		submit: function() {
@@ -322,9 +336,9 @@
 			this.unshift('posts', event.detail.response);
 			this.close();
 		},
-		submitError: function(event, detail, sender) {
-			console.log(detail.request.xhr.response.error);
-			this.error = detail.request.xhr.response.error;
+		submitError: function(event) {
+			console.log(event.detail.request.xhr.response.error);
+			this.error = event.detail.request.xhr.response.error;
 		},
 
 		open: function() {

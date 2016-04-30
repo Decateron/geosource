@@ -274,9 +274,9 @@
 			this.unshift('channels', event.detail.response);
 			this.close();
 		},
-		submitError: function(event, detail, sender) {
-			console.log(detail.request.xhr.response.error);
-			this.error = detail.request.xhr.response.error;
+		submitError: function(event) {
+			console.log(event.detail.request.xhr.response.error);
+			this.error = event.detail.request.xhr.response.error;
 		},
 
 		open: function() {
