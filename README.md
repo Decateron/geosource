@@ -10,6 +10,7 @@ Requires:
  * [PostGIS 2.1+](http://postgis.net/)
  * [ImageMagick](http://www.imagemagick.org/script/index.php)
  * [Bower](http://bower.io/)
- * A TLS key and cert for HTTPS (I recommend using [Let's Encrypt](https://letsencrypt.org/))
+ * A TLS key and cert for HTTPS
+  * I recommend using [OpenSSL](https://www.openssl.org/) for local development, and [Let's Encrypt](https://letsencrypt.org/) for deployment
 
 [A more detailed setup procedure can be found here.](docs/setup.md)
