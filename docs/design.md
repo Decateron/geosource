@@ -1,6 +1,6 @@
 # Design
 
-The overall design of the GeoSource follows the standard 3 layer architecture approach, with a website, server, and database. These three moduals are mostly seperate, handling the logic of their respective domains. However, the server does limit what sorts of information can be inserted into the database beyond what is specified within SQL. While this probably could've been handled via SQL scripts, I thought that putting the logic within the server would make it easier to move to different datastores in the future.
+The overall design of the GeoSource follows the standard 3 layer architecture approach, with a website, server, and database. These three moduals are mostly separate, handling the logic of their respective domains. However, the server does limit what sorts of information can be inserted into the database beyond what is specified within SQL. While this probably could've been handled via SQL scripts, I thought that putting the logic within the server would make it easier to move to different datastores in the future.
 
 ## Website
 
@@ -13,7 +13,7 @@ Organization of the files was based on the approach used by the [Google IO 2015]
 This project relies on a large number of recent web features. While most are not needed to browse the website, many are required for either posting or accessing the website while offline. These technologies include:
 
 - **HTML5 Geolocation** - Needed to identify the location at which the user is recording a post.
-- **IndexedDB** - Needed for saving posts. I attempted to use other more widely adopted technologies such as local storage, but they were serverly limited in size (only able to store a few MB of data on some devices), making it impossible to store posts with multiple images. Files have to be stored within the website as there is no way to reference an external file for later use for security reasons. As a result the data has to be duplicated, or else the user would have to rereference the files when submitting at a later date. Neither option is great, but duplicated data seems like the better of the two at least in the case of images.
+- **IndexedDB** - Needed for saving posts. I attempted to use other more widely adopted technologies such as local storage, but they were severely limited in size (only able to store a few MB of data on some devices), making it impossible to store posts with multiple images. Files have to be stored within the website as there is no way to reference an external file for later use for security reasons. As a result the data has to be duplicated, or else the user would have to rereference the files when submitting at a later date. Neither option is great, but duplicated data seems like the better of the two at least in the case of images.
 - **Service Workers** - This is needed for accessing the website while offline. Service workers can be associated with a webpage and essentially.
 - **Web Components** - This technically isn't needed, as there is a [polyfill](https://en.wikipedia.org/wiki/Polyfill) for it, but polyfills aren't cheap. 
 
@@ -26,7 +26,7 @@ The server for this project was built in [Go 1.6](https://golang.org/). There ar
 * [**go vet**](https://golang.org/cmd/vet/) - Reports likely errors such as calls to Printf with incorrect argument types.
 * [**goimports**](https://godoc.org/golang.org/x/tools/cmd/goimports) - Automatically fixes some missing or unnecessary dependencies. This too can be set to run whenever you save a Go file in [Sublime](http://michaelwhatcott.com/gosublime-goimports/).
 
-The server serves all of the static files inside the `app/public/` directory and exposes a RESTful API through which all interactions occur. The website is only available via HTTPS (HTTP simply redirects to HTTPS). This is not only more secure, but faster as well with HTTP/2, which is supported by default as of Go 1.6 and some webcomponent minification tools such as  [vulcanize](https://github.com/Polymer/vulcanize) obselete.
+The server serves all of the static files inside the `app/public/` directory and exposes a RESTful API through which all interactions occur. The website is only available via HTTPS (HTTP simply redirects to HTTPS). This is not only more secure, but faster as well with HTTP/2, which is supported by default as of Go 1.6 and some webcomponent minification tools such as  [vulcanize](https://github.com/Polymer/vulcanize) obsolete.
 
 The server is split into three main packages, `api`, `types`, and `transactions`. The `api` package contains the logic for the RESTful API calls that can be performed. the `types` package contains all of the server-side representations of the application's datatypes such Posts and Channels. It also contains within it the `fields` package, which holds all of the various field types that can used, such as Images and Text. The `transactions` package contains all of the various interactions between the server and the database.
 
@@ -66,7 +66,7 @@ The database for this project was built in [PostgreSQL 9.4](http://www.postgresq
 
 ![](https://joshheinrichs.github.io/geosource/er-diagram.png)
 
-An ER diagram of the database has been included above. I think the structure is generally self-explanitory, so I won't go into much detail about it. The one thing I will mention is that I think the three permission tables, `channel_viewers`, `channel_bans`, and `channel_moderators` could be combined into a single `channel_permissions` table, but these tables aren't currently being used, so I haven't revised the structure.
+An ER diagram of the database has been included above. I think the structure is generally self-explanatory, so I won't go into much detail about it. The one thing I will mention is that I think the three permission tables, `channel_viewers`, `channel_bans`, and `channel_moderators` could be combined into a single `channel_permissions` table, but these tables aren't currently being used, so I haven't revised the structure.
 
 ### Users
 
@@ -84,7 +84,7 @@ An ER diagram of the database has been included above. I think the structure is 
 
 ### Posts
 
-- **p_postid** - Posts are given a base64 encoded UUID when they are created. These are somewhat random. I mainly wanted to prevent people from being able to linearlly access every post through API requests and know how many private posts are in the database if support for private channels is added.
+- **p_postid** - Posts are given a base64 encoded UUID when they are created. These are somewhat random. I mainly wanted to prevent people from being able to linearly access every post through API requests and know how many private posts are in the database if support for private channels is added.
 - **p_userid_creator** - Creator of the post.
 - **p_channelname** - The channel to which this post was posted.
 - **p_title** - The title of the post, currently limited to 140 characters. This is somewhat arbitrary and could be changed. 
