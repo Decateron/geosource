@@ -52,17 +52,6 @@ Up until Go 1.6 which was released relatively recently, Go did not have an agree
 
 ## Problems and Solutions
 
-One thing I noticed was that information was stored with various amounts of detail depending upon the state of the program. I 
-
-- custom forms
-- storing away files
-- HTML5 forms and validation not used due to `iron-form` not supporting image inputs at the time: https://github.com/PolymerElements/iron-form/issues/54
-	- some support has been added and so this could be 'fixed', but this would require redesign of channel and post creation to handle the change in how data is delivered and as such has not been added
-	- as well, the value of a form file input cannot be modified programatically, so loading a saved file off of a user's harddrive or out of the website's storage is not possible
-	- html5 forms also limited in terms of types
-		- could not support geolocation as a field type
-	- less flexible than my structure
-
 ### Saving Posts
 
 Saving away posts in a website has some challenges associated with it. The most notable problem is that websites don't have direct access to the filesystem for security reasons. As such, if you want to keep a photo that the user's taken associated with a post so that they don't have to reselect all the files before uploading, you have to save it along with the rest of the post inside of IndexedDB, which means converting the image into base64 when storing it (since binary blobs are not supported by all browsers). While this is a bit hacky, it works alright in practice, at least for images and audio files. That said, it wouldn't really work for videos, which can be multiple gigabytes in size. Storing videos in base64 would be both computationally expensive and take up a lot of extra storage space on the user's device which is pretty desirable.
