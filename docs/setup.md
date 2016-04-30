@@ -1,12 +1,12 @@
 # Setup
 
-### Install Git
+## Install Git
 
 ```
 sudo apt-get install git
 ```
 
-### Install Go
+## Install Go
 
 [Reference](https://golang.org/doc/install)
 
@@ -15,7 +15,7 @@ sudo apt-get install golang
 ```
 You'll also need to set GOPATH inside your `~/.bashrc` file. I chose to set mine to `$HOME/go`
 
-### Install ImageMagick
+## Install ImageMagick
 
 [Reference](https://github.com/gographics/imagick)
 
@@ -23,7 +23,7 @@ You'll also need to set GOPATH inside your `~/.bashrc` file. I chose to set mine
 2. `sudo apt-get install libmagickwand-dev`
 3. `pkg-config --cflags --libs MagickWand`
 
-### Retrieve the Repository
+## Retrieve the Repository
 
 Get the repo and install all of the server's dependencies: 
 
@@ -36,7 +36,7 @@ And then add a symbolic link to the folder for convenience:
 ln -s $GOPATH/src/github.com/joshheinrichs/geosource ~/geosource
 ```
 
-### Install PostgreSQL
+## Install PostgreSQL
 
 [Reference - PostgreSQL](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-14-04)
 
@@ -54,7 +54,7 @@ From inside the `geosource/database` folder, install PostgreSQL and PostGIS, cre
 5. `create extension postgis;`
 6. `\i dbinit.sql`
 
-### Install Website
+## Install Website
 
 [Reference](http://bower.io/)
 
@@ -65,7 +65,7 @@ From inside the `geosource/app` folder, install bower and then download the webs
 3. `sudo npm install -g bower`
 4. `bower install`
 
-### Set up HTTPS keys
+## Set up HTTPS keys
 
 [Reference](https://letsencrypt.org/getting-started/)
 
@@ -76,7 +76,7 @@ If you are doing local development, use [OpenSSL](https://www.openssl.org/). Oth
 
 The `fullchain.pem` and `privkey.pem` files should be located inside `/etc/letsencrypt/live/geosource.usask.ca/`
 
-### Starting the Server
+## Starting the Server
 
 Inside the `geosource/server` folder:
 
